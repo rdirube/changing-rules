@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {AppInfoOxService, ChallengeService, FeedbackOxService, GameActionsService, LevelService, SubLevelService} from 'micro-lesson-core';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
-import {ChangingRulesExercise} from '../types/changing-rules';
+import {ChangingRulesExercise} from '../models/types';
 import {ExpandableInfo, Showable} from 'ox-types';
 
 @Injectable({

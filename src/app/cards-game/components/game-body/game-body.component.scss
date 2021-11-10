@@ -1,10 +1,32 @@
 .card-to-select{
     width:20vh;
-    height:30vh;
-    background-color: aqua;
+    height:34vh;
+    background-color: whitesmoke;
     position:fixed;
     z-index: 20;
+    top:32.5vh;
+    right:4vh;  
+}
+
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr) ;
+    z-index: 50;
+    height: 62vh;
+    width: 65vh;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(3.5vh);
+}
+
+
+.deck-container {
+    position: fixed;
+    width:14vh;
+    height:20vh;
+    position: fixed;
     top:35vh;
-    right:4vh;
-    
+    left:18vh;
 }

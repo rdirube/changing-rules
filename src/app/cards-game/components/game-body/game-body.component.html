@@ -12,10 +12,18 @@
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
             path="svg/reglas_cambiantes/elementos/mesa.svg">
           </mlc-loaded-svg>
-        </div>
+      <div class="cards-grid">
+       <app-card *ngFor="let item of cardQuantity"></app-card>
+      </div>
+     </div>
     <div fxLayout="column" class="card-to-select">
       <div style="background-color: #f04141;width:100%;height: 5.5vh;" fxLayoutAlign="center center">
         <ox-text [oxTextInfo]="gameInstruction"></ox-text>
-      </div>
+      </div>  
+        <app-rules></app-rules>
     </div>
+    <div class="deck-container">
+      <app-deck></app-deck>
+    </div>
+
     </div>

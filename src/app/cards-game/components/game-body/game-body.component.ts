@@ -1,5 +1,5 @@
-import { Component, OnInit , AfterViewInit} from '@angular/core';
-import { SubscriberOxDirective } from 'micro-lesson-components';
+import {Component, OnInit, AfterViewInit} from '@angular/core';
+import {SubscriberOxDirective} from 'micro-lesson-components';
 import {
   FeedbackOxService,
   GameActionsService,
@@ -7,10 +7,10 @@ import {
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
-import { OxTextInfo, ScreenTypeOx} from 'ox-types';
-import { ChangingRulesChallengeService } from 'src/app/shared/services/changing-rules-challenge.service';
-import { ExerciseOx} from 'ox-core';
-import { ChangingRulesExercise } from 'src/app/shared/models/types';
+import {OxTextInfo, ScreenTypeOx} from 'ox-types';
+import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
+import {ExerciseOx} from 'ox-core';
+import {ChangingRulesExercise} from 'src/app/shared/models/types';
 import {filter, take} from 'rxjs/operators';
 
 
@@ -22,20 +22,20 @@ import {filter, take} from 'rxjs/operators';
 export class GameBodyComponent extends SubscriberOxDirective implements OnInit, AfterViewInit {
 
   public gameInstruction = new OxTextInfo();
-  public gameInstructionText:string = "Igual" 
-  public cardQuantity:number[] = [1,2,3,4,5,6,7,8,9];
+  public gameInstructionText: string = "Igual";
+  public cardQuantity: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   public exercise: ChangingRulesExercise | undefined;
   showCountDown: boolean | undefined;
-  
 
-  constructor(private challengeService:ChangingRulesChallengeService,
-    private metricsService: MicroLessonMetricsService<any>,
-    private gameActions: GameActionsService<any>,
-    private hintService: HintService,
-    private soundService: SoundOxService,
-    private feedbackService: FeedbackOxService) { 
 
-    super()
+  constructor(private challengeService: ChangingRulesChallengeService,
+              private metricsService: MicroLessonMetricsService<any>,
+              private gameActions: GameActionsService<any>,
+              private hintService: HintService,
+              private soundService: SoundOxService,
+              private feedbackService: FeedbackOxService) {
+
+    super();
     this.gameInstructionText = "Igual";
     this.gameInstruction.color = 'white';
     this.gameInstruction.originalText = this.gameInstructionText;
@@ -69,13 +69,11 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
   }
 
 
-  ngAfterViewInit():void {
+  ngAfterViewInit(): void {
     this.challengeService.nextChallenge();
   }
 
 
-
-  
   // private addMetric(): void {
   //   const myMetric: ExerciseData = {
   //     schemaType: 'multiple-choice',

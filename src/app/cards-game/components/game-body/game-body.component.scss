@@ -11,14 +11,13 @@
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
-    grid-template-rows: repeat(3,1fr) ;
+    grid-template-columns: repeat(3,15vh);
+    grid-template-rows: repeat(3,25vh) ;
     z-index: 50;
-    height: 62vh;
-    width: 65vh;
     justify-content: center;
     align-items: center;
     transform: translateX(3.5vh);
+    grid-column-gap:13vh;
 }
 
 
@@ -29,4 +28,9 @@
     position: fixed;
     top:35vh;
     left:18vh;
+}
+
+.card-component {
+    width: 100%;
+    height:100%;
 }

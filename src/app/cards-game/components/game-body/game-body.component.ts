@@ -23,7 +23,7 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
 
   public gameInstruction = new OxTextInfo();
   public gameInstructionText: string = "Igual";
-  public cardQuantity: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    // public cardQuantity: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   public exercise: ChangingRulesExercise | undefined;
   showCountDown: boolean | undefined;
 
@@ -46,7 +46,8 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         console.log('OTRO EJERCICIOS  ');
         this.exercise = exercise.exerciseData;
-        console.log(exercise);
+  
+        console.log(this.exercise);
         // this.addMetric();
         // this.hintService.usesPerChallenge = this.exercise.optionsBirds.length > 2 ? 1 : 0;
         this.hintService.checkHintAvailable();
@@ -62,10 +63,12 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
           // this.birdsDownAnimation();
         }
       });
-
   }
 
+
+
   ngOnInit(): void {
+
   }
 
 
@@ -73,40 +76,8 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
     this.challengeService.nextChallenge();
   }
 
-
-  // private addMetric(): void {
-  //   const myMetric: ExerciseData = {
-  //     schemaType: 'multiple-choice',
-  //     schemaData: {
-  //       statement: {parts: []},
-  //       additionalInfo: [],
-  //       options: this.challengeService.currentExercise.value.exerciseData.optionsBirds.map(this.birdToOption.bind(this)),
-  //       optionMode: 'independent',
-  //       requiredOptions: 1
-  //     } as MultipleChoiceSchemaData,
-  //     userInput: {
-  //       answers: [],
-  //       requestedHints: 0,
-  //       surrendered: false
-  //     },
-  //     finalStatus: 'to-answer',
-  //     maxHints: 1,
-  //     secondsInExercise: 0,
-  //     initialTime: new Date(),
-  //     finishTime: undefined as any,
-  //     firstInteractionTime: undefined as any
-  //   };
-  //   this.addSubscription(this.gameActions.actionToAnswer.pipe(take(1)), z => {
-  //     myMetric.firstInteractionTime = new Date();
-  //   });
-  //   this.addSubscription(this.gameActions.checkedAnswer.pipe(take(1)),
-  //     z => {
-  //       myMetric.finishTime = new Date();
-  //       console.log('Finish time');
-  //     });
-  //   this.metricsService.addMetric(myMetric as ExerciseData);
-  //   this.metricsService.currentMetrics.exercises++;
-  // }
+  
+ 
 
 
 }

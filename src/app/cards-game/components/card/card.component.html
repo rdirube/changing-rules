@@ -1,5 +1,8 @@
 <div fxLayoutAlign="center center" class="card-container">
-    <mlc-loaded-svg  forceViewBoxTo="''"
-    [path]="cardPath">
+  <mlc-loaded-svg  forceViewBoxTo="''"
+    [path]="cardCurrentFace" class="current-card-face">
+  </mlc-loaded-svg> 
+    <mlc-loaded-svg  forceViewBoxTo="''" class="current-card-symbol"
+    [pathWithReplaces]="cardPathWithReplaces" fxFlex="grow" fxLayoutAlign="center center">
   </mlc-loaded-svg> 
 </div>

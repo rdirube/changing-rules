@@ -10,7 +10,10 @@ export interface CardType  {
   fill:CardFill;
 }
 
-
+export interface Replaces {
+  path: string;
+  replaces: Map<string, string>;
+}
 
 export interface ChangingRulesExercise {
   rule:GameRule;

@@ -4,6 +4,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {TypographyOxModule} from 'typography-ox';
 import {MicroLessonComponentsModule} from 'micro-lesson-components';
 import {NgoxPostMessageModule} from 'ngox-post-message';
+import { OxComponentsModule } from 'ox-components';
 
 
 @NgModule({
@@ -13,13 +14,15 @@ import {NgoxPostMessageModule} from 'ngox-post-message';
     NgoxPostMessageModule,
     MicroLessonComponentsModule,
     TypographyOxModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    OxComponentsModule
   ],
   exports: [
     FlexLayoutModule,
     NgoxPostMessageModule,
     MicroLessonComponentsModule,
     TypographyOxModule,
+    OxComponentsModule
   ]
 })
 export class SharedModule {

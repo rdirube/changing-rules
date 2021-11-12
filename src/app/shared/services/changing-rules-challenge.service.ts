@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   AppInfoOxService,
   ChallengeService,
@@ -7,7 +7,7 @@ import {
   LevelService,
   SubLevelService
 } from 'micro-lesson-core';
-import {ExerciseOx, PreloaderOxService} from 'ox-core';
+import { ExerciseOx, PreloaderOxService } from 'ox-core';
 import {
   ChangingRulesExercise,
   ChangingRulesNivelation,
@@ -19,8 +19,8 @@ import {
   GameMode,
   CardType
 } from '../models/types';
-import {anyElement, ExpandableInfo, Showable, shuffle, equalArrays, randomBool} from 'ox-types';
-import {zip} from 'rxjs';
+import { anyElement, ExpandableInfo, Showable, shuffle, equalArrays, randomBool, } from 'ox-types';
+import { zip } from 'rxjs';
 
 
 @Injectable({
@@ -39,10 +39,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   public turn: number = 0;
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
-              subLevelService: SubLevelService,
-              private preloaderService: PreloaderOxService,
-              private feedback: FeedbackOxService,
-              private appInfo: AppInfoOxService) {
+    subLevelService: SubLevelService,
+    private preloaderService: PreloaderOxService,
+    private feedback: FeedbackOxService,
+    private appInfo: AppInfoOxService) {
     super(gameActionsService, subLevelService, preloaderService);
     for (let i = 0; i < this.cardColors.length; i++) {
       for (let t = 0; t < this.cardShapes.length; t++) {
@@ -56,6 +56,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         }
       }
     }
+
     gameActionsService.restartGame.subscribe(z => {
       this.cachedExercises = [];
       this.setInitialExercise();
@@ -63,7 +64,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
     });
-
+    
     // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
   }
 
@@ -90,10 +91,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
     const currentExerciseRule: GameRule = anyElement(this.gameRules);
-    const shuffledTotalCards = shuffle(this.totalCards);
+    console.log(currentExerciseRule);
     const firstCards: CardType[] = [];
     for (let i = 0; i < this.exerciseConfig.cardsInTable - this.exerciseConfig.cardsForCorrectAnswer; i++) {
-      this.remainingCards = shuffledTotalCards.filter((z, t) => z !== firstCards[t]);
+      this.remainingCards = this.totalCards.filter((z, t) => z !== firstCards[t]);
       firstCards.push(this.remainingCards[i]);
     }
     const lastCards = this.setLastCards(firstCards, this.remainingCards, this.exerciseConfig.cardsForCorrectAnswer, currentExerciseRule);
@@ -101,8 +102,8 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.turn++;
     return new ExerciseOx({
       rule: currentExerciseRule,
-      cards: this.turn === 1 ? currentCards : lastCards
-    } as ChangingRulesExercise, 1, {maxTimeToBonus: 0, freeTime: 0}, []);
+      cards: this.turn === 1 ? shuffle(currentCards) : shuffle(lastCards)
+    } as ChangingRulesExercise, 1, { maxTimeToBonus: 0, freeTime: 0 }, []);
   }
 
 
@@ -138,9 +139,11 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+
   private setInitialExercise(): void {
     console.log('setInitialExercise');
   }
+
 
 
   private countOfEqualProperty(randomCard: CardType, currentsCard: CardType[], rule: GameRule, compareFunc = (a: any, b: any) => a === b): number {
@@ -153,6 +156,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         return currentsCard.filter(z => compareFunc(z.fill, randomCard.fill)).length;
     }
   }
+
 
 
   private setLastCardsEqualProp(rule: GameRule, randomCard: CardType): CardType {
@@ -186,12 +190,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   private setLastCards(cardsInTable: CardType[], shuffleTotalCards: CardType[], cardsForCorrect: number, rule: GameRule): CardType[] {
     const randomCard = anyElement(cardsInTable);
     const lastCards: CardType[] = [];
-    console.log(randomCard);
     const propertyEqualQuantity = this.countOfEqualProperty(randomCard, cardsInTable, rule);
     console.log(propertyEqualQuantity);
     for (let i = 0; i < cardsForCorrect - propertyEqualQuantity; i++) {
       const cardToAdd = this.setLastCardsEqualProp(rule, randomCard);
-      console.log(cardToAdd);
       lastCards.push(cardToAdd);
     }
     while (lastCards.length < this.exerciseConfig.cardsForCorrectAnswer) {
@@ -204,6 +206,8 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     }
     return lastCards;
   }
+
+
 
 
   getNotUnique(array: CardType[]) {

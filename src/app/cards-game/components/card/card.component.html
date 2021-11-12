@@ -1,8 +1,11 @@
-<div fxLayoutAlign="center center" class="card-container">
-  <mlc-loaded-svg  forceViewBoxTo="''"
-    [path]="cardCurrentFace" class="current-card-face">
+<div fxLayoutAlign="center center" [class]="cardState">
+  <mlc-loaded-svg   
+    path="svg/reglas_cambiantes/elementos/frente.svg" class="current-card-face">
   </mlc-loaded-svg> 
-    <mlc-loaded-svg  forceViewBoxTo="''" class="current-card-symbol"
+  <ox-comp-image *ngIf="oxImageInfo" class="current-card-symbol"
+  [oxImageInfo]="oxImageInfo" style="height: 100%;"
+  ></ox-comp-image>
+    <!-- <mlc-loaded-svg   class="current-card-symbol"
     [pathWithReplaces]="cardPathWithReplaces" fxFlex="grow" fxLayoutAlign="center center">
-  </mlc-loaded-svg> 
+  </mlc-loaded-svg>  -->
 </div>

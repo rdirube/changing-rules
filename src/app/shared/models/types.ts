@@ -43,3 +43,55 @@ export interface ChangingRulesNivelation {
   gameMode:GameMode;
   rulesForAnswer:number;
 }
+
+
+export abstract class Rule {
+  abstract id: GameRule;
+  abstract satisfyRule(cards: CardType[]): boolean;
+}
+
+
+export class ShapeRule extends Rule {
+  id = 'forma' as GameRule;
+  satisfyRule(cards: CardType[]): boolean {
+    return cards.every(card => card.shape === cards[0].shape)
+  }
+  // ruleOnMethod(path:string,svg:string ){
+  //   path = 'svg/reglas_cambiantes/indicación/' + 
+  // }
+  
+}
+
+
+export class ColorRule extends Rule {
+  id = 'color' as GameRule;
+  satisfyRule(cards: CardType[]): boolean {
+    return cards.every(card => card.color === cards[0].color)
+  }
+}
+
+
+export class FillRule extends Rule {
+  id = 'relleno' as GameRule;
+  satisfyRule(cards: CardType[]): boolean {
+    return cards.every(card => card.fill === cards[0].fill)
+  }
+}
+
+
+
+export function allSatisfyRule(cards: CardType[], rule: GameRule): boolean {
+    return cards.every(card => satisfyRule(card, cards[0], rule))
+}
+
+
+export function satisfyRule(c1: CardType, c2: CardType, rule: GameRule): boolean {
+  switch(rule){
+    case "forma": return c1.shape === c2.shape;
+    case "color": return c1.color === c2.color;
+    case "relleno": return c1.fill === c2.fill;
+  }
+  throw new Error('unknow rule');
+}
+
+export const ALL_RULES: Rule[] = [new ShapeRule(), new FillRule(), new ColorRule()];

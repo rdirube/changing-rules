@@ -1,21 +1,20 @@
 <div fxLayout="column" style="padding: 2vh;"  fxLayoutAlign="center center">
- <div fxLayout="row" class="rule-container color" fxLayoutAlign="center center">
+ <div fxLayout="row" [class]="containerClass[0]" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule color" forceViewBoxTo="''"
     [path]="colorRulePath">
   </mlc-loaded-svg>
   <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Color"></ox-text>
  </div>
- <div fxLayout="row" class="rule-container shape" fxLayoutAlign="center center">
+ <div fxLayout="row" [class]="containerClass[1]" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule shape" forceViewBoxTo="''"
     [path]="shapeRulePath">
   </mlc-loaded-svg>
   <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Forma"></ox-text>
  </div>
- <div fxLayout="row" class="rule-container filler" fxLayoutAlign="center center">
+ <div fxLayout="row" [class]="containerClass[2]" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule filler" forceViewBoxTo="''"
     [path]="fillerRulePath" >
   </mlc-loaded-svg>
   <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Relleno"></ox-text>
-
  </div>
 </div>

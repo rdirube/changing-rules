@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, Input } from '@angular/core';
 
 @Component({
   selector: 'app-deck',
@@ -7,9 +7,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DeckComponent implements OnInit {
 
-  constructor() { }
+  @Input() deckClass!:string;
+
+  constructor(private elementRef:ElementRef) {
+    
+   }
 
   ngOnInit(): void {
+    const deckposition = this.elementRef.nativeElement.getBoundingClientRect()
+    console.log(deckposition);
   }
 
 }

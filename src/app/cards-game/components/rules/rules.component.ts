@@ -11,29 +11,33 @@ import { SubscriberOxDirective } from 'micro-lesson-components';
 })
 export class RulesComponent implements OnInit {
 
-  @Input() colorRulePath!:string;
-  @Input() shapeRulePath!:string;
-  @Input() fillerRulePath!:string;
-  @Input() currentRule!:string;
+  
+  currentRule!:string;
   public colorInstructionText = new OxTextInfo();
   public shapeInstructionText = new OxTextInfo();
   public instructionText = new OxTextInfo();
-  public rulesSvg:string[] = ['colores_igual.svg', 'colores_igual_block.svg', 'formas_igual.svg','formas_igual_block.svg','relleno_igual.svg','relleno_igual_block.svg'];
-  public containerClass:string[] = ['rule-container-off', 'rule-container-off', 'rule-container-off']
+  public rulesSvgActive:string[] = [this.concatRuteSvg('colores_igual.svg'),this.concatRuteSvg('formas_igual.svg'),this.concatRuteSvg('relleno_igual.svg')];
+  public rulesSvgBlock:string[] = [this.concatRuteSvg('colores_igual_block.svg'), this.concatRuteSvg('formas_igual_block.svg'),this.concatRuteSvg('relleno_igual_block.svg')];
+  public isRuleOn = [false, false, false];
+  public colorRulePath!:string;
+  public shapeRulePath!:string;
+  public fillerRulePath!:string;
+
+
 
   @Input('currentRule')
   set setCurrentRule(r: GameRule) {
     this.currentRule = r;
     this.ruleOnMethod();
+    this.colorRulePath = this.isRuleOn[0] ? this.rulesSvgActive[0] : this.rulesSvgBlock[0];
+    this.shapeRulePath = this.isRuleOn[1] ? this.rulesSvgActive[1] : this.rulesSvgBlock[1];
+    this.fillerRulePath = this.isRuleOn[2] ? this.rulesSvgActive[2] : this.rulesSvgBlock[2];
   }
 
 
 
   constructor(private elementRef:ElementRef) {
-    this.colorRulePath = this.concatRuteSvg(this.rulesSvg[1]) ;
-    this.shapeRulePath = this.concatRuteSvg(this.rulesSvg[3]);
-    this.fillerRulePath = this.concatRuteSvg(this.rulesSvg[5]);
-  
+    
    }
 
   
@@ -55,22 +59,18 @@ export class RulesComponent implements OnInit {
 
 
   ruleOnMethod() {
-    this.containerClass.forEach(c => c = 'rule-container-off');
+    this.isRuleOn.fill(false);
     switch(this.currentRule){
       case 'color':
-        this.colorRulePath = this.concatRuteSvg(this.rulesSvg[0]);
-        this.containerClass[0] = 'rule-container-on';
+        this.isRuleOn[0] = true;
         break;
         case 'forma':
-        this.shapeRulePath = this.concatRuteSvg(this.rulesSvg[2]);
-        this.containerClass[1] = 'rule-container-on';
+        this.isRuleOn[1] = true;
         break;
         case 'relleno':
-        this.fillerRulePath = this.concatRuteSvg(this.rulesSvg[4]);
-        this.containerClass[2] = 'rule-container-on';
+        this.isRuleOn[2] = true;
         break;
     }
-    console.log(this.currentRule);
   }
 
 

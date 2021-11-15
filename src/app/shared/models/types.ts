@@ -94,4 +94,19 @@ export function satisfyRule(c1: CardType, c2: CardType, rule: GameRule): boolean
   throw new Error('unknow rule');
 }
 
+
+
+export function countOfEqualProperty(randomCard: CardType, cardsInTable: CardType[], rule: GameRule, compareFunc = (a: any, b: any) => a === b):number {
+  switch (rule) {
+    case 'color':
+      return cardsInTable.filter(z => compareFunc(z.color, randomCard.color)).length;
+    case 'forma':
+      return cardsInTable.filter(z => compareFunc(z.shape, randomCard.shape)).length;
+    case 'relleno':
+      return cardsInTable.filter(z => compareFunc(z.fill, randomCard.fill)).length;
+  }
+}
+
+
+
 export const ALL_RULES: Rule[] = [new ShapeRule(), new FillRule(), new ColorRule()];

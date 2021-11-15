@@ -32,7 +32,6 @@ export class CardComponent implements OnInit {
     this.card = c;
     this.setCard();
     this.elementRef.nativeElement.style.transform = '';
-    console.log(c);
   }
 
 
@@ -40,7 +39,7 @@ export class CardComponent implements OnInit {
   card!: CardType;
 
 
-  public cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_moteado.svg', 'estrella_moteado.svg',
+  public cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
     'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg']
 
 
@@ -60,19 +59,10 @@ export class CardComponent implements OnInit {
 
 
   setCard(): void {
-    console.log('Setting card', this.card)
-    // const cardSvgNocolor = 'svg/reglas_cambiantes/formas_sin_cara/' + this.cardsSvg.find(z => z.includes(this.card.shape) && z.includes(this.card.fill))
-     const cardSvgNocolor = 'svg/reglas_cambiantes/formas_sin_cara/cuadrado_relleno.svg'
-    //  + this.cardsSvg.find(z => z.includes(this.card.shape) && z.includes(this.card.fill))
+    const cardSvgNocolor = 'svg/reglas_cambiantes/formas_sin_cara/' + this.cardsSvg.find(z => z.includes(this.card.shape) && z.includes(this.card.fill))
     const replaces = new Map<string, string>();
-    replaces.set('#449ed7', colorsParseFunction(this.card.color).toUpperCase());
+    replaces.set("#4a90d6", colorsParseFunction(this.card.color).toLowerCase());
     this.cardPathWithReplaces = { path: cardSvgNocolor, replaces: replaces };
-    this.oxImageInfo = {
-      data: this.preloader.getResourceData(cardSvgNocolor),
-      keys: ['#449ed7'],
-      // values: [colorsParseFunction(this.card.color).toLowerCase()]
-      values: [anyElement(['red', 'brown', 'yellow', 'blue', '#123AAA'])]
-    }
   }
 
 

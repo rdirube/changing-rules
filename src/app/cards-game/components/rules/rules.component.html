@@ -1,17 +1,17 @@
 <div fxLayout="column" style="padding: 2vh;"  fxLayoutAlign="center center">
- <div fxLayout="row" [class]="containerClass[0]" fxLayoutAlign="center center">
+ <div fxLayout="row" [ngClass]="isRuleOn[0] ? 'rule-container-on': 'rule-container-off'" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule color" forceViewBoxTo="''"
     [path]="colorRulePath">
   </mlc-loaded-svg>
   <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Color"></ox-text>
  </div>
- <div fxLayout="row" [class]="containerClass[1]" fxLayoutAlign="center center">
+ <div fxLayout="row" [ngClass]="isRuleOn[1] ? 'rule-container-on': 'rule-container-off'" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule shape" forceViewBoxTo="''"
     [path]="shapeRulePath">
   </mlc-loaded-svg>
   <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Forma"></ox-text>
  </div>
- <div fxLayout="row" [class]="containerClass[2]" fxLayoutAlign="center center">
+ <div fxLayout="row" [ngClass]="isRuleOn[2] ? 'rule-container-on': 'rule-container-off'" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule filler" forceViewBoxTo="''"
     [path]="fillerRulePath" >
   </mlc-loaded-svg>

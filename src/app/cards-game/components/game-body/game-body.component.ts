@@ -61,19 +61,20 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
           this.cardComponentArray = this.cardComponent.toArray();
         })
         this.hintService.checkHintAvailable();
-        if(this.challengeService.turn > 1) {
-        this.deckClass = 'filled';
-         this.answer.forEach((z,i)=> {
-           this.exercise.cards.splice(this.exercise.cards.indexOf(z.card),1,exercise.exerciseData.cards[i])
-         })
-         this.exercise.rule = exercise.exerciseData.rule;
-         console.log(this.exercise);
-         console.log(this.exercise.rule);
-        } else {
-        this.exercise = exercise.exerciseData;
-        console.log(this.exercise);
+        if(this.challengeService.exerciseConfig.cardQuantityDeck > this.challengeService.quantityOfCardsPlayed){
+          if(this.challengeService.turn > 1) {
+            this.deckClass = 'filled';
+             this.answer.forEach((z,i)=> {
+               this.exercise.cards.splice(this.exercise.cards.indexOf(z.card),1,exercise.exerciseData.cards[i])
+             })
+             this.exercise.rule = exercise.exerciseData.rule;
+             this.challengeService.quantityOfCardsPlayed+=3;
+            } else {
+            this.exercise = exercise.exerciseData;
+            this.challengeService.quantityOfCardsPlayed+=9;
+            }
         }
-        console.log(this.challengeService.turn);
+       
   
         // this.replaceBirds3and4(this.exercise?.optionsBirds);
         // this.setNests(this.exercise.optionsBirds);
@@ -96,6 +97,7 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
         })
         this.gameActions.showNextChallenge.emit();
         this.answerCounter = 0;
+        this.answer = [];
       } else {
         this.answer.forEach(z => z.cardState = 'card-wrong');
       }
@@ -134,17 +136,24 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
   }
 
 
-  // cardsToDeckAnimation() {
-  //   anime({
-  //     targets: this.answer,
-  //     translateX:162,
-  //     translateY: 315,
-  //     delay:500,
-  //     duration:1000,
-  //     easing: 'easeOutExpo',
-  //     complete:() => this.gameActions.showNextChallenge.emit()
-  //   })
-  //   }
+
+  public endFedbackEmitter() {
+    this.feedbackService.endFeedback.emit();
+  }
+
+
+
+  cardsToDeckAnimation() {
+    anime({
+      targets: '.card-correct',
+      translateX:162,
+      translateY: 315,
+      delay:500,
+      duration:1000,
+      easing: 'easeOutExpo',
+      complete:() => this.gameActions.showNextChallenge.emit()
+    })
+    }
 
 
 

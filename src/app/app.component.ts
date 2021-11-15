@@ -55,7 +55,8 @@ export class AppComponent extends BaseMicroLessonApp {
   protected getGameResourcesToLoad(): ResourceOx[] {
     const svgElementos:string[] = ['mesa.svg', 'dorso.svg', 'frente.svg','mazo.svg'];
     const svgIndications:string[] = ['colores_igual.svg', 'colores_igual_block.svg', 'formas_igual.svg','formas_igual_block.svg','relleno_igual.svg','relleno_igual_block.svg'];
-    const svgForms:string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg','cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_moteado.svg', 'estrella_moteado.svg',
+    const svgForms:string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg','cuadrado_vacio.svg',
+    'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
     'estrella_vacio.svg','estrella_relleno.svg', 'triangulo_moteado.svg','triangulo_relleno.svg', 'triangulo_vacio.svg','triangulo_rallado.svg']
     return ['bubble01.mp3', 'bubble02.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
       [ScreenTypeOx.Game], false))

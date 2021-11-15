@@ -17,7 +17,10 @@ import {
   GameRule,
   GameSetting,
   GameMode,
-  CardType
+  CardInfo,
+  CardsInTable,
+  Rule,
+  ALL_RULES
 } from '../models/types';
 import { anyElement, ExpandableInfo, Showable, shuffle, equalArrays, randomBool, } from 'ox-types';
 import { zip } from 'rxjs';
@@ -35,10 +38,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   public cardFillers: CardFill[] = ['relleno', 'rallado', 'moteado', 'vacio'];
   public gameRules: GameRule[] = ['color', 'forma', 'relleno'];
 
-  public totalCards: CardType[] = [];
-  public remainingCards: CardType[] = [];
+  public totalCards: CardInfo[] = [];
+  public remainingCards: CardInfo[] = [];
   public turn: number = 0;
-  public quantityOfCardsPlayed:number = 0;
+  public quantityOfCardsPlayed: number = 0;
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
     subLevelService: SubLevelService,
@@ -46,18 +49,18 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     private feedback: FeedbackOxService,
     private appInfo: AppInfoOxService) {
     super(gameActionsService, subLevelService, preloaderService);
-    for (let i = 0; i < this.cardColors.length; i++) {
-      for (let t = 0; t < this.cardShapes.length; t++) {
-        for (let p = 0; p < this.cardFillers.length; p++) {
-          let card: CardType = {
-            color: this.cardColors[i],
-            shape: this.cardShapes[t],
-            fill: this.cardFillers[p]
-          };
-          this.totalCards.push(card);
-        }
-      }
-    }
+    // for (let i = 0; i < this.cardColors.length; i++) {
+    //   for (let t = 0; t < this.cardShapes.length; t++) {
+    //     for (let p = 0; p < this.cardFillers.length; p++) {
+    //       let card: CardInfo = {
+    //         color: this.cardColors[i],
+    //         shape: this.cardShapes[t],
+    //         fill: this.cardFillers[p]
+    //       };
+    //       this.totalCards.push(card);
+    //     }
+    //   }
+    // }
 
     gameActionsService.restartGame.subscribe(z => {
       this.cachedExercises = [];
@@ -66,7 +69,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
     });
-    
+
     // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
   }
 
@@ -92,33 +95,31 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   // }
 
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
-    
+
     const currentExerciseRule: GameRule = anyElement(this.gameRules);
-    console.log(currentExerciseRule);
-    const firstCards: CardType[] = [];
-    const shuffleTotalCards = shuffle(this.totalCards);
-    for (let i = 0; i < this.exerciseConfig.cardsInTable - this.exerciseConfig.cardsForCorrectAnswer; i++) {
-      this.remainingCards = shuffleTotalCards.filter((z, t) => z !== firstCards[t]);
-      firstCards.push(this.remainingCards[i]);
+    const cardsInTable: CardInfo[] = [];
+    const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule);
+    const cardsInTableClassInstance = new CardsInTable(ruleClass!)
+    if (this.turn < 1) {
+      cardsInTableClassInstance.setInitialCards(this.cardColors, this.cardShapes, this.cardFillers, this.exerciseConfig.cardsInTable, cardsInTable);
     }
-    const lastCards = this.setLastCards(firstCards, this.remainingCards, this.exerciseConfig.cardsForCorrectAnswer, currentExerciseRule);
-    const currentCards = firstCards.concat(lastCards);
+    cardsInTableClassInstance.modififyFinalCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer, cardsInTable, this.cardColors, this.cardShapes, this.cardFillers)
     this.turn++;
     return new ExerciseOx({
       rule: currentExerciseRule,
-      cards: this.turn === 1 ? shuffle(currentCards) : shuffle(lastCards)
+      cards: cardsInTable
     } as ChangingRulesExercise, 1, { maxTimeToBonus: 0, freeTime: 0 }, []);
   }
 
 
 
   beforeStartGame(): void {
-    const gameCase = this.appInfo.microLessonInfo.extraInfo.gameUrl;
+    const gameCase = this.appInfo.microLessonInfo.extraInfo.exerciseCase;
     switch (gameCase) {
       case 'created-config':
         this.currentSubLevelPregeneratedExercisesNeeded = 1;
-        this.exerciseConfig = this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
-        // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+        // this.exerciseConfig = this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
+        this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
         // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
         this.setInitialExercise();
         break;
@@ -150,7 +151,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
 
-  private countOfEqualProperty(randomCard: CardType, cardsInTable: CardType[], rule: GameRule, compareFunc = (a: any, b: any) => a === b): number {
+  private countOfEqualProperty(randomCard: CardInfo, cardsInTable: CardInfo[], rule: GameRule, compareFunc = (a: any, b: any) => a === b): number {
     switch (rule) {
       case 'color':
         return cardsInTable.filter(z => compareFunc(z.color, randomCard.color)).length;
@@ -163,53 +164,31 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
 
-  private setLastCardsEqualProp(rule: GameRule, randomCard: CardType): CardType {
-    switch (rule) {
-      case 'color':
-        let card1: CardType = {
-          color: randomCard.color,
-          shape: anyElement(this.cardShapes),
-          fill: anyElement(this.cardFillers)
-        };
-        return card1;
-      case 'forma':
-        let card2: CardType = {
-          color: anyElement(this.cardColors),
-          shape: randomCard.shape,
-          fill: anyElement(this.cardFillers)
-        };
-        return card2;
-      case 'relleno':
-        let card3: CardType = {
-          color: anyElement(this.cardColors),
-          shape: anyElement(this.cardShapes),
-          fill: randomCard.fill
-        };
-        return card3;
-    }
+  private setLastCardsEqualProp(rule: GameRule, randomCard: CardInfo): void {
+
   }
 
 
 
 
-  private setLastCards(cardsInTable: CardType[], shuffleTotalCards: CardType[], cardsForCorrect: number, rule: GameRule): CardType[] {
-    const randomCard = anyElement(cardsInTable);
-    const lastCards: CardType[] = [];
-    const propertyEqualQuantity = this.countOfEqualProperty(randomCard, cardsInTable, rule);
-    for (let i = 0; i < cardsForCorrect - propertyEqualQuantity; i++) {
-      const cardToAdd = this.setLastCardsEqualProp(rule, randomCard);
-      lastCards.push(cardToAdd);
-    }
-    while (lastCards.length < cardsForCorrect) {
-      let randomCardToAdd: CardType = {
-        color: anyElement(this.cardColors),
-        shape: anyElement(this.cardShapes),
-        fill: anyElement(this.cardFillers)
-      };
-      lastCards.push(randomCardToAdd);
-    }
-    return lastCards;
-  }
+  // private setLastCards(cardsInTable: CardInfo[], shuffleTotalCards: CardInfo[], cardsForCorrect: number, rule: GameRule): CardInfo[] {
+  //   const randomCard = anyElement(cardsInTable);
+  //   const lastCards: CardInfo[] = [];
+  //   const propertyEqualQuantity = this.countOfEqualProperty(randomCard, cardsInTable, rule);
+  //   for (let i = 0; i < cardsForCorrect - propertyEqualQuantity; i++) {
+  //     const cardToAdd = this.setLastCardsEqualProp(rule, randomCard);
+  //     lastCards.push(cardToAdd);
+  //   }
+  //   while (lastCards.length < cardsForCorrect) {
+  //     let randomCardToAdd: CardInfo = {
+  //       color: anyElement(this.cardColors),
+  //       shape: anyElement(this.cardShapes),
+  //       fill: anyElement(this.cardFillers)
+  //     };
+  //     lastCards.push(randomCardToAdd);
+  //   }
+  //   return lastCards;
+  // }
 
 
 

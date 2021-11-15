@@ -37,7 +37,7 @@ export class RulesComponent implements OnInit {
 
 
   constructor(private elementRef:ElementRef) {
-    
+  
    }
 
   

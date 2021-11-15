@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, AfterViewInit, ElementRef } from '@angular/core';
-import { CardType, Replaces } from 'src/app/shared/models/types';
+import { CardInfo, Replaces } from 'src/app/shared/models/types';
 import { colorsParseFunction } from 'src/app/shared/models/functions'
 import anime from 'animejs';
 import {
@@ -18,17 +18,16 @@ import { PreloaderOxService } from 'ox-core';
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss']
 })
+
 export class CardComponent implements OnInit {
 
-
   public oxImageInfo!: OxImageInfo;
-
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
 
 
   @Input('cardInfo')
-  set setCardInfo(c: CardType) {
+  set setCardInfo(c: CardInfo) {
     this.card = c;
     this.setCard();
     this.elementRef.nativeElement.style.transform = '';
@@ -36,7 +35,7 @@ export class CardComponent implements OnInit {
 
 
   public cardState!: string;
-  card!: CardType;
+  card!: CardInfo;
 
 
   public cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',

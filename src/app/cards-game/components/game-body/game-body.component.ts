@@ -56,28 +56,23 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
     this.gameInstruction.ignoreLowerCase = true;
     this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
-        console.log('OTRO EJERCICIOS  ');
         timer(500).subscribe(z => {
           this.cardComponentArray = this.cardComponent.toArray();
         })
         this.hintService.checkHintAvailable();
-        if(this.challengeService.exerciseConfig.cardQuantityDeck > this.challengeService.quantityOfCardsPlayed){
           if(this.challengeService.turn > 1) {
             this.deckClass = 'filled';
-             this.answer.forEach((z,i)=> {
-               this.exercise.cards.splice(this.exercise.cards.indexOf(z.card),1,exercise.exerciseData.cards[i])
-             })
+            this.answer.forEach( (z,i) => {
+               z.card = exercise.exerciseData.cards[i];
+            })
              this.exercise.rule = exercise.exerciseData.rule;
-             this.challengeService.quantityOfCardsPlayed+=3;
             } else {
-            this.exercise = exercise.exerciseData;
-            this.challengeService.quantityOfCardsPlayed+=9;
+            this.exercise = exercise.exerciseData;  
             }
-        }
+        
        
   
-        // this.replaceBirds3and4(this.exercise?.optionsBirds);
-        // this.setNests(this.exercise.optionsBirds);
+  
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
           this.showCountDown = true;
           // this.correctAnswerCounter = 0;
@@ -90,7 +85,7 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       });
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       const ruleToApply = ALL_RULES.find(z => z.id === this.exercise.rule);
-      if (ruleToApply?.satisfyRule(this.answer.map(z => z.card))) {
+      if (ruleToApply?.allSatisfyRule(this.answer.map(z => z.card))) {
         this.answer.forEach(z => {
           z.cardState = 'card-correct';
           z.cardsToDeckAnimation();

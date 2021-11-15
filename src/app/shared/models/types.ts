@@ -80,19 +80,19 @@ export class FillRule extends Rule {
 
 
 
-export function allSatisfyRule(cards: CardType[], rule: GameRule): boolean {
-    return cards.every(card => satisfyRule(card, cards[0], rule))
-}
-
-
-export function satisfyRule(c1: CardType, c2: CardType, rule: GameRule): boolean {
-  switch(rule){
-    case "forma": return c1.shape === c2.shape;
-    case "color": return c1.color === c2.color;
-    case "relleno": return c1.fill === c2.fill;
-  }
-  throw new Error('unknow rule');
-}
+// export function allSatisfyRule(cards: CardType[], rule: GameRule): boolean {
+//     return cards.every(card => satisfyRule(card, cards[0], rule))
+// }
+//
+//
+// export function satisfyRule(c1: CardType, c2: CardType, rule: GameRule): boolean {
+//   switch(rule){
+//     case "forma": return c1.shape === c2.shape;
+//     case "color": return c1.color === c2.color;
+//     case "relleno": return c1.fill === c2.fill;
+//   }
+//   throw new Error('unknow rule');
+// }
 
 
 

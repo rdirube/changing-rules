@@ -108,12 +108,21 @@ export class FillRule extends Rule {
 
 
 
+<<<<<<< HEAD
 // export function allSatisfyRule(cards: CardInfo[], rule: GameRule): boolean {
 //     return cards.every(card => satisfyRule(card, cards[0], rule))
 // }
 
 
 // export function satisfyRule(c1: CardInfo, c2: CardInfo, rule: GameRule): boolean {
+=======
+// export function allSatisfyRule(cards: CardType[], rule: GameRule): boolean {
+//     return cards.every(card => satisfyRule(card, cards[0], rule))
+// }
+//
+//
+// export function satisfyRule(c1: CardType, c2: CardType, rule: GameRule): boolean {
+>>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
 //   switch(rule){
 //     case "forma": return c1.shape === c2.shape;
 //     case "color": return c1.color === c2.color;
@@ -121,6 +130,7 @@ export class FillRule extends Rule {
 //   }
 //   throw new Error('unknow rule');
 // }
+<<<<<<< HEAD
 
 
 
@@ -145,6 +155,8 @@ export class CardsInTable {
 
   constructor(private rule: Rule) {
   }
+=======
+>>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
 
   public cardsInTable: CardInfo[] = [];
 

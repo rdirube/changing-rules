@@ -33,10 +33,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   public resources = new Map<string, string>();
   public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
-  public cardColors: CardColor[] = ['naranja', 'celeste', 'amarillo', 'violeta'];
-  public cardShapes: CardShape[] = ['circulo', 'cuadrado', 'triangulo', 'estrella'];
-  public cardFillers: CardFill[] = ['relleno', 'rallado', 'moteado', 'vacio'];
-  public gameRules: GameRule[] = ['color', 'forma', 'relleno'];
+  public readonly cardColors: CardColor[] = ['naranja', 'celeste', 'amarillo', 'violeta'];
+  public readonly cardShapes: CardShape[] = ['circulo', 'cuadrado', 'triangulo', 'estrella'];
+  public readonly cardFillers: CardFill[] = ['relleno', 'rallado', 'moteado', 'vacio'];
+  public readonly gameRules: GameRule[] = ['color', 'forma', 'relleno'];
 
   public totalCards: CardInfo[] = [];
   public remainingCards: CardInfo[] = [];
@@ -64,7 +64,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
     gameActionsService.restartGame.subscribe(z => {
       this.cachedExercises = [];
-      this.setInitialExercise();
     });
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
@@ -77,12 +76,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.cachedExercises.push(this.generateNextChallenge(0));
   }
 
-
   protected equalsExerciseData(exerciseData: ChangingRulesExercise, exerciseDoneData: ChangingRulesExercise): boolean {
     console.log('Chequing equal exercose...');
     return equalArrays(exerciseData.cards, exerciseDoneData.cards);
   }
-
 
   // private check = 0;
 
@@ -121,7 +118,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         // this.exerciseConfig = this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
         this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
         // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
-        this.setInitialExercise();
         break;
       default:
         throw new Error('Wrong game case recived from Wumbox');
@@ -144,6 +140,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+<<<<<<< HEAD
 
   private setInitialExercise(): void {
     console.log('setInitialExercise');
@@ -152,6 +149,9 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
   private countOfEqualProperty(randomCard: CardInfo, cardsInTable: CardInfo[], rule: GameRule, compareFunc = (a: any, b: any) => a === b): number {
+=======
+  private countOfEqualProperty(randomCard: CardType, cardsInTable: CardType[], rule: GameRule, compareFunc = (a: any, b: any) => a === b): number {
+>>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
     switch (rule) {
       case 'color':
         return cardsInTable.filter(z => compareFunc(z.color, randomCard.color)).length;
@@ -164,6 +164,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
 
+<<<<<<< HEAD
   private setLastCardsEqualProp(rule: GameRule, randomCard: CardInfo): void {
 
   }
@@ -189,13 +190,51 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   //   }
   //   return lastCards;
   // }
+=======
+  private setLastCardsEqualProp(rule: GameRule, randomCard: CardType): CardType {
+    switch (rule) {
+      case 'color':
+        return {
+          color: randomCard.color,
+          shape: anyElement(this.cardShapes),
+          fill: anyElement(this.cardFillers)
+        };
+      case 'forma':
+        let card2: CardType = {
+          color: anyElement(this.cardColors),
+          shape: randomCard.shape,
+          fill: anyElement(this.cardFillers)
+        };
+        return card2;
+      case 'relleno':
+        let card3: CardType = {
+          color: anyElement(this.cardColors),
+          shape: anyElement(this.cardShapes),
+          fill: randomCard.fill
+        };
+        return card3;
+    }
+  }
 
-
-
-
-  // private generateDifferentsFigures(cardsInTable:CardType[]):CardType {
-
-  // }
+  private setLastCards(cardsInTable: CardType[], shuffleTotalCards: CardType[], cardsForCorrect: number, rule: GameRule): CardType[] {
+    const randomCard = anyElement(cardsInTable);
+    const lastCards: CardType[] = [];
+    const propertyEqualQuantity = this.countOfEqualProperty(randomCard, cardsInTable, rule);
+    for (let i = 0; i < cardsForCorrect - propertyEqualQuantity; i++) {
+      const cardToAdd = this.setLastCardsEqualProp(rule, randomCard);
+      lastCards.push(cardToAdd);
+    }
+    while (lastCards.length < cardsForCorrect) {
+      const randomCardToAdd: CardType = {
+        color: anyElement(this.cardColors),
+        shape: anyElement(this.cardShapes),
+        fill: anyElement(this.cardFillers)
+      };
+      lastCards.push(randomCardToAdd);
+    }
+    return lastCards;
+  }
+>>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
 
 
 }

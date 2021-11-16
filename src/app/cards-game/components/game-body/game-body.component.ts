@@ -1,5 +1,5 @@
-import {Component, OnInit, AfterViewInit, ViewChildren, QueryList} from '@angular/core';
-import {SubscriberOxDirective} from 'micro-lesson-components';
+import { Component, OnInit, AfterViewInit, ViewChildren, QueryList } from '@angular/core';
+import { SubscriberOxDirective } from 'micro-lesson-components';
 import {
   FeedbackOxService,
   GameActionsService,
@@ -7,22 +7,15 @@ import {
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
-import {OxTextInfo, ScreenTypeOx} from 'ox-types';
-import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
-import {ExerciseOx} from 'ox-core';
-import {
-  ChangingRulesExercise,
-  GameRule,
-  Rule,
-  FillRule,
-  ColorRule,
-  ShapeRule,
-  ALL_RULES
-} from 'src/app/shared/models/types';
-import {filter, take, toArray} from 'rxjs/operators';
-import {CardComponent} from '../card/card.component';
-import {timer} from 'rxjs';
+import { OxTextInfo, ScreenTypeOx } from 'ox-types';
+import { ChangingRulesChallengeService } from 'src/app/shared/services/changing-rules-challenge.service';
+import { ExerciseOx } from 'ox-core';
+import { ChangingRulesExercise, GameRule, Rule, FillRule, ColorRule, ShapeRule, ALL_RULES } from 'src/app/shared/models/types';
+import { filter, take, toArray } from 'rxjs/operators';
+import { CardComponent } from '../card/card.component';
+import { timer } from 'rxjs';
 import anime from 'animejs';
+
 
 
 @Component({
@@ -31,6 +24,7 @@ import anime from 'animejs';
   styleUrls: ['./game-body.component.scss']
 })
 export class GameBodyComponent extends SubscriberOxDirective implements OnInit, AfterViewInit {
+
 
 
   @ViewChildren(CardComponent) cardComponent!: QueryList<CardComponent>;
@@ -43,15 +37,15 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
   public answer: CardComponent[] = [];
   public answerCounter: number = 0;
   public cardComponentArray: CardComponent[] = [];
-  public deckClass: string = "empty";
+  public deckClass:string  = "empty";
 
 
   constructor(private challengeService: ChangingRulesChallengeService,
-              private metricsService: MicroLessonMetricsService<any>,
-              private gameActions: GameActionsService<any>,
-              private hintService: HintService,
-              private soundService: SoundOxService,
-              private feedbackService: FeedbackOxService) {
+    private metricsService: MicroLessonMetricsService<any>,
+    private gameActions: GameActionsService<any>,
+    private hintService: HintService,
+    private soundService: SoundOxService,
+    private feedbackService: FeedbackOxService) {
 
     super();
     this.gameInstructionText = "Igual";
@@ -64,41 +58,21 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         timer(500).subscribe(z => {
           this.cardComponentArray = this.cardComponent.toArray();
-        });
+        })
         this.hintService.checkHintAvailable();
-<<<<<<< HEAD
           if(this.challengeService.turn > 1) {
             this.deckClass = 'filled';
-            this.answer.forEach( (z,i) => {
-               z.card = exercise.exerciseData.cards[i];
-            })
-             this.exercise.rule = exercise.exerciseData.rule;
-            } else {
-            this.exercise = exercise.exerciseData;  
-            }
-        
-       
-  
-  
-=======
-        if (this.challengeService.exerciseConfig.cardQuantityDeck > this.challengeService.quantityOfCardsPlayed) {
-          if (this.challengeService.turn > 1) {
-            this.deckClass = 'filled';
-            this.answer.forEach((z, i) => {
-              this.exercise.cards.splice(this.exercise.cards.indexOf(z.card), 1, exercise.exerciseData.cards[i]);
-            });
+            this.answer.forEach((z,i) => {
+            this.exercise.cards.splice(this.exercise.cards.indexOf(z.card),1, exercise.exerciseData.cards[i])})
+            
+            this.challengeService.cardsInTable = this.exercise.cards;
             this.exercise.rule = exercise.exerciseData.rule;
-            this.challengeService.quantityOfCardsPlayed += 3;
-          } else {
+            } else {
             this.exercise = exercise.exerciseData;
-            this.challengeService.quantityOfCardsPlayed += 9;
-          }
-        }
-
-
-        // this.replaceBirds3and4(this.exercise?.optionsBirds);
-        // this.setNests(this.exercise.optionsBirds);
->>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
+            }
+     
+  
+  
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
           this.showCountDown = true;
           // this.correctAnswerCounter = 0;
@@ -113,25 +87,30 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       const ruleToApply = ALL_RULES.find(z => z.id === this.exercise.rule);
       if (ruleToApply?.allSatisfyRule(this.answer.map(z => z.card))) {
         this.answer.forEach(z => {
-          z.cardState = 'card-correct';
-          z.cardsToDeckAnimation();
-        });
+          z.cardState = 'card-neutral';
+          z.isSelected = false;
+          // z.cardsToDeckAnimation();
+        })
         this.gameActions.showNextChallenge.emit();
         this.answerCounter = 0;
         this.answer = [];
       } else {
         this.answer.forEach(z => z.cardState = 'card-wrong');
       }
-    });
+    })
   }
+
+
 
 
   ngOnInit(): void {
   }
 
 
+
   ngAfterViewInit(): void {
   }
+
 
 
   answerVerificationMethod(card: CardComponent, rule: GameRule) {
@@ -140,16 +119,20 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       this.answerCounter++;
       card.cardState = 'card-selected';
       card.isSelected = true;
+      console.log(this.answerCounter);
       if (this.answerCounter === this.challengeService.exerciseConfig.cardsForCorrectAnswer) {
         this.gameActions.checkedAnswer.emit();
       }
-    } else {
+    }
+    else  {
       this.answer.splice(this.answer.indexOf(card), 1);
       card.isSelected = false;
       card.cardState = 'card-neutral';
       this.answerCounter--;
+      console.log(this.answerCounter);
     }
   }
+
 
 
   public endFedbackEmitter() {
@@ -157,17 +140,19 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
   }
 
 
+
   cardsToDeckAnimation() {
     anime({
       targets: '.card-correct',
-      translateX: 162,
+      translateX:162,
       translateY: 315,
-      delay: 500,
-      duration: 1000,
+      delay:500,
+      duration:1000,
       easing: 'easeOutExpo',
-      complete: () => this.gameActions.showNextChallenge.emit()
-    });
-  }
+      complete:() => this.gameActions.showNextChallenge.emit()
+    })
+    }
+
 
 
 }

@@ -1,3 +1,4 @@
+import { initTranslocoService } from "@ngneat/transloco/lib/transloco-testing.module";
 import { random } from "animejs";
 import { anyElement } from "ox-types";
 import { zip } from "rxjs";
@@ -55,7 +56,7 @@ export abstract class Rule {
   abstract satisfyRule(c1: CardInfo, c2: CardInfo): boolean;
   abstract modifyToSatifyRule(randomCardFromTable: CardInfo, myCard: CardInfo): void;
   // abstract countOfEqualProperty(randomCard: CardInfo, cardsInTable: CardInfo[], rule: GameRule):number;
-  
+
   allSatisfyRule(cards: CardInfo[]): boolean {
     return cards.every(card => this.satisfyRule(card, cards[0]))
   }
@@ -73,7 +74,7 @@ export class ShapeRule extends Rule {
     return c1.shape === c2.shape;
   }
 
- 
+
 
   modifyToSatifyRule(primaryCard: CardInfo, toModifyCard: CardInfo): void {
     toModifyCard.shape = primaryCard.shape;
@@ -108,21 +109,12 @@ export class FillRule extends Rule {
 
 
 
-<<<<<<< HEAD
 // export function allSatisfyRule(cards: CardInfo[], rule: GameRule): boolean {
 //     return cards.every(card => satisfyRule(card, cards[0], rule))
 // }
 
 
 // export function satisfyRule(c1: CardInfo, c2: CardInfo, rule: GameRule): boolean {
-=======
-// export function allSatisfyRule(cards: CardType[], rule: GameRule): boolean {
-//     return cards.every(card => satisfyRule(card, cards[0], rule))
-// }
-//
-//
-// export function satisfyRule(c1: CardType, c2: CardType, rule: GameRule): boolean {
->>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
 //   switch(rule){
 //     case "forma": return c1.shape === c2.shape;
 //     case "color": return c1.color === c2.color;
@@ -130,7 +122,6 @@ export class FillRule extends Rule {
 //   }
 //   throw new Error('unknow rule');
 // }
-<<<<<<< HEAD
 
 
 
@@ -155,19 +146,21 @@ export class CardsInTable {
 
   constructor(private rule: Rule) {
   }
-=======
->>>>>>> c7451e27bb8dd866d9ca194535e34d316881a9b6
 
   public cardsInTable: CardInfo[] = [];
 
 
-  setInitialCards(colors: CardColor[], shapes: CardShape[], fillers: CardFill[], cardsInTableQuant: number, cardsInTable: CardInfo[]): void {
+
+  setInitialCards(colors: CardColor[], shapes: CardShape[], fillers: CardFill[], cardsInTableQuant: number, correctAnswerQuant: number): CardInfo[] {
     const optionCards = this.optionCardsMethod(colors, shapes, fillers);
-    for (let i = 0; i < cardsInTableQuant; i++) {
-      const differentFromAnswer = optionCards.filter(z => !cardsInTable.some(randomCard => sameCard(z, randomCard)))
-      cardsInTable.push(anyElement(differentFromAnswer));
+    const firstCards: CardInfo[] = []
+    for (let i = 0; i < cardsInTableQuant - correctAnswerQuant; i++) {
+      const differentFromOptions = optionCards.filter(z => !firstCards.some(randomCard => sameCard(z, randomCard)))
+      firstCards.push(anyElement(differentFromOptions));
     }
+    return firstCards;
   }
+
 
 
   optionCardsMethod(colors: CardColor[], shapes: CardShape[], fillers: CardFill[]): CardInfo[] {
@@ -180,17 +173,43 @@ export class CardsInTable {
   }
 
 
-  modififyFinalCards(currentRule: GameRule, correctAnswerQuant: number, cardsInTable: CardInfo[], colors: CardColor[], shapes: CardShape[], fillers: CardFill[]): void {
+
+
+  modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number, cardsInTable: CardInfo[], colors: CardColor[], shapes: CardShape[], fillers: CardFill[], lastCards:CardInfo[], exerciseCardQuant: number): void {
     const randomCardFromTable = anyElement(cardsInTable);
-    let equalPropertyQuantity = this.rule.countOfEqualProperty(randomCardFromTable, cardsInTable)
+    const optionCards = this.optionCardsMethod(colors, shapes, fillers);
+    let equalPropertyQuantity = this.rule.countOfEqualProperty(randomCardFromTable, cardsInTable);
+    const ruleApplied = ALL_RULES.find(z => z.id === currentRule);
+    console.log(cardsInTable);
     while (equalPropertyQuantity < correctAnswerQuant) {
-      const myCard = anyElement(cardsInTable.filter(z => z !== randomCardFromTable))
-      const ruleApplied = ALL_RULES.find(z => z.id === currentRule);
-      ruleApplied?.modifyToSatifyRule(myCard, randomCardFromTable);
-      if (cardsInTable.find(x => x !== myCard)) {
-        cardsInTable.push(myCard);
+      const myCardFixed = anyElement(optionCards);
+      ruleApplied?.modifyToSatifyRule(randomCardFromTable, myCardFixed);
+      console.log(myCardFixed);
+      console.log(this.isNotRepeatedMethod(myCardFixed,cardsInTable,lastCards))
+      if (this.isNotRepeatedMethod(myCardFixed,cardsInTable,lastCards)) {
         equalPropertyQuantity++;
+        lastCards.push(myCardFixed);
       }
     }
+    while (lastCards.length < correctAnswerQuant) {
+      const myCardRandom: CardInfo = anyElement(optionCards);
+      console.log(myCardRandom);
+      console.log(this.isNotRepeatedMethod(myCardRandom,cardsInTable,lastCards))     
+      if (this.isNotRepeatedMethod(myCardRandom,cardsInTable,lastCards)) {
+        lastCards.push(myCardRandom);
+      }    
+    }
   }
+
+
+
+  isNotRepeatedMethod(card: CardInfo, deck1: CardInfo[], deck2: CardInfo[]): boolean {
+  return !deck1.some(x => sameCard(x, card)) && !deck2.some(z => sameCard(z,card))
+  }
+
+
+  modifyFinalCards(): void {
+
+  }
+
 }

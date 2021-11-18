@@ -40,3 +40,4 @@ export function generateRandomCard():CardInfo {
 export function isNotRepeated(card: CardInfo, cards: CardInfo[]): boolean {
   return !cards.some(x => sameCard(x, card));
 }
+

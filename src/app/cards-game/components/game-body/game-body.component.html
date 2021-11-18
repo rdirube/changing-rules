@@ -1,6 +1,6 @@
-<div fxFlex="grow" style="background: #5ca244; position:relative"></div>
-<div class="myAbsolute full-width" style="height: 13vh; z-index: 10" fxLayoutAlign="space-between">
-  <mlc-to-in-game-menu-button [forceNoAnimations]="true" class='button-menu' style="width: 13vh"
+<div fxFlex="grow" style="background: #5ca244; position:relative" ></div>
+<div class="myAbsolute full-width" style="height: 13vh; z-index: 10" fxLayoutAlign="space-between"  >
+  <mlc-to-in-game-menu-button [forceNoAnimations]="true" class='button-menu' style="width: 13vh" 
     svgPath="mini-lessons/executive-functions/svg/buttons/Home.svg">
   </mlc-to-in-game-menu-button>
   <mlc-hint-button class='button-hint' style="width: 13vh"
@@ -12,15 +12,15 @@
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
       path="svg/reglas_cambiantes/elementos/mesa.svg">
     </mlc-loaded-svg>
-    <div class="cards-grid">
-      <div *ngFor="let item of exercise?.cards; let i = index" class="card-component" style="position: relative;">
-        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" 
+    <div class="cards-grid"  >     
+      <div #cardContainer *ngFor="let item of exercise?.cardsInTable; let i = index" [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'" (click)="answerVerificationMethod(i)" style="position: relative;">  
+        <app-card [cardInfo]="item"      
+        class="card-component card" [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
+      </app-card>
+        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" 
               path="svg/reglas_cambiantes/elementos/dorso.svg">
         </mlc-loaded-svg>
-        <app-card  [cardInfo]="item"
-          (click)="answerVerificationMethod(i)" 
-          class="card-component">
-        </app-card>
+       
       </div>
 
     </div>
@@ -36,3 +36,7 @@
 <div class="deck-container">
   <app-deck [deckClass]="deckClass"></app-deck>
 </div>
+<ox-comp-count-down *ngIf="countDownImageInfo"
+                    [skipButtonInfo]="countDownImageInfo"
+                    (started)="startGame()"
+                    class="myAbsolute" fxFlex="grow" style="z-index: 123"></ox-comp-count-down>

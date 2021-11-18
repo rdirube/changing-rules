@@ -37,7 +37,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   
   public cardsInTable: CardInfo[] = [];
   public lastCards: CardInfo[] = [];
-  public turn: number = 0;
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
     subLevelService: SubLevelService,
@@ -65,7 +64,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   protected equalsExerciseData(exerciseData: ChangingRulesExercise, exerciseDoneData: ChangingRulesExercise): boolean {
     console.log('Chequing equal exercose...');
-    return equalArrays(exerciseData.cards, exerciseDoneData.cards);
+    return equalArrays(exerciseData.cardsInTable, exerciseDoneData.cardsInTable);
   }
 
 
@@ -73,16 +72,13 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     const currentExerciseRule: GameRule = anyElement(gameRules);
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule);
     const cardsInTableClassInstance = new CardsInTable();
-    if (this.turn < 1) {
-      this.cardsInTable = cardsInTableClassInstance.setInitialCards(cardColors, cardShapes, cardFillers, this.exerciseConfig.cardsInTable, this.exerciseConfig.cardsForCorrectAnswer);
-    }
     this.lastCards = [];
     cardsInTableClassInstance.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer, this.cardsInTable, cardColors, cardShapes, cardFillers, this.lastCards, this.exerciseConfig.cardsInTable);
-    console.log(this.lastCards);
-    this.turn++;
     return new ExerciseOx({
       rule: currentExerciseRule,
-      cards: this.turn === 1 ? this.cardsInTable.concat(this.lastCards) : shuffle(this.lastCards)
+      initialCards:cardsInTableClassInstance.setInitialCards(cardColors, cardShapes, cardFillers, this.exerciseConfig.cardsInTable, this.exerciseConfig.cardsForCorrectAnswer).concat(this.lastCards),
+      lastCards: shuffle(this.lastCards),
+      cardsInTable: this.cardsInTable.concat(this.lastCards),
     } as ChangingRulesExercise, 1, { maxTimeToBonus: 0, freeTime: 0 }, []);
   }
 

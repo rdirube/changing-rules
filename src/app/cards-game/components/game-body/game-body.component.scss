@@ -31,7 +31,39 @@
     left:18vh;
 }
 
-.card-component {
+.card-component{
+    transform-style: preserve-3d;
     width: 100%;
     height:100%;
+    backface-visibility:hidden;
+}
+
+
+
+.card-component-visible {
+    @extend .card-component;
+    backface-visibility: visible;
+}
+
+
+.card-back {
+    backface-visibility: hidden;
+
+}
+
+
+.card-component .card-off {
+    @extend .card-component;
+    opacity: 0;
+    backface-visibility:hidden;
+
+}
+
+
+.card-component .card-on {
+    @extend .card-component;
+    opacity: 1;
+    backface-visibility:hidden;
+    z-index: 30;
+
 }

@@ -27,7 +27,9 @@ export interface Replaces {
 
 export interface ChangingRulesExercise {
   rule: GameRule;
-  cards: CardInfo[];
+  initialCards: CardInfo[];
+  lastCards: CardInfo[];
+  cardsInTable: CardInfo[]
 }
 
 
@@ -133,6 +135,7 @@ export class CardsInTable {
     for (let i = 0; i < cardsInTableQuant - correctAnswerQuant; i++) {
       firstCards.push(this.generateCard(firstCards))
     }
+    console.log(firstCards);
     return firstCards;
   }
 
@@ -146,18 +149,15 @@ export class CardsInTable {
 
 
   modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number, cardsInTable: CardInfo[], colors: CardColor[], shapes: CardShape[], fillers: CardFill[], lastCards:CardInfo[], exerciseCardQuant: number): void {
-    console.log(cardsInTable);
     const randomCardFromTable = anyElement(cardsInTable);
-    console.log(randomCardFromTable);
     const equalPropertyQuantity = this.curentRuleFinder(currentRule)?.countOfEqualProperty(randomCardFromTable, cardsInTable);
-    console.log(equalPropertyQuantity);
-    console.log(this.curentRuleFinder(currentRule)?.id)
     for(let i = 0; i < correctAnswerQuant; i++) {
       if (i < correctAnswerQuant - equalPropertyQuantity!)
         lastCards.push(this.generateCard(cardsInTable.concat(lastCards), this.curentRuleFinder(currentRule), randomCardFromTable))
       else
         lastCards.push(this.generateCard(cardsInTable.concat(lastCards)))
     }
+    console.log(lastCards);
   }
 
 

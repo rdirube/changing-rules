@@ -5,6 +5,7 @@ import {SharedModule} from '../shared/shared.module';
 import { RulesComponent } from './components/rules/rules.component';
 import { CardComponent } from './components/card/card.component';
 import { DeckComponent } from './components/deck/deck.component';
+import { OxComponentsModule } from 'ox-components';
 
 
 
@@ -13,14 +14,16 @@ import { DeckComponent } from './components/deck/deck.component';
     GameBodyComponent,
     RulesComponent,
     CardComponent,
-    DeckComponent
+    DeckComponent,
+
   ],
   exports: [
     GameBodyComponent
   ],
   imports: [
     CommonModule,
-    SharedModule
+    SharedModule,
+    OxComponentsModule
   ]
 })
 export class CardsGameModule { }

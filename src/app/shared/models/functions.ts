@@ -1,4 +1,8 @@
-import { CardColor, CardInfo } from "./types";
+import { CardColor, CardInfo} from "./types";
+import { cardColors, cardFillers, cardShapes } from "./const";
+import { anyElement } from "ox-types";
+
+
 
 
 export function colorsParseFunction(color: CardColor): string {
@@ -12,7 +16,7 @@ export function colorsParseFunction(color: CardColor): string {
     case 'violeta':
       return "#85203b";
     case 'verde':
-      return "#73be44";
+      return "#52be44";
     default:
       throw new Error('A color not listed came in ' + color);
   }
@@ -24,3 +28,15 @@ export function sameCard(c1: CardInfo, c2: CardInfo): boolean {
 }
 
 
+export function generateRandomCard():CardInfo {
+  return {
+    color:anyElement(cardColors),
+    shape: anyElement(cardShapes),
+    fill:anyElement(cardFillers)
+  }
+}  
+
+
+export function isNotRepeated(card: CardInfo, cards: CardInfo[]): boolean {
+  return !cards.some(x => sameCard(x, card));
+}

@@ -150,7 +150,10 @@ export class CardsInTable {
 
   modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number, cardsInTable: CardInfo[], colors: CardColor[], shapes: CardShape[], fillers: CardFill[], lastCards:CardInfo[], exerciseCardQuant: number): void {
     const randomCardFromTable = anyElement(cardsInTable);
+    console.log(currentRule);
+    console.log(randomCardFromTable);
     const equalPropertyQuantity = this.curentRuleFinder(currentRule)?.countOfEqualProperty(randomCardFromTable, cardsInTable);
+    console.log(equalPropertyQuantity)
     for(let i = 0; i < correctAnswerQuant; i++) {
       if (i < correctAnswerQuant - equalPropertyQuantity!)
         lastCards.push(this.generateCard(cardsInTable.concat(lastCards), this.curentRuleFinder(currentRule), randomCardFromTable))

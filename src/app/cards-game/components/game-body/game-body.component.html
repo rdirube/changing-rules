@@ -13,9 +13,11 @@
       path="svg/reglas_cambiantes/elementos/mesa.svg">
     </mlc-loaded-svg>
     <div class="cards-grid"  >     
-      <div #cardContainer *ngFor="let item of exercise?.cardsInTable; let i = index" [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'" (click)="answerVerificationMethod(i)" style="position: relative;">  
-        <app-card [cardInfo]="item"      
-        class="card-component card" [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
+      <div #cardContainer *ngFor="let item of exercise?.cardsInTable; let i = index" 
+      [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'" 
+      (click)="answerVerificationMethod(i)" style="position: relative;">  
+        <app-card [cardInfo]="item"   
+        [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
         <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" 
               path="svg/reglas_cambiantes/elementos/dorso.svg">

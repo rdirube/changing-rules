@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, AfterViewInit, ElementRef } from '@angular/core';
 import { CardInfo, Replaces } from 'src/app/shared/models/types';
-import { colorsParseFunction } from 'src/app/shared/models/functions'
+import { colorsParseFunction, convertPXToVH } from 'src/app/shared/models/functions'
 import anime from 'animejs';
 import {
   FeedbackOxService,
@@ -24,7 +24,8 @@ export class CardComponent implements OnInit {
   public oxImageInfo!: OxImageInfo;
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
-
+  
+  @Input() swiftCardOn!: boolean;
 
   @Input('cardInfo')
   set setCardInfo(c: CardInfo) {
@@ -42,9 +43,11 @@ export class CardComponent implements OnInit {
     'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg']
 
 
-  constructor(private elementRef: ElementRef, private gameActions: GameActionsService<any>,
+  constructor(public elementRef: ElementRef, private gameActions: GameActionsService<any>,
     private preloader: PreloaderOxService) {
     this.cardState = 'card-neutral';
+
+    
   }
 
 
@@ -64,18 +67,21 @@ export class CardComponent implements OnInit {
     this.cardPathWithReplaces = { path: cardSvgNocolor, replaces: replaces };
   }
 
-
-
-  cardsToDeckAnimation() {
-    anime({
-      targets: this.elementRef.nativeElement,
-      translateX: 162 - this.elementRef.nativeElement.getBoundingClientRect().x,
-      translateY: 315 - this.elementRef.nativeElement.getBoundingClientRect().y,
-      delay: 500,
-      duration: 1000,
-      easing: 'easeOutExpo',
-    })
+  swiftToggle() {
+    this.swiftCardOn = !this.swiftCardOn ;
+   
   }
+
+  // cardsToDeckAnimation() {
+  //   anime({
+  //     targets: this.elementRef.nativeElement,
+  //     translateX: convertPXToVH(162) - convertPXToVH(this.elementRef.nativeElement.getBoundingClientRect().x) + 'vh' ,
+  //     translateY: convertPXToVH(315) - convertPXToVH(this.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
+  //     delay: 100,
+  //     duration: 4000,
+  //     easing: 'easeOutExpo',
+  //   })
+  // }
 
 
 

@@ -31,12 +31,12 @@ import {  cardColors, cardShapes, cardFillers, gameRules } from '../models/const
   providedIn: 'root'
 })
 export class ChangingRulesChallengeService extends ChallengeService<any, any> {
-
+ 
   public resources = new Map<string, string>();
   public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
-  
+  public cardsInTableClassInstance = new CardsInTable();
   public cardsInTable: CardInfo[] = [];
-  public lastCards: CardInfo[] = [];
+
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
     subLevelService: SubLevelService,
@@ -71,14 +71,12 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
     const currentExerciseRule: GameRule = anyElement(gameRules);
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule);
-    const cardsInTableClassInstance = new CardsInTable();
-    this.lastCards = [];
-    cardsInTableClassInstance.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer, this.cardsInTable, cardColors, cardShapes, cardFillers, this.lastCards, this.exerciseConfig.cardsInTable);
+    const lastCards:CardInfo[] = [];
+    this.cardsInTableClassInstance.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer, this.cardsInTable, cardColors, cardShapes, cardFillers, lastCards, this.exerciseConfig.cardsInTable);
     return new ExerciseOx({
       rule: currentExerciseRule,
-      initialCards:cardsInTableClassInstance.setInitialCards(cardColors, cardShapes, cardFillers, this.exerciseConfig.cardsInTable, this.exerciseConfig.cardsForCorrectAnswer).concat(this.lastCards),
-      lastCards: shuffle(this.lastCards),
-      cardsInTable: this.cardsInTable.concat(this.lastCards),
+      lastCards: shuffle(lastCards),
+      cardsInTable: this.cardsInTable.concat(lastCards),
     } as ChangingRulesExercise, 1, { maxTimeToBonus: 0, freeTime: 0 }, []);
   }
 
@@ -91,6 +89,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         this.currentSubLevelPregeneratedExercisesNeeded = 1;
         // this.exerciseConfig = this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
         this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+        this.cardsInTable = this.cardsInTableClassInstance.setInitialCards(cardColors, cardShapes, cardFillers, this.exerciseConfig.cardsInTable, this.exerciseConfig.cardsForCorrectAnswer)
         // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
         this.setInitialExercise();
         break;

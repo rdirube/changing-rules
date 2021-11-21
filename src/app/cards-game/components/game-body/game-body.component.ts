@@ -33,7 +33,7 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
 
   public gameInstruction = new OxTextInfo();
-  public gameInstructionText: string = "Igual";
+  public gameInstructionText: string = "IGUAL";
   public exercise!: ChangingRulesExercise;
   showCountDown: boolean | undefined;
   public answer: CardComponent[] = [];
@@ -54,11 +54,11 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
     private elementRef: ElementRef) {
 
     super();
-    this.gameInstructionText = "Igual";
+    this.gameInstructionText = "IGUAL";
     this.gameInstruction.color = 'white';
     this.gameInstruction.originalText = this.gameInstructionText;
     this.gameInstruction.font = 'dinnRegular';
-    this.gameInstruction.fontSize = '4vh';
+    this.gameInstruction.fontSize = '4.5vh';
     this.gameInstruction.ignoreLowerCase = true;
 
     this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
@@ -74,7 +74,6 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
           this.answer.forEach((z, i) => {
             this.exercise.cardsInTable.splice(this.exercise.cardsInTable.indexOf(z.card), 1, exercise.exerciseData.lastCards[i])
           })
-          console.log(this.exercise.cardsInTable);
           this.exercise.rule = exercise.exerciseData.rule;
         }
       });
@@ -84,6 +83,22 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
         this.cardsToDeckAnimation();
       } else {
         this.answer.forEach(z => z.cardState = 'card-wrong');
+        timer(20).subscribe(x => {
+          anime({
+            targets: '.card-wrong',
+            rotate: [
+              { value: 2, duration: 50},
+              { value: -2, duration: 50 },
+              { value: 2, duration: 50},
+              { value: -2, duration: 50 },
+              { value: 2, duration: 50 },
+              { value: -2, duration: 50 },
+              { value: 2, duration: 50 },
+              {value:0, duration:1}
+            ]
+          })
+        })
+        
       }
     })
   }
@@ -126,7 +141,7 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       }
       else {
         this.answer.splice(this.answer.indexOf(cardComponentArray[i]), 1);
-        this.containerAnswer.splice(this.containerAnswer.indexOf(containerArray[i]),1);
+        this.containerAnswer.splice(this.containerAnswer.indexOf(containerArray[i]), 1);
         cardComponentArray[i].isSelected = false;
         cardComponentArray[i].cardState = 'card-neutral';
       }
@@ -174,13 +189,14 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
 
   cardsAppearenceNew() {
     this.answer.forEach(
-      answerCard => {
+      (answerCard, i) => {
         anime({
           targets: answerCard.elementRef.nativeElement,
           opacity: 1,
-          delay:200,
-          duration: 1        
-      }) })  
+          duration: 1,
+          delay: 200
+        })
+      })
     this.containerAnswer.forEach((container, i) => {
       anime({
         targets: container.nativeElement,
@@ -188,20 +204,14 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
         duration: 400,
         easing: 'linear',
         complete: () => {
-          if (i + 1 === this.containerAnswer.length) {
-            this.answer.forEach(z => {
-              z.cardState = 'card-neutral';
-              z.isSelected = false;
-            })
-            const cardAnswers = this.answer.map(x => x.card)
-            this.challengeService.cardsInTable = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers))
-            this.gameActions.showNextChallenge.emit();
+          if (this.containerAnswer.length === i + 1) {
             this.answer = [];
             this.containerAnswer = [];
           }
         }
-      })     
+      })
     })
+
   }
 
 
@@ -211,25 +221,44 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       answerCard.cardState = 'card-correct';
       anime({
         targets: answerCard.elementRef.nativeElement,
-        translateX: convertPXToVH(175) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
-        translateY: convertPXToVH(330) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
-        delay: 500,
+        translateX: convertPXToVH(178) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
+        translateY: convertPXToVH(319) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
+        delay: 700,
         duration: 600,
+        begin: () => {
+          timer(700).subscribe(a => {
+            answerCard.cardSvg = 'svg/reglas_cambiantes/elementos/dorso.svg';
+            answerCard.cardState = 'card-neutral';
+            answerCard.isSelected = false;
+          })
+          anime({
+            targets: '.card-correct',
+            zIndex: 200,
+            duration: 1,
+            delay: 700
+          })
+        },
         easing: 'easeOutExpo',
         complete: () => {
           anime({
             targets: answerCard.elementRef.nativeElement,
             translateX: 0,
             translateY: 0,
-            opacity:0,       
-            duration: 0,
+            opacity: 0,
+            duration: 1,
             complete: () => {
-              if(i + 1 === this.answer.length){
+              const cardAnswers = this.answer.map(x => x.card)
+              this.challengeService.cardsInTable = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers))
+              if (i + 1 === 1) {
+                this.gameActions.showNextChallenge.emit()
+              } else if (i + 1 === this.answer.length) {
                 this.cardsAppearenceNew();
+
               }
             }
-          })           
-      }})
+          })
+        }
+      })
     })
   }
 

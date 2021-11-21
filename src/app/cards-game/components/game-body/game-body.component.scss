@@ -1,18 +1,19 @@
 .card-to-select{
-    width:20vh;
-    height:34vh;
+    width:22vh;
+    height:38vh;
     background-color: whitesmoke;
     position:fixed;
     z-index: 20;
-    top:32.5vh;
-    right:4vh;  
+    top:27.5vh;
+    right:4vh; 
+    border-radius: 10px; 
 }
 
 
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(3,15vh);
-    grid-template-rows: repeat(3,25vh) ;
+    grid-template-rows: repeat(3,27.2vh) ;
     z-index: 50;
     justify-content: center;
     align-items: center;
@@ -24,7 +25,7 @@
 
 .deck-container {
     position: fixed;
-    width:14vh;
+    width:15vh;
     height:20vh;
     position: fixed;
     top:35vh;

@@ -10,23 +10,35 @@
     @extend .card-neutral;
     border: 0.8vh solid #ffd700;
     border-radius: 1.7vh;
-    animation: card-selected-animation 0.2s linear forwards;
+    animation: card-selected-animation 0.1s linear forwards;
 }
 
 @keyframes card-selected-animation {
     0%{transform: scale(1);}
-    100%{transform: scale(1.1);}
+    100%{transform: scale(1.15);}
 }
 
 
 .card-correct {
     @extend .card-neutral;
-    border: 0.5vh solid rgb(119, 198, 110);
+    border: 0.5vh solid green;
+    animation: card-correct-animation 0.58s ease-in-out;
 }
+
+@keyframes card-correct-animation {
+    0%{transform: scale(1.10);}
+    25%{transform: scale(1)};
+    50%{transform: scale(1.10);}
+    75%{transform:scale(1)};
+    100%{transform: scale(1.10)};
+}
+
+
+
 
 .card-wrong {
     @extend .card-neutral;
-    border: 0.8vh solid red;
+    border: 0.5vh solid red;
 }
 
   
@@ -41,6 +53,9 @@
 
 .current-card-symbol {
     position:absolute;
-    width: 80%;
- 
+    width: 75%;
+}
+
+.full-deck {
+    box-shadow:0 3vh rgb(208, 43, 39);
 }

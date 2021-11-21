@@ -24,7 +24,8 @@ export class CardComponent implements OnInit {
   public oxImageInfo!: OxImageInfo;
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
-  
+  public cardSvg:string = 'svg/reglas_cambiantes/elementos/frente.svg'
+
   @Input() swiftCardOn!: boolean;
 
   @Input('cardInfo')

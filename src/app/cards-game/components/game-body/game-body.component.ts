@@ -52,15 +52,14 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
     private feedbackService: FeedbackOxService,
     private preloaderService: PreloaderOxService,
     private elementRef: ElementRef) {
-
+   
     super();
     this.gameInstructionText = "IGUAL";
     this.gameInstruction.color = 'white';
     this.gameInstruction.originalText = this.gameInstructionText;
     this.gameInstruction.font = 'dinnRegular';
-    this.gameInstruction.fontSize = '4.5vh';
+    this.gameInstruction.fontSize = '4vh';
     this.gameInstruction.ignoreLowerCase = true;
-
     this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         this.hintService.checkHintAvailable();
@@ -81,24 +80,26 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.exercise.rule);
       if (ruleToApply?.allSatisfyRule(this.answer.map(z => z.card))) {
         this.cardsToDeckAnimation();
+        this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game)
       } else {
         this.answer.forEach(z => z.cardState = 'card-wrong');
+        this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game)
         timer(20).subscribe(x => {
           anime({
             targets: '.card-wrong',
             rotate: [
-              { value: 2, duration: 50},
+              { value: 2, duration: 50 },
               { value: -2, duration: 50 },
-              { value: 2, duration: 50},
+              { value: 2, duration: 50 },
               { value: -2, duration: 50 },
               { value: 2, duration: 50 },
               { value: -2, duration: 50 },
               { value: 2, duration: 50 },
-              {value:0, duration:1}
+              { value: 0, duration: 1 }
             ]
           })
         })
-        
+
       }
     })
   }
@@ -121,9 +122,11 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
 
 
   answerVerificationMethod(i: number) {
+   
     const cardComponentArray = this.cardComponent.toArray();
     const containerArray = this.cardContainer.toArray();
     if (cardComponentArray) {
+      this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
       if (this.answer.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
         this.answer.push(cardComponentArray[i]);
         this.containerAnswer.push(containerArray[i])
@@ -172,22 +175,26 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
     anime({
       targets: '.card-component',
       rotateY: '180',
-      duration: 400,
+      duration: 300,
       easing: 'linear',
       complete: () =>
         this.swiftToggle()
-    })
+        
+
+      })
     anime({
       targets: '.card-component',
-      delay: 200,
+      delay: 150,
       opacity: 1,
-      duration: 1
+      duration: 1,
+      complete: () => this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
     })
   }
 
 
 
   cardsAppearenceNew() {
+    this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
     this.answer.forEach(
       (answerCard, i) => {
         anime({
@@ -211,7 +218,6 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
         }
       })
     })
-
   }
 
 
@@ -221,8 +227,8 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       answerCard.cardState = 'card-correct';
       anime({
         targets: answerCard.elementRef.nativeElement,
-        translateX: convertPXToVH(178) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
-        translateY: convertPXToVH(319) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
+        translateX: convertPXToVH(181) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
+        translateY: convertPXToVH(322) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
         delay: 700,
         duration: 600,
         begin: () => {
@@ -250,10 +256,8 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
               const cardAnswers = this.answer.map(x => x.card)
               this.challengeService.cardsInTable = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers))
               if (i + 1 === 1) {
-                this.gameActions.showNextChallenge.emit()
-              } else if (i + 1 === this.answer.length) {
+                this.gameActions.showNextChallenge.emit();
                 this.cardsAppearenceNew();
-
               }
             }
           })

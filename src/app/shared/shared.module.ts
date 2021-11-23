@@ -5,10 +5,13 @@ import {TypographyOxModule} from 'typography-ox';
 import {MicroLessonComponentsModule} from 'micro-lesson-components';
 import {NgoxPostMessageModule} from 'ngox-post-message';
 import { OxComponentsModule } from 'ox-components';
+import { GameBodyDirective } from './directives/game-body.directive';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    GameBodyDirective
+  ],
   imports: [
     CommonModule,
     NgoxPostMessageModule,

@@ -13,16 +13,13 @@ export class RulesComponent implements OnInit {
 
   
   currentRule!:string;
-  public colorInstructionText = new OxTextInfo();
-  public shapeInstructionText = new OxTextInfo();
-  public instructionText = new OxTextInfo();
   public rulesSvgActive:string[] = [this.concatRuteSvg('colores_igual.svg'),this.concatRuteSvg('formas_igual.svg'),this.concatRuteSvg('relleno_igual.svg')];
   public rulesSvgBlock:string[] = [this.concatRuteSvg('colores_igual_block.svg'), this.concatRuteSvg('formas_igual_block.svg'),this.concatRuteSvg('relleno_igual_block.svg')];
   public isRuleOn = [false, false, false];
   public colorRulePath!:string;
   public shapeRulePath!:string;
   public fillerRulePath!:string;
-
+  public lowerCaseTrue:boolean = true;
 
 
   @Input('currentRule')

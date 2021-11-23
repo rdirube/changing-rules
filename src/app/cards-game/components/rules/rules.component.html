@@ -3,18 +3,18 @@
     <mlc-loaded-svg  class="rule color" forceViewBoxTo="''"
     [path]="colorRulePath">
   </mlc-loaded-svg>
-  <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Color"></ox-text>
+  <ox-text font="dinnRegular" color="white" fontSize="2.9vh" originalText="COLOR" [ignoreLowerCase]="lowerCaseTrue" class="rule-text"></ox-text>
  </div>
  <div fxLayout="row" [ngClass]="isRuleOn[1] ? 'rule-container-on': 'rule-container-off'" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule shape" forceViewBoxTo="''"
     [path]="shapeRulePath">
   </mlc-loaded-svg>
-  <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Forma"></ox-text>
+  <ox-text font="dinnRegular" color="white"  fontSize="2.9vh"  originalText="FORMA"  [ignoreLowerCase]="lowerCaseTrue" class="rule-text"></ox-text>
  </div>
  <div fxLayout="row" [ngClass]="isRuleOn[2] ? 'rule-container-on': 'rule-container-off'" fxLayoutAlign="center center">
     <mlc-loaded-svg  class="rule filler" forceViewBoxTo="''"
     [path]="fillerRulePath" >
   </mlc-loaded-svg>
-  <ox-text [oxTextInfo]="colorInstructionText" font="dinnRegular" color="white" fontSize="3vh" originalText="Relleno"></ox-text>
+  <ox-text font="dinnRegular" color="white" fontSize="2.9vh" originalText="RELLENO" [ignoreLowerCase]="lowerCaseTrue" class="rule-text"></ox-text>
  </div>
 </div>

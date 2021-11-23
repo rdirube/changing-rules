@@ -1,7 +1,7 @@
 import { initTranslocoService } from "@ngneat/transloco/lib/transloco-testing.module";
 import { random } from "animejs";
 import { anyElement } from "ox-types";
-import { zip } from "rxjs";
+import { Observable, zip } from "rxjs";
 import { generateRandomCard, sameCard } from "./functions";
 import { cardColors, cardFillers, cardShapes, gameRules } from "./const";
 export type CardColor = 'naranja' | 'celeste' | 'amarillo' | 'verde' | 'violeta';
@@ -10,6 +10,9 @@ export type CardFill = 'vacio' | 'relleno' | 'rallado' | 'moteado';
 export type GameRule = 'forma' | 'color' | 'relleno';
 export type GameSetting = 'igual' | 'distinto' | 'aleatorio';
 export type GameMode = 'limpiar la mesa' | 'Set convencional';
+export type PositionXAxis = "right" | "left" | "center";
+export type PositionYAxis = "top" | "bottom" | "center";
+
 export interface CardInfo {
   color: CardColor;
   shape: CardShape;
@@ -27,9 +30,21 @@ export interface Replaces {
 
 export interface ChangingRulesExercise {
   rule: GameRule;
-  initialCards: CardInfo[];
   lastCards: CardInfo[];
   cardsInTable: CardInfo[]
+}
+
+
+export interface TutorialExercise {
+  rule:GameRule;
+  cardsInTable:CardInfo[];
+}
+
+
+export interface TutorialStep {
+  text: string;
+  actions: () => void,
+  completedSub: Observable<any>;
 }
 
 
@@ -54,6 +69,28 @@ export interface ChangingRulesNivelation {
   gameMode: GameMode;
   rulesForAnswer: number;
 }
+
+
+export interface ButtonInfo {
+  horizontal: PositionXAxis;
+  vertical: PositionYAxis;
+  offsetX?: number,
+  offsetY?: number,
+}
+
+
+export interface MagnifierPosition {
+  width: string,
+  height: string,
+  transform: string,
+  borderRadius: string,
+  flexPosition: string,
+  buttonInfo?: ButtonInfo,
+  reference: string,
+}
+
+
+
 
 
 export abstract class Rule {

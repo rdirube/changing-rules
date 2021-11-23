@@ -57,10 +57,10 @@ export class AppComponent extends BaseMicroLessonApp {
     const svgIndications:string[] = ['colores_igual.svg', 'colores_igual_block.svg', 'formas_igual.svg','formas_igual_block.svg','relleno_igual.svg','relleno_igual_block.svg'];
     const svgForms:string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg','cuadrado_vacio.svg',
     'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
-    'estrella_vacio.svg','estrella_relleno.svg', 'triangulo_moteado.svg','triangulo_relleno.svg', 'triangulo_vacio.svg','triangulo_rallado.svg']
-    return ['bubble01.mp3', 'bubble02.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
+    'estrella_vacio.svg','estrella_relleno.svg', 'triangulo_moteado.svg','triangulo_relleno.svg', 'triangulo_vacio.svg','triangulo_rallado.svg'];
+    const sounds = ['click.mp3', 'bubble02.mp3', 'bonus.mp3', 'rightAnswer.mp3','woosh.mp3','wrongAnswer.mp3', 'clickSurrender.mp3'].map(z => 'sounds/' + z);
+    return ['click.mp3', 'bubble02.mp3', 'bonus.mp3', 'rightAnswer.mp3','woosh.mp3','wrongAnswer.mp3', 'clickSurrender.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
       [ScreenTypeOx.Game], false))
-      .concat(getResourceArrayFromUrlList([], ResourceType.Audio, false))
       .concat(getResourceArrayFromUrlList([], ResourceType.Svg, false))
       .concat(svgElementos.map(x => new ResourceOx('svg/reglas_cambiantes/elementos/' + x, ResourceType.Svg,
         [ScreenTypeOx.Game], false)))
@@ -70,7 +70,9 @@ export class AppComponent extends BaseMicroLessonApp {
         [ScreenTypeOx.Game], false)))
       .concat(getResourceArrayFromUrlList(['mini-lessons/executive-functions/svg/buttons/Home.svg',
         'mini-lessons/executive-functions/svg/buttons/Hint.svg',
-        'mini-lessons/executive-functions/svg/buttons/saltear.svg'], ResourceType.Svg, true));
+        'mini-lessons/executive-functions/svg/buttons/saltear.svg'], ResourceType.Svg, true))
+      .concat(getResourceArrayFromUrlList(sounds, ResourceType.Audio, true))
+  
   }
 
 

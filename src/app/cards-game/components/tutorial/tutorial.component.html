@@ -1,5 +1,5 @@
 <div fxFlex="grow" style="background: #5ca244; position:relative"></div>
-<div class="myAbsolute full-width" style="height: 13vh; z-index: 10" fxLayoutAlign="space-between"  >
+<div class="myAbsolute full-width" style="height: 13vh; z-index: 1" fxLayoutAlign="space-between"  >
   <mlc-to-in-game-menu-button [forceNoAnimations]="true" class='button-menu' style="width: 13vh" 
     svgPath="mini-lessons/executive-functions/svg/buttons/Home.svg">
   </mlc-to-in-game-menu-button>
@@ -16,7 +16,7 @@
       <div #cardContainer *ngFor="let item of tutorialExercise?.cardsInTable; let i = index" 
       [ngClass]= "swiftCardOn ? 'card-component-visible': 'card-component'" 
        style="position: relative;">  
-        <app-card [cardInfo]="item"   
+        <app-card [cardInfo]="item"  (click)="answerVerification(i)"
         [ngClass]= "swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
         <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" 
@@ -30,14 +30,24 @@
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
     <ox-text  originalText="IGUAL" font="dinnRegular" color="white"  fontSize="4vh"></ox-text>
   </div>
-  <app-rules ></app-rules>
-  [currentRule]="tutorialExercise.rule" *ngIf="tutorialExercise"
+  <app-rules [currentRule]="tutorialExercise.rule" *ngIf="tutorialExercise" ></app-rules>
+  
 </div>
 <div class="deck-container">
   <app-deck ></app-deck>
+</div>
+<div class="text-tutorial-container" style="position: absolute" fxLayoutAlign="center center" >
+  <ox-text #tutorialText
+           [ignoreLowerCase]="true"
+           [originalText]="text"
+           font="dinnMedium"
+           color="white"
+           fontSize="4vh"
+           class="tutorial-text" style="position: absolute">
+  </ox-text>
 </div>
 <!-- <ox-comp-count-down *ngIf="countDownImageInfo"
                     [skipButtonInfo]="countDownImageInfo"
                     (started)="startGame()"
                     class="myAbsolute" fxFlex="grow" style="z-index: 123"></ox-comp-count-down> -->
-                    <!-- <ox-comp-magnifier-glass></ox-comp-magnifier-glass> -->
+<ox-comp-magnifier-glass *ngIf="magnifier" [ngClass]="{'no-events':clicksOn}" [magnifierPosition]="magnifier"  [buttonOkActivate]="buttonOkActivate" style="z-index: 3;" (okButtonClicked)="onOkButtonClicked()"></ox-comp-magnifier-glass> 

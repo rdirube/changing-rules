@@ -11,7 +11,7 @@ export const gameRules: GameRule[] = ['color', 'forma', 'relleno'];
 
 export const MAGNIFIER_POSITIONS: MagnifierPosition[] = [
     {
-      width: '150vh',
+      width: '180vh',
       height: '100vh',
       transform: 'translate(0vh, 0vh)',
       borderRadius: '0%',
@@ -19,56 +19,58 @@ export const MAGNIFIER_POSITIONS: MagnifierPosition[] = [
       reference: 'initial-state'
     },
     {
-      width: '32vh',
-      height: '29vh',
-      transform: 'translate(-2vh, 9vh)',
-      borderRadius: '20%',
+      width: '29vh',
+      height: '44vh',
+      transform: 'translate(-0.8vh, 24vh)',
+      borderRadius: '20px',
       flexPosition: 'end start',
       buttonInfo: {horizontal: 'left', vertical: 'bottom'},
-      reference: 'bird-to-select'
+      reference: 'rule-panel'
     },
     {
-      width: '32vh',
-      height: '29vh',
-      transform: 'translate(-41.5vh, 8.7vh)',
-      borderRadius: '20%',
+      width: '86vh',
+      height: '86vh',
+      transform: 'translate(3.1vh, 0vh)',
+      borderRadius: '50px',
       flexPosition: 'center center',
-      reference: 'bird-0',
+      reference: 'cards-in-table',
       buttonInfo: {horizontal: 'center', vertical: 'top'},
-    },
-    {
-      width: '32vh',
-      height: '29vh',
-      transform: 'translate(0vh, 12vh)',
-      borderRadius: '20%',
-      flexPosition: 'center center',
-      reference: 'bird-1',
-      buttonInfo: {horizontal: 'center', vertical: 'top'},
-    },
-    {
-      width: '32vh',
-      height: '29vh',
-      transform: 'translate(41.5vh, 8.7vh)',
-      borderRadius: '20%',
-      flexPosition: 'center center',
-      reference: 'bird-2',
-      buttonInfo: {horizontal: 'center', vertical: 'top'},
-    },
-    {
-      width: '131vh',
-      height: '33vh',
-      transform: 'translate(0vh, 9vh)',
-      borderRadius: '10px',
-      flexPosition: 'center center',
-      reference: 'all-birds',
-      buttonInfo: {horizontal: 'center', vertical: 'top'},
-    },
-    {
-      width: '27vh',
-      height: '25vh',
-      transform: 'translate(0vh, -14vh)',
-      borderRadius: '20%',
-      flexPosition: 'center center',
-      buttonInfo: {horizontal: 'right', vertical: 'bottom', offsetX: 2, offsetY: 2},
-      reference: 'clock'
-    }];
+    }
+    // {
+    //   width: '32vh',
+    //   height: '29vh',
+    //   transform: 'translate(0vh, 12vh)',
+    //   borderRadius: '20%',
+    //   flexPosition: 'center center',
+    //   reference: 'bird-1',
+    //   buttonInfo: {horizontal: 'center', vertical: 'top'},
+    // },
+    // {
+    //   width: '32vh',
+    //   height: '29vh',
+    //   transform: 'translate(41.5vh, 8.7vh)',
+    //   borderRadius: '20%',
+    //   flexPosition: 'center center',
+    //   reference: 'bird-2',
+    //   buttonInfo: {horizontal: 'center', vertical: 'top'},
+    // },
+    // {
+    //   width: '131vh',
+    //   height: '33vh',
+    //   transform: 'translate(0vh, 9vh)',
+    //   borderRadius: '10px',
+    //   flexPosition: 'center center',
+    //   reference: 'all-birds',
+    //   buttonInfo: {horizontal: 'center', vertical: 'top'},
+    // },
+    // {
+    //   width: '27vh',
+    //   height: '25vh',
+    //   transform: 'translate(0vh, -14vh)',
+    //   borderRadius: '20%',
+    //   flexPosition: 'center center',
+    //   buttonInfo: {horizontal: 'right', vertical: 'bottom', offsetX: 2, offsetY: 2},
+    //   reference: 'clock'
+    // }
+
+];

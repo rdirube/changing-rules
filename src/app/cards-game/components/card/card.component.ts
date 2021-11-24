@@ -36,7 +36,7 @@ export class CardComponent implements OnInit {
   }
 
 
-  public cardState!: string;
+  @Input() cardState!: string;
   card!: CardInfo;
 
 
@@ -70,20 +70,16 @@ export class CardComponent implements OnInit {
 
   swiftToggle() {
     this.swiftCardOn = !this.swiftCardOn ;
-   
   }
 
-  // cardsToDeckAnimation() {
-  //   anime({
-  //     targets: this.elementRef.nativeElement,
-  //     translateX: convertPXToVH(162) - convertPXToVH(this.elementRef.nativeElement.getBoundingClientRect().x) + 'vh' ,
-  //     translateY: convertPXToVH(315) - convertPXToVH(this.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
-  //     delay: 100,
-  //     duration: 4000,
-  //     easing: 'easeOutExpo',
-  //   })
-  // }
+
+  changeCardState(state:string):void {
+    this.cardState = state;
+  }
 
 
+  switchSelectCard(state:boolean):void {
+    this.isSelected = state;
+  }
 
 }

@@ -17,6 +17,7 @@ export interface CardInfo {
   color: CardColor;
   shape: CardShape;
   fill: CardFill;
+  isAnchorForRule?: boolean;
 }
 
 
@@ -36,8 +37,8 @@ export interface ChangingRulesExercise {
 
 
 export interface TutorialExercise {
-  rule:GameRule;
-  cardsInTable:CardInfo[];
+  rule: GameRule;
+  cardsInTable: CardInfo[];
 }
 
 
@@ -130,11 +131,14 @@ export class ColorRule extends Rule {
     return c1.color === c2.color;
   }
 
-
   modifyToSatifyRule(primaryCard: CardInfo, toModifyCard: CardInfo): CardInfo {
     toModifyCard.color = primaryCard.color;
     return toModifyCard;
   }
+
+
+
+
 }
 
 
@@ -178,26 +182,25 @@ export class CardsInTable {
 
 
 
-  curentRuleFinder(rule:GameRule):Rule | undefined {
+  curentRuleFinder(rule: GameRule): Rule | undefined {
     const ruleSelected = ALL_RULES.find(x => x.id === rule);
     return ruleSelected
   }
 
 
 
-  modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number, cardsInTable: CardInfo[], colors: CardColor[], shapes: CardShape[], fillers: CardFill[], lastCards:CardInfo[], exerciseCardQuant: number): void {
-    const randomCardFromTable = anyElement(cardsInTable);
-    console.log(currentRule);
-    console.log(randomCardFromTable);
+  modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number, cardsInTable: CardInfo[], colors: CardColor[], shapes: CardShape[], fillers: CardFill[], lastCards: CardInfo[], exerciseCardQuant: number): void {
+    const randomCardFromTable = anyElement(cardsInTable);  
     const equalPropertyQuantity = this.curentRuleFinder(currentRule)?.countOfEqualProperty(randomCardFromTable, cardsInTable);
-    console.log(equalPropertyQuantity)
-    for(let i = 0; i < correctAnswerQuant; i++) {
+    for (let i = 0; i < correctAnswerQuant; i++) {
       if (i < correctAnswerQuant - equalPropertyQuantity!)
         lastCards.push(this.generateCard(cardsInTable.concat(lastCards), this.curentRuleFinder(currentRule), randomCardFromTable))
       else
-        lastCards.push(this.generateCard(cardsInTable.concat(lastCards)))
+        lastCards.push(this.generateCard(cardsInTable.concat(lastCards)));
     }
-    console.log(lastCards);
+    cardsInTable.concat(lastCards).forEach(x => x.isAnchorForRule = false);
+    randomCardFromTable.isAnchorForRule = true;
+   
   }
 
 
@@ -209,7 +212,7 @@ export class CardsInTable {
       ruleToApply?.modifyToSatifyRule(cardGuideRule, cardToAdd)
     }
     return this.isNotRepeated(cardToAdd, cards) ? cardToAdd :
-    this.generateCard(cards, ruleToApply, cardGuideRule);
+      this.generateCard(cards, ruleToApply, cardGuideRule);
   }
 
   isNotRepeated(card: CardInfo, cards: CardInfo[]): boolean {

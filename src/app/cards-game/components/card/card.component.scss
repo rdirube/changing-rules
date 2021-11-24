@@ -58,3 +58,16 @@
 .full-deck {
     box-shadow:0 3vh rgb(208, 43, 39);
 }
+
+
+.card-to-select-tutorial {
+    @extend .card-neutral;
+    animation: card-to-select 2.5s infinite;
+}
+
+@keyframes card-to-select {
+    0%{filter:brightness(0.5) }
+    50%{filter:brightness(1.5);}
+    100%{filter:brightness(0.5) 
+    }
+} 

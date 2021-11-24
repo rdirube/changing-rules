@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, EventEmitter } from '@angular/core';
 import { SubscriberOxDirective } from 'micro-lesson-components';
 import {
   FeedbackOxService,
@@ -17,6 +17,7 @@ import { timer } from 'rxjs';
 import anime from 'animejs';
 import { sameCard, isNotRepeated, convertPXToVH } from 'src/app/shared/models/functions';
 import { ChangingRulesAnswerService } from 'src/app/shared/services/changing-rules-answer.service';
+import { GameBodyDirective } from 'src/app/shared/directives/game-body.directive';
 
 
 
@@ -25,7 +26,10 @@ import { ChangingRulesAnswerService } from 'src/app/shared/services/changing-rul
   templateUrl: './game-body.component.html',
   styleUrls: ['./game-body.component.scss']
 })
-export class GameBodyComponent extends SubscriberOxDirective implements OnInit, AfterViewInit {
+
+
+
+export class GameBodyComponent extends GameBodyDirective implements OnInit, AfterViewInit {
 
 
 
@@ -41,19 +45,20 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
   public deckClass: string = "empty";
   public countDownImageInfo: OxImageInfo | undefined;
   public swiftCardOn: boolean = false;
+ 
 
 
   constructor(private challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
     private gameActions: GameActionsService<any>,
     private hintService: HintService,
+    protected soundService: SoundOxService,
     private answerService: ChangingRulesAnswerService,
-    private soundService: SoundOxService,
     private feedbackService: FeedbackOxService,
     private preloaderService: PreloaderOxService,
     private elementRef: ElementRef) {
    
-    super();
+    super(soundService);
     this.gameInstructionText = "IGUAL";
     this.gameInstruction.color = 'white';
     this.gameInstruction.originalText = this.gameInstructionText;
@@ -122,15 +127,11 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
 
 
   answerVerificationMethod(i: number) {
-   
     const cardComponentArray = this.cardComponent.toArray();
-    const containerArray = this.cardContainer.toArray();
     if (cardComponentArray) {
       this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
       if (this.answer.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
         this.answer.push(cardComponentArray[i]);
-        this.containerAnswer.push(containerArray[i])
-        console.log(this.containerAnswer);
         cardComponentArray[i].cardState = 'card-selected';
         cardComponentArray[i].isSelected = true;
         if (this.answer.length === this.challengeService.exerciseConfig.cardsForCorrectAnswer) {
@@ -144,7 +145,6 @@ export class GameBodyComponent extends SubscriberOxDirective implements OnInit, 
       }
       else {
         this.answer.splice(this.answer.indexOf(cardComponentArray[i]), 1);
-        this.containerAnswer.splice(this.containerAnswer.indexOf(containerArray[i]), 1);
         cardComponentArray[i].isSelected = false;
         cardComponentArray[i].cardState = 'card-neutral';
       }

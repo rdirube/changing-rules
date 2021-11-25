@@ -36,7 +36,8 @@ import { GameBodyDirective } from 'src/app/shared/directives/game-body.directive
 
 export class TutorialComponent extends GameBodyDirective implements OnInit {
 
- 
+
+
 
 
   public swiftCardOn: boolean = true;
@@ -52,11 +53,11 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   public buttonOkActivate: boolean = false;
   public cardComponentArray!: any[];
   public clicksOn: boolean = false;
-  public tutorialAnswer:CardComponent[] = [];
+  public tutorialAnswer: CardComponent[] = [];
+  public lastCardsNumber!: number;
   private correctCards = new EventEmitter();
-  private checkAnswerTutorial = new EventEmitter();
-  tutorialText: any;
-  cardComponent: any;
+  public checkAnswerTutorial = new EventEmitter();
+  public deckClass: string = "empty";
 
 
 
@@ -70,10 +71,11 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     private preloaderService: PreloaderOxService,
     private elementRef: ElementRef,
     private tutorialService: TutorialService) {
-      super(soundService)
+    super(soundService)
+    this.tutorialService.tutorialCardGenerator(true);
     this.tutorialExercise = {
-      rule: this.tutorialService.tutorialRule(),
-      cardsInTable: this.tutorialService.tutorialCardGenerator()
+      rule: this.tutorialService.currentRule,
+      cardsInTable: this.tutorialService.tutorialCards
     }
     console.log("hola soy bob el constructor");
     console.log(this.tutorialExercise.rule);
@@ -81,7 +83,9 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.addSubscription(this.checkAnswerTutorial, z => {
       const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.tutorialExercise.rule);
       if (ruleToApply?.allSatisfyRule(this.tutorialAnswer.map(z => z.card))) {
-        // this.cardsToDeckAnimation();
+        const cardsInTable = this.cardComponent.toArray().map(z => z?.card as CardInfo);
+        this.cardsToDeckAnimation(this.tutorialAnswer, this.tutorialService.tutorialCards, this.correctCards, this.deckClass);
+        this.tutorialAnswer.forEach(z => z.cardState = 'card-correct');
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
 
       } else {
@@ -104,18 +108,28 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
         })
       }
     })
-  }
 
+    this.addSubscription(this.correctCards, z => {
+      this.tutorialService.tutorialCardGenerator(false);
+      this.tutorialAnswer.forEach((z, i) => {
+        this.tutorialExercise.cardsInTable.splice(this.tutorialExercise.cardsInTable.indexOf(z.card), 1, this.tutorialService.lastCards[i])
+      })
+      this.tutorialExercise.rule = this.tutorialService.currentRule;
+    })
+  }
 
 
 
   ngOnInit(): void {
+
   }
+
 
 
   ngAfterViewInit(): void {
     this.setMagnifierReference('initial-state');
     this.executeCurrentStep();
+    this.lastCardsNumber = this.tutorialService.lastCards.length
   }
 
 
@@ -129,10 +143,13 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.magnifier = this.magnifierPositions.find(z => z.reference === ref);
   }
 
+  public answerVerificationTutorial(i: number): void {
+    super.answerVerification(i, this.tutorialAnswer, 3, this.checkAnswerTutorial);
+  }
 
 
   public setSteps() {
-    this.addStep('Buenas, bienvenidos al tutorial', () => { }, timer(5500));
+    this.addStep('Buenas, bienvenidos al tutorial', () => { }, timer(3500));
     this.addStep('El objetivo del juego consiste en seleccionar las cartas que compartan la regla que figura en el panel de reglas', () => {
       this.setMagnifierReference('rule-panel');
       this.buttonOkActivate = true;
@@ -140,49 +157,56 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.addStep('Selecciona tres cartas que cumplan con la regla que indica panel', () => {
       this.setMagnifierReference('cards-in-table');
       this.buttonOkActivate = false;
+      this.clicksOn = true;
       this.cardsToSelect(this.tutorialService.currentRule);
-    }, this.okButtonHasBeenClick);
+    }, this.correctCards);
+    this.addStep('Selecciona las tres cartas una ultima vez', () => {
+      this.cardsToSelect(this.tutorialService.currentRule);
+    }, this.correctCards);
+    this.addStep('Y por última vez!', ()=> {
+      this.cardsToSelect(this.tutorialService.currentRule);
+    }, this.correctCards)
   }
 
 
 
 
   cardsToSelect(rule: GameRule): void {
-    const cardComponentArray = this.cardComponent.toArray();
+    const cardComponentArray = this.cardComponent.toArray() as CardComponent[];
     const cardInTableObj = new CardsInTable();
     const equalCardByElement = cardInTableObj.curentRuleFinder(this.tutorialExercise.rule);
-    const anchorCard = cardComponentArray.find((z: { card: { isAnchorForRule: boolean; }; }) => z?.card.isAnchorForRule);
-    const cardsEqualProperties = cardComponentArray.filter((z: { card: CardInfo; }) => equalCardByElement?.satisfyRule(z?.card as CardInfo,anchorCard?.card as CardInfo)).slice(0,3);
-    cardsEqualProperties.forEach((z: CardComponent) => (z as CardComponent).changeCardState('card-to-select-tutorial'));
-  }
-
-  
-
-
-  selectCardAction(i:number) {
-    
+    const anchorCard = cardComponentArray.find(z => z.card.isAnchorForRule);
+    const cardsEqualProperties = cardComponentArray.filter(z => equalCardByElement?.satisfyRule(z.card, anchorCard?.card as CardInfo)).slice(0, 3);
+    cardsEqualProperties.forEach(z => z.cardState = 'card-to-select-tutorial')
   }
 
 
-  answerVerification(i: number) { 
-    const cardComponentArray = this.cardComponent.toArray() as CardComponent[];
-    if (cardComponentArray) {
-      this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
-      if (this.tutorialAnswer.length <= this.tutorialService.lastCards.length && !cardComponentArray[i]?.isSelected) {
-        this.tutorialAnswer.push(cardComponentArray[i] as CardComponent);
-        cardComponentArray[i].cardState = 'card-selected';
-        cardComponentArray[i].isSelected = true;
-        if (this.tutorialAnswer.length === this.tutorialService.lastCards.length) {
-          this.checkAnswerTutorial.emit();
-        }
-      }
-      else {
-        this.tutorialAnswer.splice(this.tutorialAnswer.indexOf(cardComponentArray[i] as CardComponent), 1);
-        cardComponentArray[i].isSelected = false;
-        cardComponentArray[i].cardState = 'neutral-card';;
-      }
-    }
+
+
+  selectCardAction(i: number) {
+
   }
+
+
+  // answerVerification(i: number) { 
+  //   const cardComponentArray = this.cardComponent.toArray() as CardComponent[];
+  //   if (cardComponentArray) {
+  //     this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
+  //     if (this.tutorialAnswer.length <= this.tutorialService.lastCards.length && !cardComponentArray[i]?.isSelected) {
+  //       this.tutorialAnswer.push(cardComponentArray[i] as CardComponent);
+  //       cardComponentArray[i].cardState = 'card-selected';
+  //       cardComponentArray[i].isSelected = true;
+  //       if (this.tutorialAnswer.length === this.tutorialService.lastCards.length) {
+  //         this.checkAnswerTutorial.emit();
+  //       }
+  //     }
+  //     else {
+  //       this.tutorialAnswer.splice(this.tutorialAnswer.indexOf(cardComponentArray[i] as CardComponent), 1);
+  //       cardComponentArray[i].isSelected = false;
+  //       cardComponentArray[i].cardState = 'neutral-card';;
+  //     }
+  //   }
+  // }
 
 
 

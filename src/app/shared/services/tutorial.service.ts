@@ -17,24 +17,24 @@ export class TutorialService {
   public cardInTableObj = new CardsInTable();
   public lastCards:CardInfo[] = [];
   constructor() { }
+  public rulesAvaiables = gameRules;
+  public tutorialCards:CardInfo[] = []
 
 
 
-  tutorialRule():GameRule {
-   return anyElement(gameRules);
-  }
 
 
-
-  tutorialCardGenerator():CardInfo[] {
+  tutorialCardGenerator(isFirst:boolean):void {
   this.lastCards = [];
-  this.currentRule = anyElement(gameRules);
-  const initialCards = this.cardInTableObj.setInitialCards(cardColors,cardShapes,cardFillers,9,3);
-  this.cardInTableObj.modifyInitialCards(this.currentRule,3,initialCards,cardColors,cardShapes,cardFillers,this.lastCards,9);
-  console.log(initialCards);
-  console.log(this.lastCards);
-  return shuffle(initialCards.concat(this.lastCards));
-  
+  this.currentRule = anyElement(this.rulesAvaiables);
+  this.rulesAvaiables = this.rulesAvaiables.filter(z => z !== this.currentRule);
+  if(isFirst){
+    this.tutorialCards = this.cardInTableObj.setInitialCards(cardColors,cardShapes,cardFillers,9,3);
+    this.cardInTableObj.modifyInitialCards(this.currentRule,3,this.tutorialCards,cardColors,cardShapes,cardFillers,this.lastCards,9);
+    this.tutorialCards = shuffle(this.tutorialCards.concat(this.lastCards));
+  } else {
+    this.cardInTableObj.modifyInitialCards(this.currentRule,3,this.tutorialCards,cardColors,cardShapes,cardFillers,this.lastCards,9);
+  }
 }
 
 

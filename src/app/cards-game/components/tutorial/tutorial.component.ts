@@ -94,10 +94,10 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       if (ruleToApply?.allSatisfyRule(this.tutorialAnswer.map(z => z.card))) {
         const cardsInTable = this.cardComponent.toArray().map(z => z?.card as CardInfo);
         this.cardsToDeckAnimation(this.tutorialAnswer, this.tutorialService.cardInTableObj.cards, this.correctCards, this.deckClass);
-        this.tutorialAnswer.forEach(z => z.cardState = 'card-correct');
+        this.tutorialAnswer.forEach(z => z.cardClasses = 'card-correct');
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
-        this.tutorialAnswer.forEach(z => z.cardState = 'card-wrong');
+        this.tutorialAnswer.forEach(z => z.cardClasses = 'card-wrong');
         this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game);
         timer(20).subscribe(x => {
           anime({
@@ -206,7 +206,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   //     this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
   //     if (this.tutorialAnswer.length <= this.tutorialService.lastCards.length && !cardComponentArray[i]?.isSelected) {
   //       this.tutorialAnswer.push(cardComponentArray[i] as CardComponent);
-  //       cardComponentArray[i].cardState = 'card-selected';
+  //       cardComponentArray[i].cardClasses = 'card-selected';
   //       cardComponentArray[i].isSelected = true;
   //       if (this.tutorialAnswer.length === this.tutorialService.lastCards.length) {
   //         this.checkAnswerTutorial.emit();
@@ -215,7 +215,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   //     else {
   //       this.tutorialAnswer.splice(this.tutorialAnswer.indexOf(cardComponentArray[i] as CardComponent), 1);
   //       cardComponentArray[i].isSelected = false;
-  //       cardComponentArray[i].cardState = 'neutral-card';;
+  //       cardComponentArray[i].cardClasses = 'neutral-card';;
   //     }
   //   }
   // }

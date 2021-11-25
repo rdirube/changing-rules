@@ -17,7 +17,7 @@
       [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
       (click)="answerVerificationMethod(i)" style="position: relative;">
         <app-card [cardInfo]="item"
-                  [cardState]="stateByCards[i]"
+                  [cardClasses]="stateByCards[i]"
                   [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
         <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="svg/reglas_cambiantes/elementos/dorso.svg">

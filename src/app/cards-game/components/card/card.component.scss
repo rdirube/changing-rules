@@ -22,15 +22,15 @@
 .card-correct {
     @extend .card-neutral;
     border: 0.5vh solid green;
-    animation: card-correct-animation 0.58s ease-in-out;
+    //animation: card-correct-animation 0.58s ease-in-out;
 }
 
 @keyframes card-correct-animation {
-    0%{transform: scale(1.10);}
-    25%{transform: scale(1)};
-    50%{transform: scale(1.10);}
-    75%{transform:scale(1)};
-    100%{transform: scale(1.10)};
+    0%{transform: scale(1.10)}
+    25%{transform: scale(1)}
+    50%{transform: scale(1.10)}
+    75%{transform:scale(1)}
+    100%{transform: scale(1.10)}
 }
 
 
@@ -41,7 +41,7 @@
     border: 0.5vh solid red;
 }
 
-  
+
 
 
 
@@ -68,6 +68,6 @@
 @keyframes card-to-select {
     0%{filter:brightness(0.5) }
     50%{filter:brightness(1.5);}
-    100%{filter:brightness(0.5) 
+    100%{filter:brightness(0.5)
     }
 } 

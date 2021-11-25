@@ -1,15 +1,9 @@
-import {Component, OnInit, Input, AfterViewInit, ElementRef} from '@angular/core';
+import {Component, OnInit, Input, ElementRef} from '@angular/core';
 import {CardInfo, Replaces} from 'src/app/shared/models/types';
-import {colorsParseFunction, convertPXToVH} from 'src/app/shared/models/functions';
-import anime from 'animejs';
+import {colorsParseFunction} from 'src/app/shared/models/functions';
 import {
-  FeedbackOxService,
   GameActionsService,
-  HintService,
-  MicroLessonMetricsService,
-  SoundOxService
 } from 'micro-lesson-core';
-import {anyElement, OxImageInfo} from 'ox-types';
 import {PreloaderOxService} from 'ox-core';
 
 
@@ -29,34 +23,29 @@ export class CardComponent implements OnInit {
 
   @Input('cardInfo')
   set setCardInfo(c: CardInfo) {
-    this.cardSvg = 'svg/reglas_cambiantes/elementos/frente.svg';
     this.card = c;
     this.setCard();
+    this.updateCard();
     this.elementRef.nativeElement.style.transform = '';
   }
 
 
-  @Input() cardState: string = 'card-neutral';
+  @Input() cardClasses: string = 'card-neutral';
   card!: CardInfo;
 
 
   public cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
     'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
+  faceDown = false;
 
 
   constructor(public elementRef: ElementRef, private gameActions: GameActionsService<any>,
               private preloader: PreloaderOxService) {
-    this.cardState = 'card-neutral';
+    this.cardClasses = 'card-neutral';
   }
 
 
   ngOnInit(): void {
-    console.log(this.cardState);
-  }
-
-
-  ngAfterViewInit(): void {
-
   }
 
 
@@ -67,13 +56,10 @@ export class CardComponent implements OnInit {
     this.cardPathWithReplaces = {path: cardSvgNocolor, replaces: replaces};
   }
 
-  swiftToggle() {
-    this.swiftCardOn = !this.swiftCardOn;
+  public updateCard(): void {
+    this.cardSvg = 'svg/reglas_cambiantes/elementos/frente.svg';
+    this.faceDown = false;
   }
 
-
-  switchSelectCard(state: boolean): void {
-    this.isSelected = state;
-  }
 
 }

@@ -7,7 +7,7 @@ import {
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
-import {OxTextInfo, ScreenTypeOx, ExerciseData, OxImageInfo} from 'ox-types';
+import {OxTextInfo, ScreenTypeOx, ExerciseData, OxImageInfo, isEven, duplicateWithJSON} from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
@@ -39,7 +39,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   public gameInstructionText: string = "IGUAL";
   public exercise!: ChangingRulesExercise;
   showCountDown: boolean | undefined;
-  public answer: CardComponent[] = [];
+  public answerComponents: CardComponent[] = [];
   public containerAnswer: any[] = [];
   public deckClass: string = "empty";
   public countDownImageInfo: OxImageInfo | undefined;
@@ -68,48 +68,37 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         console.log(exercise);
         this.hintService.checkHintAvailable();
         this.addMetric();
+        // console.log(duplicateWithJSON(exercise.exerciseData.currentCards));
         this.exercise = exercise.exerciseData;
         this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
-        timer(1000).subscribe(z => {
-          this.cardComponent.toArray().forEach(x => x.cardSvg = 'svg/reglas_cambiantes/elementos/frente.svg');
-        });
-        this.answer = [];
+        this.answerComponents = [];
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
           this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
-          // this.exercise.cards = exercise.exerciseData.currentCards;
         } else {
           this.deckClass = 'filled';
-          // this.answer.forEach((z, i) => {
-          //   this.exercise.cardsInTable.splice(this.exercise.cardsInTable.indexOf(z.card), 1, exercise.exerciseData.lastCards[i]);
-          // });
-          // this.exercise.rule = exercise.exerciseData.rule;
+          this.cardComponent.toArray().forEach((z, i) => {
+            z.updateCard();
+          });
         }
       });
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       // const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.exercise.rule);
       const ruleToApply = this.exercise.rule;
-      if (ruleToApply?.allSatisfyRule(this.answer.map(z => z.card))) {
+      if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
         this.cardsToDeckAnimation();
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
-        this.answer.forEach(z => z.cardState = 'card-wrong');
+        this.answerComponents.forEach(z => z.cardClasses = 'card-wrong');
         this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game);
+        const rotate = Array.from(Array(8).keys()).map((z, i) => {
+          return {value: isEven(i) ? 2 : -2, duration: 50};
+        }).concat([{value: 0, duration: 50}]);
         timer(20).subscribe(x => {
           anime({
             targets: '.card-wrong',
-            rotate: [
-              {value: 2, duration: 50},
-              {value: -2, duration: 50},
-              {value: 2, duration: 50},
-              {value: -2, duration: 50},
-              {value: 2, duration: 50},
-              {value: -2, duration: 50},
-              {value: 2, duration: 50},
-              {value: 0, duration: 1}
-            ]
+            rotate
           });
         });
-
       }
     });
   }
@@ -129,11 +118,11 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     const cardComponentArray = this.cardComponent.toArray();
     if (cardComponentArray) {
       this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game);
-      if (this.answer.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
-        this.answer.push(cardComponentArray[i]);
-        cardComponentArray[i].cardState = 'card-selected';
+      if (this.answerComponents.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
+        this.answerComponents.push(cardComponentArray[i]);
+        cardComponentArray[i].cardClasses = 'card-selected';
         cardComponentArray[i].isSelected = true;
-        if (this.answer.length === this.challengeService.exerciseConfig.cardsForCorrectAnswer) {
+        if (this.answerComponents.length === this.challengeService.exerciseConfig.cardsForCorrectAnswer) {
           this.answerService.currentAnswer = {
             parts: [
               {correctness: 'correct', parts: []}
@@ -142,9 +131,9 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
           this.answerService.onTryAnswer();
         }
       } else {
-        this.answer.splice(this.answer.indexOf(cardComponentArray[i]), 1);
+        this.answerComponents.splice(this.answerComponents.indexOf(cardComponentArray[i]), 1);
         cardComponentArray[i].isSelected = false;
-        cardComponentArray[i].cardState = 'card-neutral';
+        cardComponentArray[i].cardClasses = 'card-neutral';
       }
     }
   }
@@ -189,7 +178,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   cardsAppearenceNew() {
-    console.log('cardsAppearenceNew');
     this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
     this.cardComponent.toArray().forEach(
       (answerCard, i) => {
@@ -204,46 +192,63 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   cardsToDeckAnimation() {
-    this.answer.forEach((answerCard, i) => {
-      answerCard.cardState = 'card-correct';
+    const duration = 75;
+    const scale = Array.from(Array(5).keys()).map((z, i) => {
+      return {value: isEven(i) ? 1 : 1.15, duration};
+    }).concat([{value: 1, duration}]);
+    this.answerComponents.forEach((answerCard, i) => {
+      answerCard.card.hasBeenUsed = true;
+      answerCard.cardClasses = 'card-correct';
       anime({
-        targets: answerCard.elementRef.nativeElement,
-        translateX: convertPXToVH(181) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
-        translateY: convertPXToVH(322) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
-        delay: 700,
-        duration: 600,
-        begin: () => {
-          timer(700).subscribe(a => {
-            answerCard.cardSvg = 'svg/reglas_cambiantes/elementos/dorso.svg';
-            answerCard.cardState = 'card-neutral';
-            answerCard.isSelected = false;
-          });
-          anime({
-            targets: '.card-correct',
-            zIndex: 200,
-            duration: 1,
-            delay: 700
-          });
-        },
-        easing: 'easeOutExpo',
-        complete: () => {
-          anime({
-            targets: answerCard.elementRef.nativeElement,
-            translateX: 0,
-            translateY: 0,
-            opacity: 0,
-            duration: 1,
-            complete: () => {
-              // const cardAnswers = this.answer.map(x => x.card);
-              // this.challengeService.cards = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers));
-              if (i + 1 === 1) {
-                this.gameActions.showNextChallenge.emit();
-                this.cardsAppearenceNew();
+          targets: answerCard.elementRef.nativeElement,
+          easing: 'easeInBounce',
+          // targets: '.card-correct',
+          scale,
+          complete: () => {
+            anime({
+              targets: answerCard.elementRef.nativeElement,
+              translateX: convertPXToVH(181) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
+              translateY: convertPXToVH(322) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
+              delay: 700,
+              duration: 600,
+              begin: () => {
+                // timer(700).subscribe(a => {
+                answerCard.cardSvg = 'svg/reglas_cambiantes/elementos/dorso.svg';
+                answerCard.cardClasses = 'card-neutral';
+                answerCard.isSelected = false;
+                // });
+                answerCard.faceDown = true;
+                // anime({
+                //   targets: '.card-correct',
+                //   zIndex: 5,
+                //   duration: 1,
+                //   delay: 700
+                // });
+              },
+              easing: 'easeOutExpo',
+              complete: () => {
+                anime({
+                  targets: answerCard.elementRef.nativeElement,
+                  translateX: 0,
+                  translateY: 0,
+                  opacity: 0,
+                  duration: 1,
+                  complete: () => {
+                    // const cardAnswers = this.answerComponents.map(x => x.card);
+                    // this.challengeService.cards = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers));
+                    if (i + 1 === 1) {
+                      this.gameActions.showNextChallenge.emit();
+                      this.cardsAppearenceNew();
+                    }
+                  }
+                });
               }
-            }
-          });
+            });
+
+
+          }
         }
-      });
+      );
     });
   }
 
@@ -257,7 +262,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         requestedHints: 0,
         surrendered: false
       },
-      finalStatus: 'to-answer',
+      finalStatus: 'to-answerComponents',
       maxHints: 0, // TODO SET MAX HINTS
       secondsInExercise: 0,
       initialTime: new Date(),

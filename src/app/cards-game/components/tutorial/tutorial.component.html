@@ -17,7 +17,7 @@
       [ngClass]= "swiftCardOn ? 'card-component-visible': 'card-component'" 
        style="position: relative;">  
         <app-card [cardInfo]="item"
-                  [cardState]="stateByCards[i]"
+                  [cardClasses]="stateByCards[i]"
                   (click)="answerVerificationTutorial(i)"
         [ngClass]= "swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>

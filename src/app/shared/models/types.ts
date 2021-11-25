@@ -20,7 +20,7 @@ export interface CardInfo {
   fill: CardFill;
   hasBeenUsed: boolean;
   // isAnchorForRule?: boolean;
-  // cardState?: string;
+  // cardClasses?: string;
 }
 
 

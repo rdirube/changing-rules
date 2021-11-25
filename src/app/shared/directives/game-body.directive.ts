@@ -30,14 +30,14 @@ export class GameBodyDirective extends SubscriberOxDirective  {
 
   
 
-  // answerVerification(i: number,answer:CardComponent[], cardsForCorrect:number, emit: () => void) {
+  // answerVerification(i: number,answerComponents:CardComponent[], cardsForCorrect:number, emit: () => void) {
     answerVerification(i: number,answer:CardComponent[], cardsForCorrect:number, emitter: EventEmitter<any>) {
     const cardComponentArray = this.cardComponent.toArray() as CardComponent[];
     if (cardComponentArray) {
       this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
       if (answer.length < cardsForCorrect && !cardComponentArray[i]?.isSelected) {
         answer.push(cardComponentArray[i]);
-        cardComponentArray[i].cardState  = 'card-selected';
+        cardComponentArray[i].cardClasses  = 'card-selected';
         cardComponentArray[i].isSelected = true;
         console.log(answer);
         if (answer.length === cardsForCorrect) {
@@ -52,7 +52,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
       else {
         answer.splice(answer.indexOf(cardComponentArray[i]), 1);
         cardComponentArray[i].isSelected = false;
-        cardComponentArray[i].cardState = 'card-neutral';
+        cardComponentArray[i].cardClasses = 'card-neutral';
       }
     }
   }
@@ -63,7 +63,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
 
   cardsToDeckAnimation(answer:CardComponent[], cardsInTable:CardInfo[], nextStepEmitter:EventEmitter<any>, deck:string) {
     answer.forEach((answerCard, i) => {
-      answerCard.cardState = 'card-correct';
+      answerCard.cardClasses = 'card-correct';
       anime({
         targets: answerCard.elementRef.nativeElement,
         translateX: convertPXToVH(181) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
@@ -73,7 +73,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
         begin: () => {
           timer(700).subscribe(a => {
             answerCard.cardSvg = 'svg/reglas_cambiantes/elementos/dorso.svg';
-            answerCard.cardState = 'card-neutral';
+            answerCard.cardClasses = 'card-neutral';
             answerCard.isSelected = false;
           })
           anime({

@@ -26,11 +26,10 @@
       
     </div>
   </div>
-
 </div>
 <div fxLayout="column" class="card-to-select">
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
-    <ox-text [oxTextInfo]="gameInstruction"></ox-text>
+    <ox-text originalText="IGUAL" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
   </div>
   <app-rules [currentRule]="exercise.rule.id" *ngIf="exercise"></app-rules>
 </div>

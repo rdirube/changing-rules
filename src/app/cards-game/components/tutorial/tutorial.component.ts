@@ -93,7 +93,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.tutorialExercise.rule);
       if (ruleToApply?.allSatisfyRule(this.tutorialAnswer.map(z => z.card))) {
         const cardsInTable = this.cardComponent.toArray().map(z => z?.card as CardInfo);
-        this.cardsToDeckAnimation(this.tutorialAnswer, this.tutorialService.cardInTableObj.cards, this.correctCards, this.deckClass);
+        // TODO fix me
+        // this.cardsToDeckAnimation(this.tutorialAnswer, this.tutorialService.cardInTableObj.cards, this.correctCards, this.deckClass);
         this.tutorialAnswer.forEach(z => z.cardClasses = 'card-correct');
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
@@ -146,7 +147,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   }
 
   public answerVerificationTutorial(i: number): void {
-    super.answerVerification(i, this.tutorialAnswer, 3, this.checkAnswerTutorial);
+    // super.answerVerification(i, this.tutorialAnswer, 3, this.checkAnswerTutorial);
+    super.updateAnswer(i, 3, () => this.checkAnswerTutorial.emit());
   }
 
   public setSteps() {

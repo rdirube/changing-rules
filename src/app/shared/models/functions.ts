@@ -32,7 +32,8 @@ export function generateRandomCard():CardInfo {
   return {
     color:anyElement(cardColors),
     shape: anyElement(cardShapes),
-    fill:anyElement(cardFillers)
+    fill:anyElement(cardFillers),
+    hasBeenUsed: false
   }
 }  
 

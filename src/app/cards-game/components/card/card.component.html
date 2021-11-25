@@ -1,11 +1,11 @@
 <div fxLayoutAlign="center center" style="width: 100%; height: 100%;">
   <mlc-loaded-svg   
-    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="cardState"  style = "transform: translateY(0.65vh);">
+    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="cardState"  style = "transform: translateY(0.65vh); z-index: 1">
   </mlc-loaded-svg> 
   <mlc-loaded-svg   
-    [path]="cardSvg" [class]="cardState" >
+    [path]="cardSvg" [class]="cardState" style="z-index: 2">
   </mlc-loaded-svg> 
-    <mlc-loaded-svg   class="current-card-symbol"
+    <mlc-loaded-svg   class="current-card-symbol" style="z-index: 3"
     [pathWithReplaces]="cardPathWithReplaces" fxFlex="grow" fxLayoutAlign="center center">
   </mlc-loaded-svg> 
 </div>

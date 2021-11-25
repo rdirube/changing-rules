@@ -16,7 +16,9 @@
       <div #cardContainer *ngFor="let item of tutorialExercise?.cardsInTable; let i = index" 
       [ngClass]= "swiftCardOn ? 'card-component-visible': 'card-component'" 
        style="position: relative;">  
-        <app-card [cardInfo]="item"  (click)="answerVerificationTutorial(i)"
+        <app-card [cardInfo]="item"
+                  [cardState]="stateByCards[i]"
+                  (click)="answerVerificationTutorial(i)"
         [ngClass]= "swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
         <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" 

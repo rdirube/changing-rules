@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, EventEmitter } from '@angular/core';
-import { SubscriberOxDirective } from 'micro-lesson-components';
+import {Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, EventEmitter} from '@angular/core';
+import {SubscriberOxDirective} from 'micro-lesson-components';
 import {
   FeedbackOxService,
   GameActionsService,
@@ -7,18 +7,19 @@ import {
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
-import { OxTextInfo, ScreenTypeOx, ExerciseData, MultipleChoiceSchemaData, OxImageInfo } from 'ox-types';
-import { ChangingRulesChallengeService } from 'src/app/shared/services/changing-rules-challenge.service';
-import { ExerciseOx, PreloaderOxService } from 'ox-core';
-import { ChangingRulesExercise, GameRule, Rule, FillRule, ColorRule, ShapeRule, ALL_RULES, CardInfo } from 'src/app/shared/models/types';
-import { filter, take, toArray } from 'rxjs/operators';
-import { CardComponent } from '../card/card.component';
-import { timer } from 'rxjs';
+import {OxTextInfo, ScreenTypeOx, ExerciseData, OxImageInfo} from 'ox-types';
+import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
+import {ExerciseOx, PreloaderOxService} from 'ox-core';
+import {
+  ChangingRulesExercise,
+} from 'src/app/shared/models/types';
+import {filter, take, toArray} from 'rxjs/operators';
+import {CardComponent} from '../card/card.component';
+import {timer} from 'rxjs';
 import anime from 'animejs';
-import { sameCard, isNotRepeated, convertPXToVH } from 'src/app/shared/models/functions';
-import { ChangingRulesAnswerService } from 'src/app/shared/services/changing-rules-answer.service';
-import { GameBodyDirective } from 'src/app/shared/directives/game-body.directive';
-
+import {sameCard, isNotRepeated, convertPXToVH} from 'src/app/shared/models/functions';
+import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
+import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 
 
 @Component({
@@ -28,9 +29,7 @@ import { GameBodyDirective } from 'src/app/shared/directives/game-body.directive
 })
 
 
-
 export class GameBodyComponent extends GameBodyDirective implements OnInit, AfterViewInit {
-
 
 
   @ViewChildren(CardComponent) cardComponent!: QueryList<CardComponent>;
@@ -45,19 +44,18 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   public deckClass: string = "empty";
   public countDownImageInfo: OxImageInfo | undefined;
   public swiftCardOn: boolean = false;
- 
 
 
   constructor(private challengeService: ChangingRulesChallengeService,
-    private metricsService: MicroLessonMetricsService<any>,
-    private gameActions: GameActionsService<any>,
-    private hintService: HintService,
-    protected soundService: SoundOxService,
-    private answerService: ChangingRulesAnswerService,
-    private feedbackService: FeedbackOxService,
-    private preloaderService: PreloaderOxService,
-    private elementRef: ElementRef) {
-   
+              private metricsService: MicroLessonMetricsService<any>,
+              private gameActions: GameActionsService<any>,
+              private hintService: HintService,
+              protected soundService: SoundOxService,
+              private answerService: ChangingRulesAnswerService,
+              private feedbackService: FeedbackOxService,
+              private preloaderService: PreloaderOxService,
+              private elementRef: ElementRef) {
+
     super(soundService);
     this.gameInstructionText = "IGUAL";
     this.gameInstruction.color = 'white';
@@ -67,49 +65,54 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.gameInstruction.ignoreLowerCase = true;
     this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
+        console.log(exercise);
         this.hintService.checkHintAvailable();
         this.addMetric();
+        this.exercise = exercise.exerciseData;
+        this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
+        timer(1000).subscribe(z => {
+          this.cardComponent.toArray().forEach(x => x.cardSvg = 'svg/reglas_cambiantes/elementos/frente.svg');
+        });
+        this.answer = [];
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
-          this.countDownImageInfo = { data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg') }
-          this.exercise = exercise.exerciseData;
-          this.exercise.cardsInTable = exercise.exerciseData.cardsInTable;
+          this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
+          // this.exercise.cards = exercise.exerciseData.currentCards;
         } else {
           this.deckClass = 'filled';
-          this.answer.forEach((z, i) => {
-            this.exercise.cardsInTable.splice(this.exercise.cardsInTable.indexOf(z.card), 1, exercise.exerciseData.lastCards[i])
-          })
-          this.exercise.rule = exercise.exerciseData.rule;
+          // this.answer.forEach((z, i) => {
+          //   this.exercise.cardsInTable.splice(this.exercise.cardsInTable.indexOf(z.card), 1, exercise.exerciseData.lastCards[i]);
+          // });
+          // this.exercise.rule = exercise.exerciseData.rule;
         }
       });
     this.addSubscription(this.gameActions.checkedAnswer, z => {
-      const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.exercise.rule);
+      // const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.exercise.rule);
+      const ruleToApply = this.exercise.rule;
       if (ruleToApply?.allSatisfyRule(this.answer.map(z => z.card))) {
         this.cardsToDeckAnimation();
-        this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game)
+        this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
         this.answer.forEach(z => z.cardState = 'card-wrong');
-        this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game)
+        this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game);
         timer(20).subscribe(x => {
           anime({
             targets: '.card-wrong',
             rotate: [
-              { value: 2, duration: 50 },
-              { value: -2, duration: 50 },
-              { value: 2, duration: 50 },
-              { value: -2, duration: 50 },
-              { value: 2, duration: 50 },
-              { value: -2, duration: 50 },
-              { value: 2, duration: 50 },
-              { value: 0, duration: 1 }
+              {value: 2, duration: 50},
+              {value: -2, duration: 50},
+              {value: 2, duration: 50},
+              {value: -2, duration: 50},
+              {value: 2, duration: 50},
+              {value: -2, duration: 50},
+              {value: 2, duration: 50},
+              {value: 0, duration: 1}
             ]
-          })
-        })
+          });
+        });
 
       }
-    })
+    });
   }
-
-
 
 
   ngOnInit(): void {
@@ -117,19 +120,15 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
 
-
   ngAfterViewInit(): void {
 
   }
 
 
-
-
-
   answerVerificationMethod(i: number) {
     const cardComponentArray = this.cardComponent.toArray();
     if (cardComponentArray) {
-      this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
+      this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game);
       if (this.answer.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
         this.answer.push(cardComponentArray[i]);
         cardComponentArray[i].cardState = 'card-selected';
@@ -137,20 +136,18 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         if (this.answer.length === this.challengeService.exerciseConfig.cardsForCorrectAnswer) {
           this.answerService.currentAnswer = {
             parts: [
-              { correctness: 'correct', parts: [] }
+              {correctness: 'correct', parts: []}
             ]
-          }
+          };
           this.answerService.onTryAnswer();
         }
-      }
-      else {
+      } else {
         this.answer.splice(this.answer.indexOf(cardComponentArray[i]), 1);
         cardComponentArray[i].isSelected = false;
         cardComponentArray[i].cardState = 'card-neutral';
       }
     }
   }
-
 
 
   public endFedbackEmitter() {
@@ -170,7 +167,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
 
-
   cardsAppearenceAnimation() {
     anime({
       targets: '.card-component',
@@ -179,47 +175,32 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       easing: 'linear',
       complete: () =>
         this.swiftToggle()
-        
 
-      })
+
+    });
     anime({
       targets: '.card-component',
       delay: 150,
       opacity: 1,
       duration: 1,
       complete: () => this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
-    })
+    });
   }
 
 
-
   cardsAppearenceNew() {
-    this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
-    this.answer.forEach(
+    console.log('cardsAppearenceNew');
+    this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
+    this.cardComponent.toArray().forEach(
       (answerCard, i) => {
         anime({
           targets: answerCard.elementRef.nativeElement,
           opacity: 1,
           duration: 1,
           delay: 200
-        })
-      })
-    this.containerAnswer.forEach((container, i) => {
-      anime({
-        targets: container.nativeElement,
-        rotateY: '180',
-        duration: 400,
-        easing: 'linear',
-        complete: () => {
-          if (this.containerAnswer.length === i + 1) {
-            this.answer = [];
-            this.containerAnswer = [];
-          }
-        }
-      })
-    })
+        });
+      });
   }
-
 
 
   cardsToDeckAnimation() {
@@ -236,13 +217,13 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
             answerCard.cardSvg = 'svg/reglas_cambiantes/elementos/dorso.svg';
             answerCard.cardState = 'card-neutral';
             answerCard.isSelected = false;
-          })
+          });
           anime({
             targets: '.card-correct',
             zIndex: 200,
             duration: 1,
             delay: 700
-          })
+          });
         },
         easing: 'easeOutExpo',
         complete: () => {
@@ -253,19 +234,18 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
             opacity: 0,
             duration: 1,
             complete: () => {
-              const cardAnswers = this.answer.map(x => x.card)
-              this.challengeService.cardsInTable = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers))
+              // const cardAnswers = this.answer.map(x => x.card);
+              // this.challengeService.cards = this.exercise.cardsInTable.filter(x => isNotRepeated(x, cardAnswers));
               if (i + 1 === 1) {
                 this.gameActions.showNextChallenge.emit();
                 this.cardsAppearenceNew();
               }
             }
-          })
+          });
         }
-      })
-    })
+      });
+    });
   }
-
 
 
   private addMetric(): void {

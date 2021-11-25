@@ -20,9 +20,9 @@ export class GameBodyDirective extends SubscriberOxDirective  {
   
   @ViewChildren(CardComponent) cardComponent!: QueryList<CardComponent | undefined>;
   @ViewChild('tutorialText') tutorialText!: TextComponent;
-  
- 
-  
+  stateByCards: string[] = [];
+
+
 
   constructor(protected soundService:SoundOxService) { 
     super();

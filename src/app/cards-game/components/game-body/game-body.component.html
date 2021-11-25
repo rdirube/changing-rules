@@ -13,14 +13,14 @@
       path="svg/reglas_cambiantes/elementos/mesa.svg">
     </mlc-loaded-svg>
     <div class="cards-grid"  >     
-      <div #cardContainer *ngFor="let item of exercise?.cardsInTable; let i = index" 
-      [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'" 
-      (click)="answerVerificationMethod(i)" style="position: relative;">  
-        <app-card [cardInfo]="item"   
-        [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
+      <div #cardContainer *ngFor="let item of exercise?.currentCards; let i = index"
+      [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
+      (click)="answerVerificationMethod(i)" style="position: relative;">
+        <app-card [cardInfo]="item"
+                  [cardState]="stateByCards[i]"
+                  [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
-        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" 
-              path="svg/reglas_cambiantes/elementos/dorso.svg">
+        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="svg/reglas_cambiantes/elementos/dorso.svg">
         </mlc-loaded-svg>
       </div>
       
@@ -32,7 +32,7 @@
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
     <ox-text [oxTextInfo]="gameInstruction"></ox-text>
   </div>
-  <app-rules [currentRule]="exercise.rule" *ngIf="exercise"></app-rules>
+  <app-rules [currentRule]="exercise.rule.id" *ngIf="exercise"></app-rules>
 </div>
 <div class="deck-container">
   <app-deck [deckClass]="deckClass"></app-deck>

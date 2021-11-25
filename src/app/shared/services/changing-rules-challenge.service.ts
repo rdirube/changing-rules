@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {
   AppInfoOxService,
   ChallengeService,
@@ -7,7 +7,7 @@ import {
   LevelService,
   SubLevelService
 } from 'micro-lesson-core';
-import { ExerciseOx, PreloaderOxService } from 'ox-core';
+import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
   ChangingRulesExercise,
   ChangingRulesNivelation,
@@ -22,27 +22,26 @@ import {
   Rule,
   ALL_RULES
 } from '../models/types';
-import { anyElement, ExpandableInfo, Showable, shuffle, equalArrays, randomBool } from 'ox-types';
-import { zip } from 'rxjs';
-import {  cardColors, cardShapes, cardFillers, gameRules } from '../models/const';
+import {anyElement, ExpandableInfo, Showable, shuffle, equalArrays, randomBool} from 'ox-types';
+import {zip} from 'rxjs';
+import {cardColors, cardShapes, cardFillers, gameRules} from '../models/const';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChangingRulesChallengeService extends ChallengeService<any, any> {
- 
+
   public resources = new Map<string, string>();
   public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
-  public cardsInTableClassInstance = new CardsInTable();
-  public cardsInTable: CardInfo[] = [];
+  public cardsInTable = new CardsInTable();
 
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
-    subLevelService: SubLevelService,
-    private preloaderService: PreloaderOxService,
-    private feedback: FeedbackOxService,
-    private appInfo: AppInfoOxService) {
+              subLevelService: SubLevelService,
+              private preloaderService: PreloaderOxService,
+              private feedback: FeedbackOxService,
+              private appInfo: AppInfoOxService) {
     super(gameActionsService, subLevelService, preloaderService);
 
 
@@ -53,7 +52,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
     });
-    // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+    // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cards":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
   }
 
 
@@ -64,22 +63,23 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   protected equalsExerciseData(exerciseData: ChangingRulesExercise, exerciseDoneData: ChangingRulesExercise): boolean {
     console.log('Chequing equal exercose...');
-    return equalArrays(exerciseData.cardsInTable, exerciseDoneData.cardsInTable);
+    // TODO re validate this
+    return equalArrays(exerciseData.currentCards, exerciseDoneData.currentCards);
   }
 
 
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
     const currentExerciseRule: GameRule = anyElement(gameRules);
-    const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule);
-    const lastCards:CardInfo[] = [];
-    this.cardsInTableClassInstance.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer, this.cardsInTable, cardColors, cardShapes, cardFillers, lastCards, this.exerciseConfig.cardsInTable);
+    const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
+    this.cardsInTable.updateCards(ruleClass, 3);
+    // TODO SOLVE THIS
+    // this.cardsInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
+    //   , this.cards, cardColors, cardShapes, cardFillers, lastCards, this.exerciseConfig.cards);
     return new ExerciseOx({
-      rule: currentExerciseRule,
-      lastCards: shuffle(lastCards),
-      cardsInTable: this.cardsInTable.concat(lastCards),
-    } as ChangingRulesExercise, 1, { maxTimeToBonus: 0, freeTime: 0 }, []);
+      rule: ruleClass,
+      currentCards: this.cardsInTable.cards
+    } as ChangingRulesExercise, 1, {maxTimeToBonus: 0, freeTime: 0}, []);
   }
-
 
 
   beforeStartGame(): void {
@@ -88,8 +88,9 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
       case 'created-config':
         this.currentSubLevelPregeneratedExercisesNeeded = 1;
         // this.exerciseConfig = this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
-        this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardsInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
-        this.cardsInTable = this.cardsInTableClassInstance.setInitialCards(cardColors, cardShapes, cardFillers, this.exerciseConfig.cardsInTable, this.exerciseConfig.cardsForCorrectAnswer)
+        this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cards":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+        // this.cards =
+        this.cardsInTable.setInitialCards(this.exerciseConfig.cards, this.exerciseConfig.cardsForCorrectAnswer);
         // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
         this.setInitialExercise();
         break;
@@ -117,7 +118,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   private setInitialExercise(): void {
     console.log('setInitialExercise');
   }
-
 
 
 }

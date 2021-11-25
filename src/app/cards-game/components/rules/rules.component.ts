@@ -23,7 +23,8 @@ export class RulesComponent implements OnInit {
 
 
   @Input('currentRule')
-  set setCurrentRule(r: GameRule) {
+  set setCurrentRule(r: GameRule | undefined) {
+    if (r === undefined) return;
     this.currentRule = r;
     this.ruleOnMethod();
     this.colorRulePath = this.isRuleOn[0] ? this.rulesSvgActive[0] : this.rulesSvgBlock[0];

@@ -3,10 +3,6 @@ import {
   ElementRef,
   EventEmitter,
   OnInit,
-  AfterViewInit,
-  ViewChild,
-  ViewChildren,
-  QueryList
 } from '@angular/core';
 import {
   FeedbackOxService,
@@ -26,21 +22,14 @@ import {
   MagnifierPosition,
   TutorialStep,
   ALL_RULES,
-  GameRule,
-  CardsInTable,
-  Rule
+  Rule, ChangingRulesExercise
 } from 'src/app/shared/models/types';
-import {TutorialExercise} from 'src/app/shared/models/types';
 import {MAGNIFIER_POSITIONS} from 'src/app/shared/models/const';
-import {FlexModule} from '@angular/flex-layout';
 import anime from 'animejs';
-import {TextComponent} from 'typography-ox';
 import {take} from 'rxjs/operators';
-import {CardComponent} from '../card/card.component';
-import {sameCard} from 'src/app/shared/models/functions';
-import {SubscriberOxDirective} from 'micro-lesson-components';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
-
+import {sameCard} from '../../../shared/models/functions';
+import {CardComponent} from '../card/card.component';
 
 @Component({
   selector: 'app-tutorial',
@@ -52,7 +41,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
   public swiftCardOn: boolean = true;
-  public tutorialExercise!: TutorialExercise;
+  public tutorialExercise!: ChangingRulesExercise;
   private currentStep = 0;
   public magnifier!: MagnifierPosition | undefined;
   text: string = '';
@@ -62,13 +51,9 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   private currentEndStepSubscription!: Subscription | undefined;
   public isTutorialComplete: boolean = false;
   public buttonOkActivate: boolean = false;
-  public cardComponentArray!: any[];
   public clicksOn: boolean = false;
-  public tutorialAnswer: CardComponent[] = [];
-  public lastCardsNumber!: number;
   private correctCards = new EventEmitter();
   public checkAnswerTutorial = new EventEmitter();
-  public deckClass: string = "empty";
 
 
   constructor(private challengeService: ChangingRulesChallengeService,
@@ -82,47 +67,38 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
               private elementRef: ElementRef,
               private tutorialService: TutorialService) {
     super(soundService);
-    this.tutorialService.tutorialCardGenerator(true);
-    this.stateByCards = this.tutorialService.cardInTableObj.cards.map(z => 'card-neutral');
+    this.tutorialService.tutorialCardGenerator();
+    this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
     this.tutorialExercise = {
       rule: this.tutorialService.currentRule,
-      cardsInTable: this.tutorialService.cardInTableObj.cards
+      currentCards: this.tutorialService.cardInTable.cards
     };
+    console.log(this.tutorialExercise);
     this.setSteps();
     this.addSubscription(this.checkAnswerTutorial, z => {
-      const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.tutorialExercise.rule);
-      if (ruleToApply?.allSatisfyRule(this.tutorialAnswer.map(z => z.card))) {
-        const cardsInTable = this.cardComponent.toArray().map(z => z?.card as CardInfo);
+      const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.tutorialExercise.rule.id);
+      if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
+        const cardsInTable = this.cardComponentQueryList.toArray().map(z => z?.card as CardInfo);
         // TODO fix me
-        // this.cardsToDeckAnimation(this.tutorialAnswer, this.tutorialService.cardInTableObj.cards, this.correctCards, this.deckClass);
-        this.tutorialAnswer.forEach(z => z.cardClasses = 'card-correct');
+        this.cardsToDeckAnimation(this.correctCards);
+        this.answerComponents.forEach(z => z.cardClasses = 'card-correct');
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
-        this.tutorialAnswer.forEach(z => z.cardClasses = 'card-wrong');
+        this.answerComponents.forEach(z => z.cardClasses = 'card-wrong');
         this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game);
-        timer(20).subscribe(x => {
-          anime({
-            targets: '.card-wrong',
-            rotate: [
-              {value: 2, duration: 50},
-              {value: -2, duration: 50},
-              {value: 2, duration: 50},
-              {value: -2, duration: 50},
-              {value: 2, duration: 50},
-              {value: -2, duration: 50},
-              {value: 2, duration: 50},
-              {value: 0, duration: 1}
-            ]
-          });
-        });
+        this.playWrongAnimation();
       }
     });
 
     this.addSubscription(this.correctCards, z => {
-      this.tutorialService.tutorialCardGenerator(false);
-      this.tutorialAnswer.forEach((z, i) => {
-        this.tutorialExercise.cardsInTable.splice(this.tutorialExercise.cardsInTable.indexOf(z.card), 1, this.tutorialService.lastCards[i]);
-      });
+      // this.tutorialService.tutorialCardGenerator();
+      // this.answerComponents.forEach((z, i) => {
+      //   this.tutorialExercise.currentCards.splice(this.tutorialExercise.currentCards.indexOf(z.card), 1,
+      //     this.tutorialService.lastCards[i]);
+      // });
+      this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
+      this.answerComponents.forEach(z => z.card.hasBeenUsed = true);
+      this.tutorialService.tutorialCardGenerator();
       this.tutorialExercise.rule = this.tutorialService.currentRule;
       console.log('Genere desdepues de correct cards.');
     });
@@ -135,7 +111,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   ngAfterViewInit(): void {
     this.setMagnifierReference('initial-state');
     this.executeCurrentStep();
-    this.lastCardsNumber = this.tutorialService.lastCards.length;
   }
 
   private addStep(text: string, actions: () => void, completedSub: Observable<any>) {
@@ -174,36 +149,25 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
   cardsToSelect(): void {
-    // let errorCounter = 0;
-    // for (let i = 0; i < 1000; i++) {
-    //   try {
-    //     this.tutorialAnswer = [];
-    //     const rule: Rule = this.tutorialService.cardInTableObj.curentRuleFinder(this.tutorialExercise.rule) as Rule;
-    //     // const anchorCard = this.tutorialService.cardInTableObj.cards.find(z => z.isAnchorForRule) as CardInfo;
-    //     const possibleCorrectCards: CardInfo[] = this.tutorialService.cardInTableObj.cards
-    //       .filter(z => rule.satisfyRule(z, anchorCard)).slice(0, 3);
-    //     this.stateByCards = this.tutorialService.cardInTableObj.cards.map(z =>
-    //       possibleCorrectCards.some(ca => sameCard(z, ca)) ? 'card-to-select-tutorial' : 'card-neutral');
-    //     if (possibleCorrectCards.length < 3) {
-    //       throw new Error('rompi por no tener caratas')
-    //     }
-    //   } catch (e) {
-    //     console.log(' ME rompi jejejejejejeje');
-    //     errorCounter++;
-    //   }
-    // }
-    // console.log('Total errores detected. ' + errorCounter);
-    // this.tutorialAnswer = [];
-    // const rule: Rule = this.tutorialService.cardInTableObj.curentRuleFinder(this.tutorialExercise.rule) as Rule;
-    // // const anchorCard = this.tutorialService.cardInTableObj.cards.find(z => z.isAnchorForRule) as CardInfo;
-    // const possibleCorrectCards: CardInfo[] = this.tutorialService.cardInTableObj.cards
+    this.answerComponents = [];
+    // const rule: Rule = this.tutorialService.cardInTable.curentRuleFinder(this.tutorialExercise.rule) as Rule;
+    // const anchorCard = this.tutorialService.cardInTable.cards.find(z => z.isAnchorForRule) as CardInfo;
+    // const possibleCorrectCards: CardInfo[] = this.tutorialService.cardInTable.cards
     //   .filter(z => rule.satisfyRule(z, anchorCard)).slice(0, 3);
-    // this.stateByCards = this.tutorialService.cardInTableObj.cards.map(z =>
-    //   possibleCorrectCards.some(ca => sameCard(z, ca)) ? 'card-to-select-tutorial' : 'card-neutral');
+    // this.stateByCards = this.tutorialService.cardInTable.cards.map(z =>
+    //   possibleCorrectCards.some(ca => sameCard(z, ca)) ? 'card-to-select-tutorial' : 'card-neutral');]
+    const answer = this.tutorialService.cardInTable.currentPossibleAnswerCards;
+    timer(300).subscribe(z => {
+      this.stateByCards = (this.cardComponentQueryList.toArray() as CardComponent[])
+        .map(cardComp => answer.some(a => sameCard(cardComp.card, a)) ? 'card-to-select-tutorial' : 'card-neutral');
+    });
+    // this.stateByCards = this.tutorialService.cardInTable.currentPossibleAnswerCards.map(z =>
+    //   this.cardComponentQueryList.toArray().find(ca => sameCard(z, (ca as CardComponent).card)) as CardComponent);
+    // ? 'card-to-select-tutorial' : 'card-neutral'
   }
 
   // answerVerification(i: number) {
-  //   const cardComponentArray = this.cardComponent.toArray() as CardComponent[];
+  //   const cardComponentArray = this.cardComponentQueryList.toArray() as CardComponent[];
   //   if (cardComponentArray) {
   //     this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
   //     if (this.tutorialAnswer.length <= this.tutorialService.lastCards.length && !cardComponentArray[i]?.isSelected) {

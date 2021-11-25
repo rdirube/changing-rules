@@ -1,7 +1,7 @@
 <div fxFlex="grow" style="position: relative">
-  <app-game-body *ngIf="loaded" fxFlex="grow" class="myAbsolute"
-                 [ngStyle]="{'visibility': showingTutorial ? 'collapse' : ''}"
-  ></app-game-body>
-<!--<app-tutorial *ngIf="loaded" class="myAbsolute"-->
-<!--               fxFlex="grow"></app-tutorial>-->
+<!--  <app-game-body *ngIf="loaded" fxFlex="grow" class="myAbsolute"-->
+<!--                 [ngStyle]="{'visibility': showingTutorial ? 'collapse' : ''}"-->
+<!--  ></app-game-body>-->
+<app-tutorial *ngIf="loaded" class="myAbsolute"
+               fxFlex="grow"></app-tutorial>
 </div>

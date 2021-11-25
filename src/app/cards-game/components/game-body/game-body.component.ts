@@ -27,12 +27,10 @@ import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 
 export class GameBodyComponent extends GameBodyDirective {
 
-  @ViewChildren(CardComponent) cardComponent!: QueryList<CardComponent>;
+  @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
 
   public exercise!: ChangingRulesExercise;
-  public answerComponents: CardComponent[] = [];
-  public deckClass: string = "empty";
   public countDownImageInfo: OxImageInfo | undefined;
 
   constructor(private challengeService: ChangingRulesChallengeService,
@@ -56,7 +54,7 @@ export class GameBodyComponent extends GameBodyDirective {
           this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
         } else {
           this.deckClass = 'filled';
-          this.cardComponent.toArray().forEach((z, i) => {
+          this.cardComponentQueryList.toArray().forEach((z, i) => {
             z.updateCard();
           });
         }
@@ -75,7 +73,7 @@ export class GameBodyComponent extends GameBodyDirective {
   }
 
   answerVerificationMethod(i: number) {
-    super.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer, () => {
+    this.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer, () => {
       this.answerService.currentAnswer = {
         parts: [
           {correctness: 'correct', parts: []}
@@ -83,7 +81,7 @@ export class GameBodyComponent extends GameBodyDirective {
       };
       this.answerService.onTryAnswer();
     });
-    // const cardComponentArray = this.cardComponent.toArray();
+    // const cardComponentArray = this.cardComponentQueryList.toArray();
     // if (cardComponentArray) {
     //   this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game);
     //   if (this.answerComponents.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
@@ -134,14 +132,4 @@ export class GameBodyComponent extends GameBodyDirective {
     this.metricsService.currentMetrics.exercises++;
   }
 
-
-  private playWrongAnimation() {
-    const rotate = Array.from(Array(8).keys()).map((z, i) => {
-      return {value: isEven(i) ? 2 : -2, duration: 50};
-    }).concat([{value: 0, duration: 50}]);
-    anime({
-      targets: this.answerComponents.map( z => z.elementRef.nativeElement),
-      rotate
-    });
-  }
 }

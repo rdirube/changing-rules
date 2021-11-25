@@ -13,7 +13,7 @@
       path="svg/reglas_cambiantes/elementos/mesa.svg">
     </mlc-loaded-svg>
     <div class="cards-grid"  >     
-      <div #cardContainer *ngFor="let item of tutorialExercise?.cardsInTable; let i = index" 
+      <div #cardContainer *ngFor="let item of tutorialExercise?.currentCards; let i = index"
       [ngClass]= "swiftCardOn ? 'card-component-visible': 'card-component'" 
        style="position: relative;">  
         <app-card [cardInfo]="item"
@@ -32,7 +32,7 @@
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
     <ox-text  originalText="IGUAL" font="dinnRegular" color="white"  fontSize="4vh"></ox-text>
   </div>
-  <app-rules [currentRule]="tutorialExercise.rule" *ngIf="tutorialExercise" ></app-rules>
+  <app-rules [currentRule]="tutorialExercise.rule.id" *ngIf="tutorialExercise" ></app-rules>
   
 </div>
 <div class="deck-container">

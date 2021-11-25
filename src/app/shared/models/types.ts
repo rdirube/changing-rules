@@ -36,13 +36,6 @@ export interface ChangingRulesExercise {
   currentCards: CardInfo[]
 }
 
-
-export interface TutorialExercise {
-  rule: GameRule;
-  cardsInTable: CardInfo[];
-}
-
-
 export interface TutorialStep {
   text: string;
   actions: () => void,
@@ -173,7 +166,7 @@ export class CardsInTable {
       this.cards.push(this.generateCard());
     }
     const indexes = shuffle(this.cards.map( (z, i) => i )).slice(0, correctAnswerQuant);
-    indexes.forEach( i => this.cards[i].hasBeenUsed);
+    indexes.forEach( i => this.cards[i].hasBeenUsed = true);
   }
 
   curentRuleFinder(rule: GameRule): Rule | undefined {
@@ -181,24 +174,24 @@ export class CardsInTable {
     return ruleSelected;
   }
 
-  modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number,
-                     colors: CardColor[], shapes: CardShape[], fillers: CardFill[],
-                     lastCards: CardInfo[]): void {
-    const randomCardFromTable = anyElement(this.cards);
-    const rule = this.curentRuleFinder(currentRule) as Rule;
-    const initialSatisfyingCards = rule.getSatisfyCards(randomCardFromTable, this.cards);
-    const equalPropertyQuantity = rule.countOfEqualProperty(randomCardFromTable, this.cards);
-    for (let i = 0; i < correctAnswerQuant; i++) {
-      if (i < correctAnswerQuant - equalPropertyQuantity!)
-        lastCards.push(this.generateCard(this.curentRuleFinder(currentRule), randomCardFromTable));
-      else
-        lastCards.push(this.generateCard());
-    }
-    // this.cards.forEach(x => x.isAnchorForRule = false);
-    // randomCardFromTable.isAnchorForRule = true;
-    console.log('The initial satisfying cards was', duplicateWithJSON(initialSatisfyingCards));
-    // console.log('Current satisfying cards was', duplicateWithJSON(rule.getSatisfyCards(randomCardFromTable)));
-  }
+  // modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number,
+  //                    colors: CardColor[], shapes: CardShape[], fillers: CardFill[],
+  //                    lastCards: CardInfo[]): void {
+  //   const randomCardFromTable = anyElement(this.cards);
+  //   const rule = this.curentRuleFinder(currentRule) as Rule;
+  //   const initialSatisfyingCards = rule.getSatisfyCards(randomCardFromTable, this.cards);
+  //   const equalPropertyQuantity = rule.countOfEqualProperty(randomCardFromTable, this.cards);
+  //   for (let i = 0; i < correctAnswerQuant; i++) {
+  //     if (i < correctAnswerQuant - equalPropertyQuantity!)
+  //       lastCards.push(this.generateCard(this.curentRuleFinder(currentRule), randomCardFromTable));
+  //     else
+  //       lastCards.push(this.generateCard());
+  //   }
+  //   // this.cards.forEach(x => x.isAnchorForRule = false);
+  //   // randomCardFromTable.isAnchorForRule = true;
+  //   console.log('The initial satisfying cards was', duplicateWithJSON(initialSatisfyingCards));
+  //   // console.log('Current satisfying cards was', duplicateWithJSON(rule.getSatisfyCards(randomCardFromTable)));
+  // }
 
 
   generateCard(ruleToApply?: Rule, cardGuideRule?: CardInfo): CardInfo {
@@ -217,8 +210,9 @@ export class CardsInTable {
   updateCards(rule: Rule, minToCorrectAnswer: number): void {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
-    const randomCardFromTable = anyElement(this.cards);
-    this.currentPossibleAnswerCards = rule.getSatisfyCards(randomCardFromTable, this.cards);
+    const cardsThatWillRemain = this.cards.filter( z => !z.hasBeenUsed);
+    const randomCardFromTable = anyElement(cardsThatWillRemain);
+    this.currentPossibleAnswerCards = rule.getSatisfyCards(randomCardFromTable, cardsThatWillRemain).slice(0, 3);
     const cardsToAddSatisyingRule = minToCorrectAnswer - this.currentPossibleAnswerCards.length;
     const newCards: CardInfo[] = [];
     for (let i = 0; i < indexesToReplace.length; i++) {
@@ -232,6 +226,7 @@ export class CardsInTable {
     indexesToReplace.forEach((index, i) => {
       this.cards[index] = newCards[i];
     });
+    console.log(duplicateWithJSON(this.currentPossibleAnswerCards))
   }
 }
 

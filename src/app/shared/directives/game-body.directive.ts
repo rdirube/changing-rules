@@ -18,11 +18,12 @@ import { CardInfo } from '../models/types';
 
 export class GameBodyDirective extends SubscriberOxDirective  {
   
-  @ViewChildren(CardComponent) cardComponent!: QueryList<CardComponent | undefined>;
+  @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
   @ViewChild('tutorialText') tutorialText!: TextComponent;
   stateByCards: string[] = [];
   public answerComponents: CardComponent[] = [];
   public swiftCardOn: boolean = false;
+  public deckClass: string = "empty";
 
   constructor(protected soundService:SoundOxService) { 
     super();
@@ -31,7 +32,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
 
   // answerVerification(i: number,answerComponents:CardComponent[], cardsForCorrect:number, emit: () => void) {
     updateAnswer(i: number, cardsForCorrect:number, cardsForCheckReached: () => void) {
-    const cardComponentArray = this.cardComponent.toArray() as CardComponent[];
+    const cardComponentArray = this.cardComponentQueryList.toArray() as CardComponent[];
     if (cardComponentArray) {
       this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
       if (this.answerComponents.length < cardsForCorrect && !cardComponentArray[i]?.isSelected) {
@@ -139,6 +140,17 @@ export class GameBodyDirective extends SubscriberOxDirective  {
     this.swiftCardOn = !this.swiftCardOn;
   }
 
+  protected playWrongAnimation() {
+    const rotate = Array.from(Array(8).keys()).map((z, i) => {
+      return {value: isEven(i) ? 2 : -2, duration: 50};
+    }).concat([{value: 0, duration: 50}]);
+    anime({
+      targets: this.answerComponents.map( z => z.elementRef.nativeElement),
+      rotate
+    });
+  }
+
+
 }
 
 
@@ -198,7 +210,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
 //
 // cardsAppearenceNew() {
 //   this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
-//   this.cardComponent.toArray().forEach(
+//   this.cardComponentQueryList.toArray().forEach(
 //     (answerCard, i) => {
 //       anime({
 //         targets: answerCard.elementRef.nativeElement,

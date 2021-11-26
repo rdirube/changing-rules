@@ -1,0 +1,13 @@
+{
+  "hosting": [
+    {
+      "target": "changing-rules",
+      "public": "dist/changing-rules",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[debug] [2021-11-26T22:33:25.738Z] ----------------------------------------------------------------------
+[debug] [2021-11-26T22:33:25.740Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Kirby\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting:changing-rules
+[debug] [2021-11-26T22:33:25.740Z] CLI Version:   9.10.0
+[debug] [2021-11-26T22:33:25.740Z] Platform:      win32
+[debug] [2021-11-26T22:33:25.740Z] Node Version:  v12.22.6
+[debug] [2021-11-26T22:33:25.741Z] Time:          Fri Nov 26 2021 19:33:25 GMT-0300 (Argentina Standard Time)
+[debug] [2021-11-26T22:33:25.742Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-11-26T22:33:25.750Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-11-26T22:33:25.750Z] > authorizing via signed-in user (santiago.illi@oxboard.com.ar)
+[debug] [2021-11-26T22:33:25.750Z] [iam] checking project ml-creators for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2021-11-26T22:33:25.752Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2021-11-26T22:33:25.752Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>

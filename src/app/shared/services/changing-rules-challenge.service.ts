@@ -11,20 +11,13 @@ import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
   ChangingRulesExercise,
   ChangingRulesNivelation,
-  CardColor,
-  CardFill,
-  CardShape,
   GameRule,
-  GameSetting,
-  GameMode,
-  CardInfo,
   CardsInTable,
   Rule,
   ALL_RULES
 } from '../models/types';
-import {anyElement, ExpandableInfo, Showable, shuffle, equalArrays, randomBool} from 'ox-types';
-import {zip} from 'rxjs';
-import {cardColors, cardShapes, cardFillers, gameRules} from '../models/const';
+import {anyElement, ExpandableInfo, equalArrays} from 'ox-types';
+import {gameRules} from '../models/const';
 
 
 @Injectable({

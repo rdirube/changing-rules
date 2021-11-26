@@ -11,7 +11,7 @@ import {ScreenTypeOx, ExerciseData, OxImageInfo, isEven} from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
-  ChangingRulesExercise,
+  ChangingRulesExercise, GameRule,
 } from 'src/app/shared/models/types';
 import {filter, take, toArray} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
@@ -32,6 +32,8 @@ export class GameBodyComponent extends GameBodyDirective {
 
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
+
+  public gridClass = 'cards-grid-9';
 
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
@@ -58,11 +60,14 @@ export class GameBodyComponent extends GameBodyDirective {
             z.updateCard();
           });
         }
+        this.gridClass = this.getGridClassToUse();
+        this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
       });
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       const ruleToApply = this.exercise.rule;
       if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
-        super.cardsToDeckAnimation(this.gameActions.showNextChallenge);
+        super.cardsToDeckAnimation(this.feedbackService.endFeedback);
+        // super.cardsToDeckAnimation(this.gameActions.showNextChallenge);
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
         this.answerComponents.forEach(z => z.cardClasses = 'card-wrong');
@@ -70,6 +75,7 @@ export class GameBodyComponent extends GameBodyDirective {
         this.playWrongAnimation();
       }
     });
+    this.addSubscription(this.feedbackService.endFeedback, x => this.gameActions.showNextChallenge.emit());
   }
 
   answerVerificationMethod(i: number) {
@@ -133,7 +139,7 @@ export class GameBodyComponent extends GameBodyDirective {
   }
 
 
-  gridClassToUse():string{
+  getGridClassToUse():string{
     if(this.challengeService.exerciseConfig.cards <= 4){
       return 'cards-grid-4';
     } else if(this.challengeService.exerciseConfig.cards <=6) {

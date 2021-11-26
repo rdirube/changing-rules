@@ -11,7 +11,6 @@
 
 
 
-
 .cards-grid-16 {
     display: grid;
     grid-template-columns: repeat(4,11vh);
@@ -19,10 +18,9 @@
     z-index: 50;
     justify-content: center;
     align-items: center;
-    transform: translate(3.5vh,0vh);
-    grid-column-gap:13vh;   
+    //transform: translate(3.5vh,0vh);
+    grid-column-gap:9vh;
 }
-
 
 .cards-grid-12 {
     display: grid;
@@ -31,10 +29,9 @@
     z-index: 50;
     justify-content: center;
     align-items: center;
-    transform: translateX(0.5vh);
-    grid-column-gap:10vh;   
+    //transform: translateX(0.5vh);
+    grid-column-gap: 4vh;
 }
-
 
 .cards-grid-9 {
     display: grid;
@@ -43,10 +40,9 @@
     z-index: 50;
     justify-content: center;
     align-items: center;
-    transform: translateX(3.5vh);
+    //transform: translateX(3.5vh);
     grid-column-gap:13vh;   
 }
-
 
 .cards-grid-6 {
     display: grid;
@@ -55,7 +51,7 @@
     z-index: 50;
     justify-content: center;
     align-items: center;
-    transform: translateX(3.5vh);
+    //transform: translateX(3.5vh);
     grid-column-gap:13vh;   
 }
 
@@ -67,7 +63,7 @@
     z-index: 50;
     justify-content: center;
     align-items: center;
-    transform: translateX(3.5vh);
+    //transform: translateX(3.5vh);
     grid-column-gap:13vh; 
 }
 
@@ -115,4 +111,8 @@
     backface-visibility:hidden;
     z-index: 30;
 
+}
+
+.hide {
+  opacity: 0;
 }

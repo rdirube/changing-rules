@@ -1,9 +1,6 @@
-import { Component, Input, OnInit, AfterViewInit, ElementRef, QueryList, ViewChildren } from '@angular/core';
-import { OxTextInfo, ScreenTypeOx } from 'ox-types';
-import { GameRule, RuleArray } from 'src/app/shared/models/types';
-import { SubscriberOxDirective } from 'micro-lesson-components';
+import {Component, Input, ElementRef, QueryList, ViewChildren, HostListener} from '@angular/core';
+import {GameRule, RuleArray} from 'src/app/shared/models/types';
 import anime from 'animejs';
-import { timer } from 'rxjs';
 
 
 @Component({
@@ -11,89 +8,79 @@ import { timer } from 'rxjs';
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss']
 })
-export class RulesComponent implements OnInit {
+export class RulesComponent {
 
-  @ViewChildren('rules') allRules!: QueryList<ElementRef>
+  @ViewChildren('rules') allRules!: QueryList<ElementRef>;
   currentRule!: string;
-  public isRuleOn = [false, false, false];
-  public colorRulePath!: string;
-  public shapeRulePath!: string;
-  public fillerRulePath!: string;
   public lowerCaseTrue: boolean = true;
 
-  public rulesArray!: RuleArray[];
+  public rulesArray: RuleArray[] = [
+    {
+      iconSvg: this.iconAutocomplete(false, 'colores'),
+      auxForSvg: 'colores',
+      class: this.classAutocomplete(false),
+      id: 'color',
+      isOn: false
+    },
+    {
+      iconSvg: this.iconAutocomplete(false, 'formas'),
+      auxForSvg: 'formas',
+      class: this.classAutocomplete(false),
+      id: 'forma',
+      isOn: false
+    },
+    {
+      iconSvg: this.iconAutocomplete(false, 'relleno'),
+      auxForSvg: 'relleno',
+      class: this.classAutocomplete(false),
+      id: 'relleno',
+      isOn: false
+    }
+  ];
 
-  
-
-
-  @Input('currentRule')
-  set setCurrentRule(r: GameRule | undefined) {
-    if (r === undefined) return;
+  // @Input('currentRule')
+  // set setCurrentRule(r: GameRule | undefined) {
+  //   if (r === undefined) return;
+  //   this.currentRule = r;
+  //   this.ruleSelectionAnimation();
+  // }
+  setNewRule(r: GameRule) {
     this.currentRule = r;
-    this.ruleOnMethod();
-    this.rulesArray = this.refreshRule();
+    this.updateRuleStates();
     this.ruleSelectionAnimation();
   }
 
 
-
   constructor(private elementRef: ElementRef) {
-   this.rulesArray = this.refreshRule();
   }
 
 
- iconAutocomplete(i:number, rule:string):any {
-   return this.isRuleOn[i] ? this.concatRuteSvg(rule + '_igual.svg') : this.concatRuteSvg(rule + '_igual_block.svg');
- }
-
- classAutocomplete(i:number):any {
-   return this.isRuleOn[i] ? 'rule-container-on': 'rule-container-off';
- }
-
-
-  ngOnInit(): void {
-
+  iconAutocomplete(isOn: boolean, rule: string): string {
+    return isOn ? this.concatRuteSvg(rule + '_igual.svg') : this.concatRuteSvg(rule + '_igual_block.svg');
   }
 
-  ngAfterViewInit(): void {
+  classAutocomplete(isOn: boolean): any {
+    return isOn ? 'rule-container-on' : 'rule-container-off';
   }
-
-
-
-  refreshRule():RuleArray[]
-  {
-   return [{ iconSvg:this.iconAutocomplete(0,'colores') , class: this.classAutocomplete(0), id: 'color'}, 
-   { iconSvg:this.iconAutocomplete(1,'formas')  , class: this.classAutocomplete(1), id: 'forma' }, 
-   { iconSvg:this.iconAutocomplete(2,'relleno') , class: this.classAutocomplete(2), id: 'relleno' }]
-  }
-
 
   concatRuteSvg(svg: string): string {
-    return 'svg/reglas_cambiantes/indicación/' + svg
+    return 'svg/reglas_cambiantes/indicación/' + svg;
   }
 
 
-
-  ruleOnMethod() {
-    this.isRuleOn.fill(false);
-    switch (this.currentRule) {
-      case 'color':
-        this.isRuleOn[0] = true;
-        break;
-      case 'forma':
-        this.isRuleOn[1] = true;
-        break;
-      case 'relleno':
-        this.isRuleOn[2] = true;
-        break;
-    }
+  updateRuleStates() {
+    this.rulesArray.forEach(z => {
+      z.isOn = this.currentRule === z.id;
+      z.iconSvg = this.iconAutocomplete(z.isOn, z.auxForSvg);
+      z.class = this.classAutocomplete(z.isOn);
+    });
   }
-
-
 
   ruleSelectionAnimation() {
+    if (!this.allRules) return;
+    this.allRules.toArray().forEach( (z: any) => anime.remove(z.nativeElement));
     anime({
-      targets: this.allRules.toArray()[this.rulesArray.findIndex(z => z.id === this.currentRule)].nativeElement,
+      targets: this.allRules.toArray()[this.rulesArray.findIndex(z => z.isOn)].nativeElement,
       duration: 400,
       easing: 'easeInOutExpo',
       keyframes: [{
@@ -103,9 +90,8 @@ export class RulesComponent implements OnInit {
       }, {
         scale: 1
       }]
-    })
+    });
   }
-
 
 
 }

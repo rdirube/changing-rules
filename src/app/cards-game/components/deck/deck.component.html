@@ -1,15 +1,7 @@
-<mlc-loaded-svg   
-path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="deckClass" style="transform: translateY(2.4vh);" *ngIf="cardsPlayed > 36">
-</mlc-loaded-svg>  
-<mlc-loaded-svg   
-path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="deckClass" style="transform: translateY(1.8vh);" *ngIf="cardsPlayed > 27">
-</mlc-loaded-svg>  
-<mlc-loaded-svg   
-    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="deckClass" style="transform: translateY(1.2vh);" *ngIf="cardsPlayed > 18">
-</mlc-loaded-svg>  
-<mlc-loaded-svg   
-    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="deckClass" style="transform: translateY(0.6vh);" *ngIf="cardsPlayed > 9">
-</mlc-loaded-svg> 
-<mlc-loaded-svg   
-    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="deckClass">
-</mlc-loaded-svg>   
+<div fxFlex="grow" fxLayout="column" fxLayoutGap="-147%">
+  <mlc-loaded-svg [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
+                  *ngFor="let i of auxArray"
+                  path="svg/reglas_cambiantes/elementos/dorso.svg">
+  </mlc-loaded-svg>
+</div>
+

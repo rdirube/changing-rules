@@ -12,11 +12,24 @@
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
       path="svg/reglas_cambiantes/elementos/mesa.svg">
     </mlc-loaded-svg>
-    <div [ngClass]="gridClassToUse()" *ngIf="exercise">     
+    <div fxFlex="grow" fxLayoutAlign="center center" [ngClass]="{'hide': deckWidth?.length === 0}" class="myAbsolute">
+      <app-deck
+        [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
+        [deckHeight]="deckHeight" [deckWidth]="deckWidth"
+         style="transform: translateX(-52vh);">
+      </app-deck>
+    </div>
+      <div [ngClass]="gridClass" *ngIf="exercise">
+<!--        <div fxFlex="grow" fxLayoutAlign="start center" style="pointer-events: none" class="myAbsolute">-->
+<!--&lt;!&ndash;          <app-deck [deckClass]="deckClass" [cardsPlayed]="cardsPlayed"></app-deck>&ndash;&gt;-->
+<!--          <mlc-loaded-svg-->
+<!--            path="svg/reglas_cambiantes/elementos/dorso.svg" style="width: 5vh; height: 12vh">-->
+<!--          </mlc-loaded-svg>-->
+<!--        </div>-->
       <div #cardContainer *ngFor="let item of exercise?.currentCards; let i = index"
       [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
       (click)="answerVerificationMethod(i)" style="position: relative;">
-        <app-card [cardInfo]="item"
+        <app-card [cardInfo]="item" #aCard
                   [cardClasses]="stateByCards[i]"
                   [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
@@ -31,10 +44,7 @@
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
     <ox-text originalText="IGUAL" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
   </div>
-  <app-rules [currentRule]="exercise.rule.id" *ngIf="exercise"></app-rules>
-</div>
-<div class="deck-container">
-  <app-deck [deckClass]="deckClass" [cardsPlayed]="cardsPlayed"></app-deck>
+  <app-rules ></app-rules>
 </div>
 <ox-comp-count-down *ngIf="countDownImageInfo"
                     [skipButtonInfo]="countDownImageInfo"

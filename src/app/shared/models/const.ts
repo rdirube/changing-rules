@@ -33,7 +33,7 @@ export const MAGNIFIER_POSITIONS: MagnifierPosition[] = [
       transform: 'translate(3.1vh, 0vh)',
       borderRadius: '50px',
       flexPosition: 'center center',
-      reference: 'cards-in-table',
+      reference: 'cardInTable-in-table',
       buttonInfo: {horizontal: 'center', vertical: 'top'},
     }
     // {

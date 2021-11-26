@@ -61,6 +61,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
     this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
     this.answerComponents.forEach(
       (answerCard, i) => {
+        anime.remove(answerCard.elementRef.nativeElement);
         anime({
           targets: answerCard.elementRef.nativeElement,
           opacity: 1,
@@ -81,6 +82,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
       answerCard.cardClasses = 'card-correct';
       const deckRect = this.deckComponent.elementRef.nativeElement.getBoundingClientRect();
       const answerRect = answerCard.elementRef.nativeElement.getBoundingClientRect();
+      anime.remove(answerCard.elementRef.nativeElement);
       anime({
           targets: answerCard.elementRef.nativeElement,
           easing: 'easeInOutExpo',
@@ -89,11 +91,11 @@ export class GameBodyDirective extends SubscriberOxDirective {
             anime({
               targets: answerCard.elementRef.nativeElement,
               translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
-              translateY: convertPXToVH(deckRect.y * ( 1 - this.deckComponent.auxArray.length * 0.023) ) - convertPXToVH(answerRect.y) + 'vh',
+              translateY: convertPXToVH(deckRect.y * (1 - this.deckComponent.auxArray.length * 0.023)) - convertPXToVH(answerRect.y) + 'vh',
               delay: 700,
               duration: 600,
               begin: () => {
-                answerCard.cardSvg = 'svg/reglas_cambiantes/elementos/dorso.svg';
+                answerCard.cardSvg = 'changing_rules/svg/elementos/dorso.svg';
                 answerCard.cardClasses = 'card-neutral';
                 answerCard.isSelected = false;
                 answerCard.faceDown = true;
@@ -128,21 +130,23 @@ export class GameBodyDirective extends SubscriberOxDirective {
   }
 
   cardsAppearenceAnimation() {
+    anime.remove('.card-component');
     anime({
       targets: '.card-component',
       rotateY: '180',
       duration: 300,
+      opacity: 1, // TODO validate added
       easing: 'linear',
       complete: () =>
         this.swiftToggle()
     });
-    anime({
-      targets: '.card-component',
-      delay: 150,
-      opacity: 1,
-      duration: 1,
-      complete: () => this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
-    });
+    // anime({
+    //   targets: '.card-component',
+    //   delay: 150,
+    //   opacity: 1,
+    //   duration: 1,
+    //   complete: () => this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
+    // });
   }
 
   swiftToggle() {
@@ -163,7 +167,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
 }
 
 
-// cardsToDeckAnimation(answer:CardComponent[], cardsInTable:CardInfo[], nextStepEmitter:EventEmitter<any>, deck:string) {
+// cardsToDeckAnimation(answer:CardComponent[], cardInTable:CardInfo[], nextStepEmitter:EventEmitter<any>, deck:string) {
 //   answer.forEach((answerCard, i) => {
 //     answerCard.cardClasses = 'card-correct';
 //     anime({
@@ -195,7 +199,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
 //           duration: 1,
 //           complete: () => {
 //             const cardAnswers = answer.map(x => x.card)
-//             cardsInTable = cardsInTable.filter(x => isNotRepeated(x, cardAnswers))
+//             cardInTable = cardInTable.filter(x => isNotRepeated(x, cardAnswers))
 //             if (i + 1 === answer.length) {
 //               deck = 'filled';
 //               nextStepEmitter.emit();

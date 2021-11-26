@@ -12,6 +12,21 @@
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
       path="changing_rules/svg/elementos/mesa.svg">
     </mlc-loaded-svg>
+    <div class="myAbsolute" fxLayoutAlign="end start">
+      <div *ngIf="totalTime" style="width: 12vh; position: relative; transform: translate(-12vh, 8vh)" fxLayout="row" fxLayoutAlign="center center">
+        <div style="width: 11vh; background: #ebebeb; border-radius: 50%">
+          <round-progress [responsive]="true" style="transform: scale(0.9)"
+                          [rounded]="true"
+                          [stroke]="10" [color]="color" [radius]="50"
+                          [current]="currentTime" [max]="totalTime"></round-progress>
+        </div>
+        <div fxLayoutAlign="center center" fxLayout="row" class="myAbsolute">
+          <ox-text
+            style="transform: translateY(0.3vh)"
+            color="black" font="dinnMedium" fontSize="2.7vh" [originalText]="timeFormatted"></ox-text>
+        </div>
+      </div>
+    </div>
     <div fxFlex="grow" fxLayoutAlign="center center" [ngClass]="{'hide': deckWidth?.length === 0}" class="myAbsolute">
       <app-deck
         [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
@@ -36,7 +51,6 @@
         <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
         </mlc-loaded-svg>
       </div>
-      
     </div>
   </div>
 </div>

@@ -61,16 +61,17 @@ export interface ChangingRulesNivelation {
   shapesAvaiable: CardShape[];
   colorsAvaiable: CardColor[];
   fillsAvaiable: CardFill[];
-  cards: number;
-  cardQuantityDeck: number;
+  cardInTable: number;
+  // cardQuantityDeck: number;
   cardsForCorrectAnswer: number;
   gameSetting: GameSetting;
-  totalTimeSeconds: number;
-  wildcardOn: boolean;
-  minWildcardQuantity: number;
-  maxWildcardQuantity: number;
+  totalExercises: number;
+  totalTimeInSeconds: number;
+  // wildcardOn: boolean;
+  // minWildcardQuantity: number;
+  // maxWildcardQuantity: number;
   gameMode: GameMode;
-  rulesForAnswer: number;
+  // rulesForAnswer: number;
 }
 
 
@@ -185,20 +186,20 @@ export class CardsInTable {
   // modifyInitialCards(currentRule: GameRule, correctAnswerQuant: number,
   //                    colors: CardColor[], shapes: CardShape[], fillers: CardFill[],
   //                    lastCards: CardInfo[]): void {
-  //   const randomCardFromTable = anyElement(this.cards);
+  //   const randomCardFromTable = anyElement(this.cardInTable);
   //   const rule = this.curentRuleFinder(currentRule) as Rule;
-  //   const initialSatisfyingCards = rule.getSatisfyCards(randomCardFromTable, this.cards);
-  //   const equalPropertyQuantity = rule.countOfEqualProperty(randomCardFromTable, this.cards);
+  //   const initialSatisfyingCards = rule.getSatisfyCards(randomCardFromTable, this.cardInTable);
+  //   const equalPropertyQuantity = rule.countOfEqualProperty(randomCardFromTable, this.cardInTable);
   //   for (let i = 0; i < correctAnswerQuant; i++) {
   //     if (i < correctAnswerQuant - equalPropertyQuantity!)
   //       lastCards.push(this.generateCard(this.curentRuleFinder(currentRule), randomCardFromTable));
   //     else
   //       lastCards.push(this.generateCard());
   //   }
-  //   // this.cards.forEach(x => x.isAnchorForRule = false);
+  //   // this.cardInTable.forEach(x => x.isAnchorForRule = false);
   //   // randomCardFromTable.isAnchorForRule = true;
-  //   console.log('The initial satisfying cards was', duplicateWithJSON(initialSatisfyingCards));
-  //   // console.log('Current satisfying cards was', duplicateWithJSON(rule.getSatisfyCards(randomCardFromTable)));
+  //   console.log('The initial satisfying cardInTable was', duplicateWithJSON(initialSatisfyingCards));
+  //   // console.log('Current satisfying cardInTable was', duplicateWithJSON(rule.getSatisfyCards(randomCardFromTable)));
   // }
 
 

@@ -49,32 +49,23 @@ export class AppComponent extends BaseMicroLessonApp {
         microLessonCommunicationService.sendMessageMLToManager(ResourceFinalStateOxBridge, resourceStateService.currentState.value);
       }
     });
-    preloader.addResourcesToLoad(this.getGameResourcesToLoad());
-    preloader.loadAll().subscribe(z => this.loaded = true);
-
-
-    const probando = new CardsInTable();
-    probando.setInitialCards(9, 3);
-    let myCheck = 0;
-    for (let i = 0; i < 1000; i++) {
-      try {
-        probando.updateCards(anyElement(ALL_RULES), 3);
-        if (probando.currentPossibleAnswerCards.length < 3) {
-          throw new Error();
-        }
-        const indexes = shuffle(probando.cards.map( (z, i) => i )).slice(0, 3);
-        indexes.forEach( i => probando.cards[i].hasBeenUsed = true);
-      } catch (e) {
-        myCheck++;
-      }
-    }
-    console.log('Total errors: ', myCheck);
-    console.log('Total errors: ', myCheck);
-    console.log('Total errors: ', myCheck);
-    console.log('Total errors: ', myCheck);
-    console.log('Total errors: ', myCheck);
-    console.log('Total errors: ', myCheck);
-    console.log('Total errors: ', myCheck);
+    // preloader.addResourcesToLoad(this.getGameResourcesToLoad());
+    // preloader.loadAll().subscribe(z => this.loaded = true);
+    // const probando = new CardsInTable();
+    // probando.setInitialCards(9, 3);
+    // let myCheck = 0;
+    // for (let i = 0; i < 1000; i++) {
+    //   try {
+    //     probando.updateCards(anyElement(ALL_RULES), 3);
+    //     if (probando.currentPossibleAnswerCards.length < 3) {
+    //       throw new Error();
+    //     }
+    //     const indexes = shuffle(probando.cardInTable.map( (z, i) => i )).slice(0, 3);
+    //     indexes.forEach( i => probando.cardInTable[i].hasBeenUsed = true);
+    //   } catch (e) {
+    //     myCheck++;
+    //   }
+    // }
   }
 
   protected getGameResourcesToLoad(): ResourceOx[] {
@@ -83,8 +74,8 @@ export class AppComponent extends BaseMicroLessonApp {
     const svgForms: string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg',
       'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
       'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
-    const sounds = ['click.mp3', 'bubble02.mp3', 'bonus.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(z => 'sounds/' + z);
-    return ['click.mp3', 'bubble02.mp3', 'bonus.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
+    const sounds = ['click.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(z => 'sounds/' + z);
+    return ['click.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
       [ScreenTypeOx.Game], false))
       .concat(getResourceArrayFromUrlList([], ResourceType.Svg, false))
       .concat(svgElementos.map(x => new ResourceOx('changing_rules/svg/elementos/' + x, ResourceType.Svg,

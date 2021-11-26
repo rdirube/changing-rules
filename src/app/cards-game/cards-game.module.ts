@@ -8,6 +8,7 @@ import { DeckComponent } from './components/deck/deck.component';
 import { OxComponentsModule } from 'ox-components';
 import { TutorialComponent } from './components/tutorial/tutorial.component';
 import {GameBodyDirective} from '../shared/directives/game-body.directive';
+import {RoundProgressModule} from 'angular-svg-round-progressbar';
 
 
 
@@ -25,6 +26,7 @@ import {GameBodyDirective} from '../shared/directives/game-body.directive';
     TutorialComponent,
   ],
   imports: [
+    RoundProgressModule,
     CommonModule,
     SharedModule,
     OxComponentsModule

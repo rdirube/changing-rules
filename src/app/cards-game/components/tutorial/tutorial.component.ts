@@ -98,7 +98,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       this.answerComponents.forEach(z => z.card.hasBeenUsed = true);
       this.tutorialService.tutorialCardGenerator();
       this.tutorialExercise.rule = this.tutorialService.currentRule;
-      console.log('Genere desdepues de correct cards.');
+      console.log('Genere desdepues de correct cardInTable.');
     });
   }
 
@@ -132,7 +132,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       this.buttonOkActivate = true;
     }, this.okButtonHasBeenClick);
     this.addStep('Selecciona tres cartas que cumplan con la regla que indica panel', () => {
-      this.setMagnifierReference('cards-in-table');
+      this.setMagnifierReference('cardInTable-in-table');
       this.buttonOkActivate = false;
       this.clicksOn = true;
       this.cardsToSelect();

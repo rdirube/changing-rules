@@ -52,7 +52,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
     });
-    // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cards":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+    // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
   }
 
 
@@ -73,8 +73,8 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     this.cardsInTable.updateCards(ruleClass, this.exerciseConfig.cardsForCorrectAnswer);
     // TODO SOLVE THIS
-    // this.cardsInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
-    //   , this.cards, cardColors, cardShapes, cardFillers, lastCards, this.exerciseConfig.cards);
+    // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
+    //   , this.cardInTable, cardColors, cardShapes, cardFillers, lastCards, this.exerciseConfig.cardInTable);
     return new ExerciseOx({
       rule: ruleClass,
       currentCards: this.cardsInTable.cards
@@ -87,10 +87,11 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     switch (gameCase) {
       case 'created-config':
         this.currentSubLevelPregeneratedExercisesNeeded = 1;
-        // this.exerciseConfig = this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
-        this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cards":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
-        // this.cards =
-        this.cardsInTable.setInitialCards(this.exerciseConfig.cards, this.exerciseConfig.cardsForCorrectAnswer);
+        this.exerciseConfig = this.getExerciseConfig();
+        // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+        // this.cardInTable =
+        console.log('Me llego la configu', this.exerciseConfig);
+        this.cardsInTable.setInitialCards(this.exerciseConfig.cardInTable, this.exerciseConfig.cardsForCorrectAnswer);
         // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
         this.setInitialExercise();
         break;
@@ -105,11 +106,12 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
       exercisesData: [],
       exerciseMetadata: {
         exercisesMode: 'cumulative',
-        exercisesQuantity: 'infinite',
+        exercisesQuantity: this.getExerciseConfig().totalExercises || 'infinite',
       },
       globalStatement: [],
       timeSettings: {
         timeMode: 'between-interactions',
+        totalSeconds: this.getExerciseConfig().totalTimeInSeconds ? this.getExerciseConfig().totalTimeInSeconds : undefined
       },
     };
   }
@@ -120,4 +122,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+  private getExerciseConfig(): ChangingRulesNivelation {
+    return this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
+  }
 }

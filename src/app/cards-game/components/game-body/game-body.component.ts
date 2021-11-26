@@ -1,24 +1,33 @@
-import {Component, OnInit, AfterViewInit, ViewChildren, QueryList, ElementRef, EventEmitter} from '@angular/core';
-import {SubscriberOxDirective} from 'micro-lesson-components';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  EventEmitter,
+  ChangeDetectorRef
+} from '@angular/core';
 import {
   FeedbackOxService,
   GameActionsService,
-  HintService,
+  HintService, MicroLessonCommunicationService,
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
-import {ScreenTypeOx, ExerciseData, OxImageInfo, isEven} from 'ox-types';
+import {ScreenTypeOx, ExerciseData, OxImageInfo, isEven, GameAskForScreenChangeBridge} from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
-  ChangingRulesExercise, GameRule, CardsInTable
+  ChangingRulesExercise, GameRule
 } from 'src/app/shared/models/types';
-import {filter, take, toArray} from 'rxjs/operators';
+import {filter, take} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
-import { iif, timer } from 'rxjs';
-import { sameCard } from 'src/app/shared/models/functions';
+import {interval, Subscription, timer} from 'rxjs';
+import {sameCard} from 'src/app/shared/models/functions';
+import anime from 'animejs';
 
 @Component({
   selector: 'app-game-body',
@@ -26,46 +35,40 @@ import { sameCard } from 'src/app/shared/models/functions';
   styleUrls: ['./game-body.component.scss']
 })
 
-export class GameBodyComponent extends GameBodyDirective {
+export class GameBodyComponent extends GameBodyDirective implements OnInit{
 
   @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
 
+  public currentTime = 0;
+  public totalTime = 0;
+  public color = 'rgb(0,255,0)';
+  timeFormatted: string = '';
+  private clockSubs!: Subscription;
+
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
-  public cardsInTable = new CardsInTable();
   public gridClass = 'cards-grid-9';
 
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
               private gameActions: GameActionsService<any>,
+              private cdr: ChangeDetectorRef,
               private hintService: HintService,
               protected soundService: SoundOxService,
               private answerService: ChangingRulesAnswerService,
+              private microLessonCommunication: MicroLessonCommunicationService<any>,
               private feedbackService: FeedbackOxService,
               private preloaderService: PreloaderOxService) {
     super(soundService);
-    this.addSubscription(this.gameActions.showHint, x => this.showHint());
-    this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
-      (exercise: ExerciseOx<ChangingRulesExercise>) => {
-        console.log(exercise);
-        this.hintService.usesPerChallenge = 1;
-        this.hintService.checkHintAvailable();
-        this.addMetric();
-        this.exercise = exercise.exerciseData;
-        this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
-        this.answerComponents = [];
-        if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
-          this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
-        } else {
-          this.deckClass = 'filled';
-          this.cardComponentQueryList.toArray().forEach((z, i) => {
-            z.updateCard();
-          });
-        }
-        this.gridClass = this.getGridClassToUse();
-        this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
+    this.addSubscription(this.gameActions.microLessonCompleted, z => {
+      timer(1000).subscribe(zzz => {
+        this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
+          ScreenTypeOx.GameComplete);
       });
+    });
+    this.addSubscription(this.gameActions.showHint, x => this.showHint());
+
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       const ruleToApply = this.exercise.rule;
       if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
@@ -81,7 +84,38 @@ export class GameBodyComponent extends GameBodyDirective {
     this.addSubscription(this.feedbackService.endFeedback, x => this.gameActions.showNextChallenge.emit());
   }
 
+  private setClock(totalTime: number): void {
+    this.totalTime = totalTime;
+    this.currentTime = totalTime;
+    anime.remove(this);
+    anime({
+      targets: this,
+      color: ['rgb(0,255,0)', 'rgb(255,0,0)'],
+      duration: this.totalTime * 1000,
+      easing: 'linear',
+    });
+    this.destroyClockSubs();
+    this.clockSubs = interval(1000).pipe(take(this.totalTime)).subscribe(z => {
+      this.currentTime--;
+      const mins = Math.floor(this.currentTime / 60);
+      const seconds = this.currentTime - mins * 60;
+      this.timeFormatted = toToDigitStringNumber(mins) + ':' + toToDigitStringNumber(seconds);
+      if (z === this.totalTime - 1) {
+        console.log('Clock finish.');
+        this.gameActions.microLessonCompleted.emit();
+      }
+    });
+  }
+
+  private destroyClockSubs() {
+    if (this.clockSubs) {
+      this.clockSubs.unsubscribe();
+    }
+    this.clockSubs = undefined as any;
+  }
+
   answerVerificationMethod(i: number) {
+    console.log('answerVerificationMethod');
     this.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer, () => {
       this.answerService.currentAnswer = {
         parts: [
@@ -110,6 +144,10 @@ export class GameBodyComponent extends GameBodyDirective {
 
   startGame() {
     this.countDownImageInfo = undefined;
+    this.deckComponent.auxArray = [];
+    if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
+      this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds);
+    }
     this.cardsAppearenceAnimation();
   }
 
@@ -142,31 +180,68 @@ export class GameBodyComponent extends GameBodyDirective {
   }
 
 
-  getGridClassToUse():string{
-    if(this.challengeService.exerciseConfig.cards <= 4){
+  getGridClassToUse(): string {
+    if (this.challengeService.exerciseConfig.cardInTable <= 4) {
       return 'cards-grid-4';
-    } else if(this.challengeService.exerciseConfig.cards <=6) {
+    } else if (this.challengeService.exerciseConfig.cardInTable <= 6) {
       return 'cards-grid-6';
-    } else if(this.challengeService.exerciseConfig.cards <= 9) {
+    } else if (this.challengeService.exerciseConfig.cardInTable <= 9) {
       return 'cards-grid-9';
-    } else if(this.challengeService.exerciseConfig.cards <= 12){
+    } else if (this.challengeService.exerciseConfig.cardInTable <= 12) {
       return 'cards-grid-12';
     } else {
       return 'cards-grid-16';
     }
   }
 
-
-
- public showHint(): void {
+  public showHint(): void {
     this.answerComponents = [];
-    const answer = this.challengeService.cardsInTable.currentPossibleAnswerCards.slice(0,this.challengeService.exerciseConfig.cardsForCorrectAnswer-1);
+    const answer = this.challengeService.cardsInTable.currentPossibleAnswerCards.slice(0, this.challengeService.exerciseConfig.cardsForCorrectAnswer - 1);
     timer(300).subscribe(z => {
       this.stateByCards = (this.cardComponentQueryList.toArray() as CardComponent[])
         .map(cardComp => answer.some(a => sameCard(cardComp.card, a)) ? 'card-to-select-tutorial' : 'card-neutral');
     });
   }
 
+  ngOnInit(): void {
+    // this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
+    this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
+      (exercise: ExerciseOx<ChangingRulesExercise>) => {
+        if (exercise === undefined) {
+          this.swiftCardOn = false;
+          this.answerComponents = [];
+          if (this.exercise) {
+            this.exercise.currentCards = [];
+          }
+          this.cdr.detectChanges();
+          console.log('Undefined exercise.');
+          return;
+        }
+        console.log('Setting real exercise.');
+        this.hintService.usesPerChallenge = 1;
+        this.hintService.checkHintAvailable();
+        this.addMetric();
+        this.exercise = exercise.exerciseData;
+        this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
+        this.answerComponents = [];
+        if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
+          this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
+        } else {
+          this.deckClass = 'filled';
 
+        }
+        if (this.cardComponentQueryList) {
+          this.cardComponentQueryList.toArray().forEach((z, i) => {
+            z.updateCard();
+          });
+        }
+        this.gridClass = this.getGridClassToUse();
+        this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
+      });
+  }
 
+}
+
+function toToDigitStringNumber(n: number): string {
+  return n < 10 ? '0' + n : '' + n;
 }

@@ -32,7 +32,7 @@ export class RulesComponent implements OnInit {
     this.currentRule = r;
     this.ruleOnMethod();
     this.rulesArray = this.refreshRule();
-    this.ruleSelectionAnimation();
+    this.ruleSelectionAnimation();  
   }
 
 

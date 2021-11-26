@@ -70,4 +70,15 @@
     50%{filter:brightness(1.5);}
     100%{filter:brightness(0.5)
     }
-} 
+}
+
+
+.cover-everything {
+  z-index: 10;
+}
+
+
+.little-down {
+  transform: translateY(0.65vh);
+}
+

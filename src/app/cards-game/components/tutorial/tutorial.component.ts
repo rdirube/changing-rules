@@ -14,7 +14,7 @@ import {
 import {PreloaderOxService} from 'ox-core';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
-import {OxTextInfo, ScreenTypeOx} from 'ox-types';
+import {ScreenTypeOx} from 'ox-types';
 import {Observable, Subscription, timer} from 'rxjs';
 import {TutorialService} from 'src/app/shared/services/tutorial.service';
 import {
@@ -39,7 +39,6 @@ import {CardComponent} from '../card/card.component';
 
 export class TutorialComponent extends GameBodyDirective implements OnInit {
 
-
   public swiftCardOn: boolean = true;
   public tutorialExercise!: ChangingRulesExercise;
   private currentStep = 0;
@@ -54,7 +53,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   public clicksOn: boolean = false;
   private correctCards = new EventEmitter();
   public checkAnswerTutorial = new EventEmitter();
-
 
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,

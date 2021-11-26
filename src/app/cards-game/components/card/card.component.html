@@ -1,8 +1,9 @@
 <div fxLayoutAlign="center center" style="width: 100%; height: 100%;">
   <mlc-loaded-svg
-    [ngClass]="{'cover-everything': faceDown}"
-    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="cardClasses" style = "transform: translateY(0.65vh)">
-  </mlc-loaded-svg> 
+    [ngClass]="{'cover-everything': faceDown, 'little-down': !faceDown}"
+    path="svg/reglas_cambiantes/elementos/dorso.svg" [class]="cardClasses">
+  </mlc-loaded-svg>
+<!--  style = "transform: translateY(0.65vh)">-->
   <mlc-loaded-svg
     [path]="cardSvg" [class]="cardClasses" style="z-index: 2">
   </mlc-loaded-svg> 

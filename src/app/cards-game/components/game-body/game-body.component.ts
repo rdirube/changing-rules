@@ -11,13 +11,14 @@ import {ScreenTypeOx, ExerciseData, OxImageInfo, isEven} from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
-  ChangingRulesExercise,
+  ChangingRulesExercise, GameRule, CardsInTable
 } from 'src/app/shared/models/types';
 import {filter, take, toArray} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
-import { iif } from 'rxjs';
+import { iif, timer } from 'rxjs';
+import { sameCard } from 'src/app/shared/models/functions';
 
 @Component({
   selector: 'app-game-body',
@@ -32,6 +33,8 @@ export class GameBodyComponent extends GameBodyDirective {
 
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
+  public cardsInTable = new CardsInTable();
+  public gridClass = 'cards-grid-9';
 
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
@@ -42,9 +45,11 @@ export class GameBodyComponent extends GameBodyDirective {
               private feedbackService: FeedbackOxService,
               private preloaderService: PreloaderOxService) {
     super(soundService);
+    this.addSubscription(this.gameActions.showHint, x => this.showHint());
     this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         console.log(exercise);
+        this.hintService.usesPerChallenge = 1;
         this.hintService.checkHintAvailable();
         this.addMetric();
         this.exercise = exercise.exerciseData;
@@ -58,11 +63,14 @@ export class GameBodyComponent extends GameBodyDirective {
             z.updateCard();
           });
         }
+        this.gridClass = this.getGridClassToUse();
+        this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
       });
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       const ruleToApply = this.exercise.rule;
       if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
-        super.cardsToDeckAnimation(this.gameActions.showNextChallenge);
+        super.cardsToDeckAnimation(this.feedbackService.endFeedback);
+        // super.cardsToDeckAnimation(this.gameActions.showNextChallenge);
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
         this.answerComponents.forEach(z => z.cardClasses = 'card-wrong');
@@ -70,6 +78,7 @@ export class GameBodyComponent extends GameBodyDirective {
         this.playWrongAnimation();
       }
     });
+    this.addSubscription(this.feedbackService.endFeedback, x => this.gameActions.showNextChallenge.emit());
   }
 
   answerVerificationMethod(i: number) {
@@ -133,7 +142,7 @@ export class GameBodyComponent extends GameBodyDirective {
   }
 
 
-  gridClassToUse():string{
+  getGridClassToUse():string{
     if(this.challengeService.exerciseConfig.cards <= 4){
       return 'cards-grid-4';
     } else if(this.challengeService.exerciseConfig.cards <=6) {
@@ -146,6 +155,18 @@ export class GameBodyComponent extends GameBodyDirective {
       return 'cards-grid-16';
     }
   }
+
+
+
+ public showHint(): void {
+    this.answerComponents = [];
+    const answer = this.challengeService.cardsInTable.currentPossibleAnswerCards.slice(0,this.challengeService.exerciseConfig.cardsForCorrectAnswer-1);
+    timer(300).subscribe(z => {
+      this.stateByCards = (this.cardComponentQueryList.toArray() as CardComponent[])
+        .map(cardComp => answer.some(a => sameCard(cardComp.card, a)) ? 'card-to-select-tutorial' : 'card-neutral');
+    });
+  }
+
 
 
 }

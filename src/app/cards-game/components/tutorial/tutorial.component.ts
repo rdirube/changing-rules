@@ -148,20 +148,11 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
   cardsToSelect(): void {
     this.answerComponents = [];
-    // const rule: Rule = this.tutorialService.cardInTable.curentRuleFinder(this.tutorialExercise.rule) as Rule;
-    // const anchorCard = this.tutorialService.cardInTable.cards.find(z => z.isAnchorForRule) as CardInfo;
-    // const possibleCorrectCards: CardInfo[] = this.tutorialService.cardInTable.cards
-    //   .filter(z => rule.satisfyRule(z, anchorCard)).slice(0, 3);
-    // this.stateByCards = this.tutorialService.cardInTable.cards.map(z =>
-    //   possibleCorrectCards.some(ca => sameCard(z, ca)) ? 'card-to-select-tutorial' : 'card-neutral');]
     const answer = this.tutorialService.cardInTable.currentPossibleAnswerCards;
     timer(300).subscribe(z => {
       this.stateByCards = (this.cardComponentQueryList.toArray() as CardComponent[])
         .map(cardComp => answer.some(a => sameCard(cardComp.card, a)) ? 'card-to-select-tutorial' : 'card-neutral');
     });
-    // this.stateByCards = this.tutorialService.cardInTable.currentPossibleAnswerCards.map(z =>
-    //   this.cardComponentQueryList.toArray().find(ca => sameCard(z, (ca as CardComponent).card)) as CardComponent);
-    // ? 'card-to-select-tutorial' : 'card-neutral'
   }
 
   // answerVerification(i: number) {

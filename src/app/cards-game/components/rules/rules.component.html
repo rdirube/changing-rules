@@ -18,12 +18,10 @@
       class="rule-text"></ox-text>
   </div> -->
 
-
   <div #rules
   *ngFor="let obj of rulesArray; let i = index" 
   fxLayout="row" [class]="obj.class" fxLayoutAlign="center center">
-    <mlc-loaded-svg class="rule" forceViewBoxTo="''" [path]="obj.iconSvg">
-    </mlc-loaded-svg>
+    <mlc-loaded-svg class="rule" forceViewBoxTo="''" [path]="obj.iconSvg"></mlc-loaded-svg>
     <ox-text font="dinnRegular" color="white" fontSize="3.9vh" [originalText]="obj.id" [ignoreLowerCase]="lowerCaseTrue"
       class="rule-text"></ox-text>
   </div>

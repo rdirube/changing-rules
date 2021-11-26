@@ -43,9 +43,11 @@ export interface TutorialStep {
 }
 
 export interface RuleArray {
-iconSvg:string,
-class:string,
-id:GameRule
+  auxForSvg: string,
+  iconSvg: string,
+  class: string,
+  isOn: boolean,
+  id: GameRule
 
 }
 
@@ -171,8 +173,8 @@ export class CardsInTable {
     for (let i = 0; i < cardsInTableQuant; i++) {
       this.cards.push(this.generateCard());
     }
-    const indexes = shuffle(this.cards.map( (z, i) => i )).slice(0, correctAnswerQuant);
-    indexes.forEach( i => this.cards[i].hasBeenUsed = true);
+    const indexes = shuffle(this.cards.map((z, i) => i)).slice(0, correctAnswerQuant);
+    indexes.forEach(i => this.cards[i].hasBeenUsed = true);
   }
 
   curentRuleFinder(rule: GameRule): Rule | undefined {
@@ -214,13 +216,12 @@ export class CardsInTable {
   }
 
 
-
   updateCards(rule: Rule, minToCorrectAnswer: number): void {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
-    const cardsThatWillRemain = this.cards.filter( z => !z.hasBeenUsed);
+    const cardsThatWillRemain = this.cards.filter(z => !z.hasBeenUsed);
     const randomCardFromTable = anyElement(cardsThatWillRemain);
-    this.currentPossibleAnswerCards = rule.getSatisfyCards(randomCardFromTable, cardsThatWillRemain).slice(0, 3);
+    this.currentPossibleAnswerCards = rule.getSatisfyCards(randomCardFromTable, cardsThatWillRemain).slice(0, minToCorrectAnswer);
     const cardsToAddSatisyingRule = minToCorrectAnswer - this.currentPossibleAnswerCards.length;
     const newCards: CardInfo[] = [];
     for (let i = 0; i < indexesToReplace.length; i++) {

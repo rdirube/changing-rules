@@ -42,6 +42,6 @@ export function isNotRepeated(card: CardInfo, cards: CardInfo[]): boolean {
   return !cards.some(x => sameCard(x, card));
 }
 
-export function convertPXToVH(px:number) {
+export function convertPXToVH(px:number): number {
 	return px * (100 / document.documentElement.clientHeight);
 }

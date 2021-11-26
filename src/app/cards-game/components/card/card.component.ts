@@ -1,10 +1,11 @@
-import {Component, OnInit, Input, ElementRef} from '@angular/core';
+import {Component, OnInit, Input, ElementRef, ViewChild} from '@angular/core';
 import {CardInfo, Replaces} from 'src/app/shared/models/types';
 import {colorsParseFunction} from 'src/app/shared/models/functions';
 import {
   GameActionsService,
 } from 'micro-lesson-core';
 import {PreloaderOxService} from 'ox-core';
+import {LoadedSvgComponent} from 'micro-lesson-components';
 
 
 @Component({
@@ -15,6 +16,8 @@ import {PreloaderOxService} from 'ox-core';
 
 export class CardComponent implements OnInit {
 
+
+  @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
   public cardSvg: string = 'svg/reglas_cambiantes/elementos/frente.svg';

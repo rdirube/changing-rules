@@ -1,14 +1,13 @@
-import { Directive, QueryList, ViewChild, ViewChildren, EventEmitter } from '@angular/core';
+import {Directive, QueryList, ViewChild, ViewChildren, EventEmitter} from '@angular/core';
 import anime from 'animejs';
-import { SubscriberOxDirective } from 'micro-lesson-components';
-import { SoundOxService } from 'micro-lesson-core';
+import {SubscriberOxDirective} from 'micro-lesson-components';
+import {SoundOxService} from 'micro-lesson-core';
 import {isEven, ScreenTypeOx} from 'ox-types';
-import { Observable, timer } from 'rxjs';
-import { CardComponent } from 'src/app/cards-game/components/card/card.component';
-import { TextComponent } from 'typography-ox';
-import { convertPXToVH, isNotRepeated } from '../models/functions';
-import { CardInfo } from '../models/types';
-
+import {CardComponent} from 'src/app/cards-game/components/card/card.component';
+import {TextComponent} from 'typography-ox';
+import {convertPXToVH, isNotRepeated} from '../models/functions';
+import {DeckComponent} from '../../cards-game/components/deck/deck.component';
+import {RulesComponent} from '../../cards-game/components/rules/rules.component';
 
 
 @Directive({
@@ -16,47 +15,50 @@ import { CardInfo } from '../models/types';
 })
 
 
-export class GameBodyDirective extends SubscriberOxDirective  {
-  
+export class GameBodyDirective extends SubscriberOxDirective {
+
   @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
   @ViewChild('tutorialText') tutorialText!: TextComponent;
+  @ViewChild(RulesComponent) ruleComponent!: RulesComponent;
+  @ViewChild(DeckComponent) deckComponent!: DeckComponent;
   stateByCards: string[] = [];
   public answerComponents: CardComponent[] = [];
   public swiftCardOn: boolean = false;
   public deckClass: string = "empty";
-  public cardsPlayed:number = 0;
+  public cardsPlayed: number = 0;
+  public deckWidth: string = '15vh';
+  public deckHeight: string = '20vh';
 
-  constructor(protected soundService:SoundOxService) { 
+  constructor(protected soundService: SoundOxService) {
     super();
   }
 
 
   // answerVerification(i: number,answerComponents:CardComponent[], cardsForCorrect:number, emit: () => void) {
-    updateAnswer(i: number, cardsForCorrect:number, cardsForCheckReached: () => void) {
+  updateAnswer(i: number, cardsForCorrect: number, cardsForCheckReached: () => void) {
     const cardComponentArray = this.cardComponentQueryList.toArray() as CardComponent[];
     if (cardComponentArray) {
-      this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
+      this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game);
       if (this.answerComponents.length < cardsForCorrect && !cardComponentArray[i]?.isSelected) {
         this.answerComponents.push(cardComponentArray[i]);
-        cardComponentArray[i].cardClasses  = 'card-selected';
+        cardComponentArray[i].cardClasses = 'card-selected';
         cardComponentArray[i].isSelected = true;
         console.log(this.answerComponents);
         if (this.answerComponents.length === cardsForCorrect) {
           cardsForCheckReached();
         }
-      }
-      else if (cardComponentArray[i].isSelected) {
+      } else if (cardComponentArray[i].isSelected) {
         this.answerComponents.splice(this.answerComponents.indexOf(cardComponentArray[i]), 1);
         cardComponentArray[i].isSelected = false;
         cardComponentArray[i].cardClasses = 'card-neutral';
       }
-      console.log(this.answerComponents.length)
+      console.log(this.answerComponents.length);
     }
   }
 
 
   cardsAppearenceNew() {
-    this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game)
+    this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
     this.answerComponents.forEach(
       (answerCard, i) => {
         anime({
@@ -64,11 +66,9 @@ export class GameBodyDirective extends SubscriberOxDirective  {
           opacity: 1,
           duration: 1,
           delay: 200,
-        })
-      })
+        });
+      });
   }
-
-
 
 
   cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
@@ -79,6 +79,8 @@ export class GameBodyDirective extends SubscriberOxDirective  {
     this.answerComponents.forEach((answerCard, i) => {
       answerCard.card.hasBeenUsed = true;
       answerCard.cardClasses = 'card-correct';
+      const deckRect = this.deckComponent.elementRef.nativeElement.getBoundingClientRect();
+      const answerRect = answerCard.elementRef.nativeElement.getBoundingClientRect();
       anime({
           targets: answerCard.elementRef.nativeElement,
           easing: 'easeInOutExpo',
@@ -86,8 +88,8 @@ export class GameBodyDirective extends SubscriberOxDirective  {
           complete: () => {
             anime({
               targets: answerCard.elementRef.nativeElement,
-              translateX: convertPXToVH(164) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
-              translateY: convertPXToVH(295) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
+              translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
+              translateY: convertPXToVH(deckRect.y * ( 1 - this.deckComponent.auxArray.length * 0.023) ) - convertPXToVH(answerRect.y) + 'vh',
               delay: 700,
               duration: 600,
               begin: () => {
@@ -106,10 +108,14 @@ export class GameBodyDirective extends SubscriberOxDirective  {
                   duration: 1,
                   complete: () => {
                     if (i + 1 === 1) {
+                      this.deckWidth = answerCard.cardPlaceholder.elementRef.nativeElement.offsetWidth;
+                      this.deckHeight = answerCard.cardPlaceholder.elementRef.nativeElement.offsetHeight;
+                      this.deckWidth = convertPXToVH(+this.deckWidth) + 'vh';
+                      this.deckHeight = convertPXToVH(+this.deckHeight) + 'vh';
                       // this.deck = 'filled';
                       nextStepEmitter.emit();
                       this.cardsAppearenceNew();
-                      this.cardsPlayed+=3;
+                      this.cardsPlayed += 3;
                     }
                   }
                 });
@@ -148,19 +154,13 @@ export class GameBodyDirective extends SubscriberOxDirective  {
       return {value: isEven(i) ? 2 : -2, duration: 50};
     }).concat([{value: 0, duration: 50}]);
     anime({
-      targets: this.answerComponents.map( z => z.elementRef.nativeElement),
+      targets: this.answerComponents.map(z => z.elementRef.nativeElement),
       rotate
     });
   }
 
 
 }
-
-
-
-
-
-
 
 
 // cardsToDeckAnimation(answer:CardComponent[], cardsInTable:CardInfo[], nextStepEmitter:EventEmitter<any>, deck:string) {

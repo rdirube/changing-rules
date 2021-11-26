@@ -41,17 +41,17 @@
 }
 
 
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3,15vh);
-    grid-template-rows: repeat(3,27.2vh) ;
-    z-index: 2;
-    justify-content: center;
-    align-items: center;
-    transform: translateX(3.5vh);
-    grid-column-gap:13vh;
-    
-}
+//.cards-grid {
+//    display: grid;
+//    grid-template-columns: repeat(3,15vh);
+//    grid-template-rows: repeat(3,27.2vh) ;
+//    z-index: 2;
+//    justify-content: center;
+//    align-items: center;
+//    transform: translateX(3.5vh);
+//    grid-column-gap:13vh;
+//
+//}
 
 
 .deck-container {

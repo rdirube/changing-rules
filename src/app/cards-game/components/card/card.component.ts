@@ -20,7 +20,7 @@ export class CardComponent implements OnInit {
   @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
-  public cardSvg: string = 'svg/reglas_cambiantes/elementos/frente.svg';
+  public cardSvg: string = 'changing_rules/svg/elementos/frente.svg';
 
   @Input() swiftCardOn!: boolean;
 
@@ -53,14 +53,14 @@ export class CardComponent implements OnInit {
 
 
   setCard(): void {
-    const cardSvgNocolor = 'svg/reglas_cambiantes/formas_sin_cara/' + this.cardsSvg.find(z => z.includes(this.card.shape) && z.includes(this.card.fill));
+    const cardSvgNocolor = 'changing_rules/svg/formas_sin_cara/' + this.cardsSvg.find(z => z.includes(this.card.shape) && z.includes(this.card.fill));
     const replaces = new Map<string, string>();
     replaces.set("#4a90d6", colorsParseFunction(this.card.color).toLowerCase());
     this.cardPathWithReplaces = {path: cardSvgNocolor, replaces: replaces};
   }
 
   public updateCard(): void {
-    this.cardSvg = 'svg/reglas_cambiantes/elementos/frente.svg';
+    this.cardSvg = 'changing_rules/svg/elementos/frente.svg';
     this.faceDown = false;
   }
 

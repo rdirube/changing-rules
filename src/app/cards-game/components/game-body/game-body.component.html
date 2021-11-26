@@ -10,7 +10,7 @@
 <div class="myAbsolute" fxFlex="grow" fxFlexFill>
   <div fxFlex="grow" fxFlexFill style="position: relative" fxLayoutAlign="center center">
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
-      path="svg/reglas_cambiantes/elementos/mesa.svg">
+      path="changing_rules/svg/elementos/mesa.svg">
     </mlc-loaded-svg>
     <div fxFlex="grow" fxLayoutAlign="center center" [ngClass]="{'hide': deckWidth?.length === 0}" class="myAbsolute">
       <app-deck
@@ -33,7 +33,7 @@
                   [cardClasses]="stateByCards[i]"
                   [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
-        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="svg/reglas_cambiantes/elementos/dorso.svg">
+        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
         </mlc-loaded-svg>
       </div>
       

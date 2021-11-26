@@ -87,11 +87,11 @@ export class AppComponent extends BaseMicroLessonApp {
     return ['click.mp3', 'bubble02.mp3', 'bonus.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
       [ScreenTypeOx.Game], false))
       .concat(getResourceArrayFromUrlList([], ResourceType.Svg, false))
-      .concat(svgElementos.map(x => new ResourceOx('svg/reglas_cambiantes/elementos/' + x, ResourceType.Svg,
+      .concat(svgElementos.map(x => new ResourceOx('changing_rules/svg/elementos/' + x, ResourceType.Svg,
         [ScreenTypeOx.Game], false)))
-      .concat(svgIndications.map(x => new ResourceOx('svg/reglas_cambiantes/indicación/' + x, ResourceType.Svg,
+      .concat(svgIndications.map(x => new ResourceOx('changing_rules/svg/indicación/' + x, ResourceType.Svg,
         [ScreenTypeOx.Game], false)))
-      .concat(svgForms.map(x => new ResourceOx('svg/reglas_cambiantes/formas_sin_cara/' + x, ResourceType.Svg,
+      .concat(svgForms.map(x => new ResourceOx('changing_rules/svg/formas_sin_cara/' + x, ResourceType.Svg,
         [ScreenTypeOx.Game], false)))
       .concat(getResourceArrayFromUrlList(['mini-lessons/executive-functions/svg/buttons/Home.svg',
         'mini-lessons/executive-functions/svg/buttons/Hint.svg',

@@ -64,7 +64,7 @@ export class RulesComponent {
   }
 
   concatRuteSvg(svg: string): string {
-    return 'svg/reglas_cambiantes/indicación/' + svg;
+    return 'changing_rules/svg/indicación/' + svg;
   }
 
 

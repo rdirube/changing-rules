@@ -12,7 +12,7 @@
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
       path="svg/reglas_cambiantes/elementos/mesa.svg">
     </mlc-loaded-svg>
-    <div class="cards-grid"  >     
+    <div [ngClass]="gridClassToUse()" *ngIf="exercise">     
       <div #cardContainer *ngFor="let item of exercise?.currentCards; let i = index"
       [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
       (click)="answerVerificationMethod(i)" style="position: relative;">
@@ -34,7 +34,7 @@
   <app-rules [currentRule]="exercise.rule.id" *ngIf="exercise"></app-rules>
 </div>
 <div class="deck-container">
-  <app-deck [deckClass]="deckClass"></app-deck>
+  <app-deck [deckClass]="deckClass" [cardsPlayed]="cardsPlayed"></app-deck>
 </div>
 <ox-comp-count-down *ngIf="countDownImageInfo"
                     [skipButtonInfo]="countDownImageInfo"

@@ -15,9 +15,9 @@ import {
 } from 'src/app/shared/models/types';
 import {filter, take, toArray} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
-import anime from 'animejs';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
+import { iif } from 'rxjs';
 
 @Component({
   selector: 'app-game-body',
@@ -131,5 +131,21 @@ export class GameBodyComponent extends GameBodyDirective {
     this.metricsService.addMetric(myMetric as ExerciseData);
     this.metricsService.currentMetrics.exercises++;
   }
+
+
+  gridClassToUse():string{
+    if(this.challengeService.exerciseConfig.cards <= 4){
+      return 'cards-grid-4';
+    } else if(this.challengeService.exerciseConfig.cards <=6) {
+      return 'cards-grid-6';
+    } else if(this.challengeService.exerciseConfig.cards <= 9) {
+      return 'cards-grid-9';
+    } else if(this.challengeService.exerciseConfig.cards <= 12){
+      return 'cards-grid-12';
+    } else {
+      return 'cards-grid-16';
+    }
+  }
+
 
 }

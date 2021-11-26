@@ -24,6 +24,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
   public answerComponents: CardComponent[] = [];
   public swiftCardOn: boolean = false;
   public deckClass: string = "empty";
+  public cardsPlayed:number = 0;
 
   constructor(protected soundService:SoundOxService) { 
     super();
@@ -71,7 +72,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
 
 
   cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
-    const duration = 75;
+    const duration = 123;
     const scale = Array.from(Array(5).keys()).map((z, i) => {
       return {value: isEven(i) ? 1 : 1.15, duration};
     }).concat([{value: 1, duration}]);
@@ -80,13 +81,13 @@ export class GameBodyDirective extends SubscriberOxDirective  {
       answerCard.cardClasses = 'card-correct';
       anime({
           targets: answerCard.elementRef.nativeElement,
-          easing: 'easeInBounce',
+          easing: 'easeInOutExpo',
           scale,
           complete: () => {
             anime({
               targets: answerCard.elementRef.nativeElement,
-              translateX: convertPXToVH(181) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
-              translateY: convertPXToVH(322) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
+              translateX: convertPXToVH(164) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().x) + 'vh',
+              translateY: convertPXToVH(295) - convertPXToVH(answerCard.elementRef.nativeElement.getBoundingClientRect().y) + 'vh',
               delay: 700,
               duration: 600,
               begin: () => {
@@ -108,6 +109,7 @@ export class GameBodyDirective extends SubscriberOxDirective  {
                       // this.deck = 'filled';
                       nextStepEmitter.emit();
                       this.cardsAppearenceNew();
+                      this.cardsPlayed+=3;
                     }
                   }
                 });

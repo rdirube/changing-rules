@@ -8,6 +8,8 @@ import { Component, OnInit, ElementRef, Input } from '@angular/core';
 export class DeckComponent implements OnInit {
 
   @Input() deckClass!:string;
+  @Input('cardsPlayed') cardsPlayed!:number;
+
 
   constructor(private elementRef:ElementRef) {
     

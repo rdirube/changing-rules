@@ -42,6 +42,12 @@ export interface TutorialStep {
   completedSub: Observable<any>;
 }
 
+export interface RuleArray {
+iconSvg:string,
+class:string,
+id:GameRule
+
+}
 
 export interface ChangingRulesCard {
   svg: string;
@@ -207,6 +213,8 @@ export class CardsInTable {
     return !this.cards.some(x => sameCard(x, card));
   }
 
+
+
   updateCards(rule: Rule, minToCorrectAnswer: number): void {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
@@ -226,7 +234,6 @@ export class CardsInTable {
     indexesToReplace.forEach((index, i) => {
       this.cards[index] = newCards[i];
     });
-    console.log(duplicateWithJSON(this.currentPossibleAnswerCards))
   }
 }
 

@@ -9,15 +9,10 @@
 .rule-container-on {
     @extend .rule-container-off;
     background-color: #3880ff;
-    animation: rule-selected 0.3s ease-in-out;
 }
 
 
-@keyframes rule-selected {
-    0%{transform: scale(1);}
-    50%{transform: scale(0.8);}
-    100%{transform: scale(1);}
-}
+
 
 
 

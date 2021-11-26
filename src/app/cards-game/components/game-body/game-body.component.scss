@@ -10,7 +10,33 @@
 }
 
 
-.cards-grid {
+
+
+.cards-grid-16 {
+    display: grid;
+    grid-template-columns: repeat(4,11vh);
+    grid-template-rows: repeat(4,21.2vh) ;
+    z-index: 50;
+    justify-content: center;
+    align-items: center;
+    transform: translate(3.5vh,0vh);
+    grid-column-gap:13vh;   
+}
+
+
+.cards-grid-12 {
+    display: grid;
+    grid-template-columns: repeat(4,15vh);
+    grid-template-rows: repeat(3,27.2vh) ;
+    z-index: 50;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(0.5vh);
+    grid-column-gap:10vh;   
+}
+
+
+.cards-grid-9 {
     display: grid;
     grid-template-columns: repeat(3,15vh);
     grid-template-rows: repeat(3,27.2vh) ;
@@ -18,9 +44,34 @@
     justify-content: center;
     align-items: center;
     transform: translateX(3.5vh);
-    grid-column-gap:13vh;
-    
+    grid-column-gap:13vh;   
 }
+
+
+.cards-grid-6 {
+    display: grid;
+    grid-template-columns: repeat(2,15vh);
+    grid-template-rows: repeat(3,27.2vh) ;
+    z-index: 50;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(3.5vh);
+    grid-column-gap:13vh;   
+}
+
+
+.cards-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(2,19vh);
+    grid-template-rows: repeat(2,31.2vh) ;
+    z-index: 50;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(3.5vh);
+    grid-column-gap:13vh; 
+}
+
+
 
 
 .deck-container {

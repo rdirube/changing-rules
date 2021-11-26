@@ -44,11 +44,12 @@ export class GameBodyDirective extends SubscriberOxDirective  {
           cardsForCheckReached();
         }
       }
-      else {
+      else if (cardComponentArray[i].isSelected) {
         this.answerComponents.splice(this.answerComponents.indexOf(cardComponentArray[i]), 1);
         cardComponentArray[i].isSelected = false;
         cardComponentArray[i].cardClasses = 'card-neutral';
       }
+      console.log(this.answerComponents.length)
     }
   }
 

@@ -35,42 +35,16 @@ export const MAGNIFIER_POSITIONS: MagnifierPosition[] = [
       flexPosition: 'center center',
       reference: 'cardInTable-in-table',
       buttonInfo: {horizontal: 'center', vertical: 'top'},
+    },
+    {
+      width: '20vh',
+      height: '20vh',
+      transform: 'translate(-8vh, 5.5vh)',
+      borderRadius: '1vh',
+      flexPosition: 'end start',
+      reference: 'clock',
+      buttonInfo: {horizontal: 'center', vertical: 'bottom'},
     }
-    // {
-    //   width: '32vh',
-    //   height: '29vh',
-    //   transform: 'translate(0vh, 12vh)',
-    //   borderRadius: '20%',
-    //   flexPosition: 'center center',
-    //   reference: 'bird-1',
-    //   buttonInfo: {horizontal: 'center', vertical: 'top'},
-    // },
-    // {
-    //   width: '32vh',
-    //   height: '29vh',
-    //   transform: 'translate(41.5vh, 8.7vh)',
-    //   borderRadius: '20%',
-    //   flexPosition: 'center center',
-    //   reference: 'bird-2',
-    //   buttonInfo: {horizontal: 'center', vertical: 'top'},
-    // },
-    // {
-    //   width: '131vh',
-    //   height: '33vh',
-    //   transform: 'translate(0vh, 9vh)',
-    //   borderRadius: '10px',
-    //   flexPosition: 'center center',
-    //   reference: 'all-birds',
-    //   buttonInfo: {horizontal: 'center', vertical: 'top'},
-    // },
-    // {
-    //   width: '27vh',
-    //   height: '25vh',
-    //   transform: 'translate(0vh, -14vh)',
-    //   borderRadius: '20%',
-    //   flexPosition: 'center center',
-    //   buttonInfo: {horizontal: 'right', vertical: 'bottom', offsetX: 2, offsetY: 2},
-    //   reference: 'clock'
-    // }
+
 
 ];

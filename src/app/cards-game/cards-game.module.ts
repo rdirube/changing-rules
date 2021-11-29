@@ -9,6 +9,7 @@ import { OxComponentsModule } from 'ox-components';
 import { TutorialComponent } from './components/tutorial/tutorial.component';
 import {GameBodyDirective} from '../shared/directives/game-body.directive';
 import {RoundProgressModule} from 'angular-svg-round-progressbar';
+import { ClockComponent } from './components/clock/clock.component';
 
 
 
@@ -20,6 +21,7 @@ import {RoundProgressModule} from 'angular-svg-round-progressbar';
     CardComponent,
     DeckComponent,
     TutorialComponent,
+    ClockComponent,
   ],
   exports: [
     GameBodyComponent,

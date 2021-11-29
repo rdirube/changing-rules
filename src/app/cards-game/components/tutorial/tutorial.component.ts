@@ -2,7 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  OnInit,
+  OnInit, ViewChild,
 } from '@angular/core';
 import {
   FeedbackOxService,
@@ -22,7 +22,7 @@ import {
   MagnifierPosition,
   TutorialStep,
   ALL_RULES,
-  Rule, ChangingRulesExercise
+  Rule, ChangingRulesExercise, GameRule
 } from 'src/app/shared/models/types';
 import {MAGNIFIER_POSITIONS} from 'src/app/shared/models/const';
 import anime from 'animejs';
@@ -30,6 +30,7 @@ import {take} from 'rxjs/operators';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 import {sameCard} from '../../../shared/models/functions';
 import {CardComponent} from '../card/card.component';
+import {RulesComponent} from '../rules/rules.component';
 
 @Component({
   selector: 'app-tutorial',
@@ -38,6 +39,8 @@ import {CardComponent} from '../card/card.component';
 })
 
 export class TutorialComponent extends GameBodyDirective implements OnInit {
+
+  @ViewChild(RulesComponent) ruleComponet!: RulesComponent;
 
   public swiftCardOn: boolean = true;
   public tutorialExercise!: ChangingRulesExercise;
@@ -64,15 +67,12 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
               private preloaderService: PreloaderOxService,
               private elementRef: ElementRef,
               private tutorialService: TutorialService) {
-    super(soundService);
-    this.tutorialService.tutorialCardGenerator();
+    super(soundService, challengeService);
+    this.tutorialExercise = this.tutorialService.tutorialCardGenerator(this.challengeService.getExerciseConfig().gameRules[0]);
     this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
-    this.tutorialExercise = {
-      rule: this.tutorialService.currentRule,
-      currentCards: this.tutorialService.cardInTable.cards
-    };
-    console.log(this.tutorialExercise);
+    this.gridClass = this.getGridClassToUse();
     this.setSteps();
+    this.clicksOn = false;
     this.addSubscription(this.checkAnswerTutorial, z => {
       const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.tutorialExercise.rule.id);
       if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
@@ -93,13 +93,13 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       // this.answerComponents.forEach((z, i) => {
       //   this.tutorialExercise.currentCards.splice(this.tutorialExercise.currentCards.indexOf(z.card), 1,
       //     this.tutorialService.lastCards[i]);
-      // });
+      //       // });
       this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
       this.answerComponents.forEach(z => z.card.hasBeenUsed = true);
-      this.tutorialService.tutorialCardGenerator();
-      this.tutorialExercise.rule = this.tutorialService.currentRule;
+      // this.tutorialExercise.rule = this.tutorialService.currentRule;
       console.log('Genere desdepues de correct cardInTable.');
     });
+    this.setMagnifierReference('initial-state');
   }
 
 
@@ -107,7 +107,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.setMagnifierReference('initial-state');
     this.executeCurrentStep();
   }
 
@@ -120,29 +119,55 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   }
 
   public answerVerificationTutorial(i: number): void {
+    if (!this.clicksOn) return;
     // super.answerVerification(i, this.tutorialAnswer, 3, this.checkAnswerTutorial);
     super.updateAnswer(i, 3, () => this.checkAnswerTutorial.emit());
   }
 
   public setSteps() {
-    this.addStep('Buenas, bienvenidos al tutorial', () => {
+    this.destroyClock();
+    const aux = this.challengeService.getExerciseConfig();
+    const rulesToEjemplify = aux.gameRules;
+    this.addStep('¡Buenas! El objetivo del juego consiste en seleccionar las cartas que compartan la regla que figura en el panel de reglas', () => {
     }, timer(3500));
-    this.addStep('El objetivo del juego consiste en seleccionar las cartas que compartan la regla que figura en el panel de reglas', () => {
-      this.setMagnifierReference('rule-panel');
-      this.buttonOkActivate = true;
-    }, this.okButtonHasBeenClick);
-    this.addStep('Selecciona tres cartas que cumplan con la regla que indica panel', () => {
-      this.setMagnifierReference('cardInTable-in-table');
+    for (let i = 0; i < rulesToEjemplify.length; i++) {
+      this.addStep('Observa la regla del panel.', () => {
+        this.clicksOn = false;
+        if (i > 0)
+          this.tutorialExercise = this.tutorialService.tutorialCardGenerator(rulesToEjemplify[i]);
+        this.ruleComponent.setNewRule(this.tutorialExercise.rule.id as GameRule);
+        this.setMagnifierReference('rule-panel');
+        this.ruleComponet.ruleSelectionAnimation();
+        this.buttonOkActivate = true;
+      }, this.okButtonHasBeenClick);
+      this.addStep('Selecciona las cartas que cumplan con la regla', () => {
+        this.setMagnifierReference('initial-state');
+        this.buttonOkActivate = false;
+        this.clicksOn = true;
+        this.cardsToSelect();
+      }, this.correctCards);
+    }
+    // this.addStep('Selecciona las tres cartas una ultima vez', () => {
+    //   this.tutorialService.tutorialCardGenerator(1);
+    //   this.cardsToSelect();
+    // }, this.correctCards);
+    // this.addStep('¡Intenta completar la mayor cantidad de ejercicios antes de que el tiempo acabe!.', () => {
+    //
+    // });
+    if (aux.totalTimeInSeconds) {
+      this.addStep('¡Presta atencion, el tiempo corre!', () => {
+        this.setMagnifierReference('clock');
+        this.clicksOn = false;
+        this.buttonOkActivate = true;
+        this.totalTime = 1;
+        this.recursiviblySetClock();
+      }, this.okButtonHasBeenClick);
+    }
+    this.addStep('Listo!', () => {
+      this.setMagnifierReference('initial-state');
       this.buttonOkActivate = false;
-      this.clicksOn = true;
-      this.cardsToSelect();
-    }, this.correctCards);
-    this.addStep('Selecciona las tres cartas una ultima vez', () => {
-      this.cardsToSelect();
-    }, this.correctCards);
-    this.addStep('Y por última vez!', () => {
-      this.cardsToSelect();
-    }, this.correctCards);
+      // this.cardsToSelect();
+    }, timer(3000));
   }
 
 
@@ -154,27 +179,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
         .map(cardComp => answer.some(a => sameCard(cardComp.card, a)) ? 'card-to-select-tutorial' : 'card-neutral');
     });
   }
-
-  // answerVerification(i: number) {
-  //   const cardComponentArray = this.cardComponentQueryList.toArray() as CardComponent[];
-  //   if (cardComponentArray) {
-  //     this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game)
-  //     if (this.tutorialAnswer.length <= this.tutorialService.lastCards.length && !cardComponentArray[i]?.isSelected) {
-  //       this.tutorialAnswer.push(cardComponentArray[i] as CardComponent);
-  //       cardComponentArray[i].cardClasses = 'card-selected';
-  //       cardComponentArray[i].isSelected = true;
-  //       if (this.tutorialAnswer.length === this.tutorialService.lastCards.length) {
-  //         this.checkAnswerTutorial.emit();
-  //       }
-  //     }
-  //     else {
-  //       this.tutorialAnswer.splice(this.tutorialAnswer.indexOf(cardComponentArray[i] as CardComponent), 1);
-  //       cardComponentArray[i].isSelected = false;
-  //       cardComponentArray[i].cardClasses = 'neutral-card';;
-  //     }
-  //   }
-  // }
-
 
   textChangeAnimation(text: string): void {
     const duration = 500;
@@ -223,14 +227,25 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   private onCompleteStep() {
     if (this.steps[++this.currentStep])
       this.executeCurrentStep();
-    else
+    else {
+      this.destroyClock();
       console.log('tutorialComplete');
+    }
   }
 
+
+  private destroyClock() {
+    this.destroyClockSubs();
+    this.totalTime = undefined as any;
+  }
 
   onOkButtonClicked(): void {
     this.okButtonHasBeenClick.emit();
   }
 
 
+  private recursiviblySetClock(): void {
+    if (this.totalTime)
+      this.setClock(10, () => this.recursiviblySetClock());
+  }
 }

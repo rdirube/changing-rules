@@ -9,10 +9,11 @@ import {
   CardInfo,
   CardShape,
   CardsInTable,
-  ALL_RULES
+  ALL_RULES, ChangingRulesExercise
 } from '../models/types';
 import { CARD_COLORS, CARD_SHAPES, CARD_FILLERS, GAME_RULES } from '../models/const';
 import { anyElement, shuffle } from 'ox-types';
+import {ChangingRulesChallengeService} from './changing-rules-challenge.service';
 
 
 
@@ -26,29 +27,20 @@ export class TutorialService {
   public currentRule!: Rule;
   public cardInTable;
 
-  public rulesAvaiables = ALL_RULES;
-
-  constructor() {
-    this.cardInTable = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
+  constructor(private challengeService: ChangingRulesChallengeService) {
+    const aux = this.challengeService.getExerciseConfig();
+    this.cardInTable = new CardsInTable(aux.colorsAvaiable, aux.shapesAvaiable, aux.fillsAvaiable);
     this.cardInTable.setInitialCards(9, 3);
   }
 
-
-
-
-
-  tutorialCardGenerator():void {
-  this.currentRule = anyElement(this.rulesAvaiables);
-  this.rulesAvaiables = this.rulesAvaiables.filter(z => z !== this.currentRule);
-  this.cardInTable.updateCards(this.currentRule, 3);
-  // if(isFirst){
-  //   // this.cardInTable.setInitialCards(CARD_COLORS,CARD_SHAPES,CARD_FILLERS,9,3);
-  //   // this.tutorialCards = ;
-  //   // this.cardInTable.modifyInitialCards(this.currentRule,3,this.tutorialCards,CARD_COLORS,CARD_SHAPES,CARD_FILLERS,this.lastCards,9);
-  //   // this.tutorialCards = shuffle(this.tutorialCards.concat(this.lastCards));
-  // } else {
-  //   // this.cardInTable.modifyInitialCards(this.currentRule,3,this.tutorialCards,CARD_COLORS,CARD_SHAPES,CARD_FILLERS,this.lastCards,9);
-  // }
+  tutorialCardGenerator(gameRule: GameRule): ChangingRulesExercise {
+  this.currentRule = ALL_RULES.find( z => gameRule === z.id) as Rule;
+  // this.rulesAvaiables = this.rulesAvaiables.filter(z => z !== this.currentRule.id);
+  this.cardInTable.updateCards(this.currentRule, this.challengeService.getExerciseConfig().cardsForCorrectAnswer);
+  return  {
+    currentCards: this.cardInTable.cards,
+    rule: this.currentRule
+  }
 }
 
 

@@ -169,7 +169,7 @@ export class CardsInTable {
     this.cards = [];
     // for (let i = 0; i < cardsInTableQuant - correctAnswerQuant; i++) {
     for (let i = 0; i < cardsInTableQuant; i++) {
-      this.cards.push(this.generateCard());
+      this.cards.push(this.generateCard([]));
     }
     const indexes = shuffle(this.cards.map((z, i) => i)).slice(0, correctAnswerQuant);
     indexes.forEach(i => this.cards[i].hasBeenUsed = true);
@@ -200,17 +200,17 @@ export class CardsInTable {
   // }
 
 
-  generateCard(ruleToApply?: Rule, cardGuideRule?: CardInfo): CardInfo {
+  generateCard(extraCardArray: CardInfo[], ruleToApply?: Rule, cardGuideRule?: CardInfo): CardInfo {
     const cardToAdd: CardInfo = generateRandomCard(this.cardColors, this.cardShapes, this.cardFillers);
     if (cardGuideRule && ruleToApply) {
       ruleToApply.modifyToSatifyRule(cardGuideRule, cardToAdd);
     }
-    return this.isNotRepeated(cardToAdd) ? cardToAdd :
-      this.generateCard(ruleToApply, cardGuideRule);
+    return this.isNotRepeated(cardToAdd, extraCardArray) ? cardToAdd :
+      this.generateCard(extraCardArray, ruleToApply, cardGuideRule);
   }
 
-  isNotRepeated(card: CardInfo): boolean {
-    return !this.cards.some(x => sameCard(x, card));
+  isNotRepeated(card: CardInfo, extraCardArray: CardInfo[]): boolean {
+    return !this.cards.concat(extraCardArray).some(x => !x.hasBeenUsed && sameCard(x, card));
   }
 
 
@@ -224,11 +224,11 @@ export class CardsInTable {
     const newCards: CardInfo[] = [];
     for (let i = 0; i < indexesToReplace.length; i++) {
       if (newCards.length < cardsToAddSatisyingRule) {
-        const card = this.generateCard(rule, randomCardFromTable);
+        const card = this.generateCard(newCards, rule, randomCardFromTable);
         newCards.push(card);
         this.currentPossibleAnswerCards.push(card);
       } else
-        newCards.push(this.generateCard());
+        newCards.push(this.generateCard(newCards));
     }
     indexesToReplace.forEach((index, i) => {
       this.cards[index] = newCards[i];

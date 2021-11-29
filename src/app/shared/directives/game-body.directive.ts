@@ -8,6 +8,9 @@ import {TextComponent} from 'typography-ox';
 import {convertPXToVH, isNotRepeated} from '../models/functions';
 import {DeckComponent} from '../../cards-game/components/deck/deck.component';
 import {RulesComponent} from '../../cards-game/components/rules/rules.component';
+import {ChangingRulesChallengeService} from '../services/changing-rules-challenge.service';
+import {interval, Subscription} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 
 @Directive({
@@ -28,8 +31,16 @@ export class GameBodyDirective extends SubscriberOxDirective {
   public cardsPlayed: number = 0;
   public deckWidth: string = '15vh';
   public deckHeight: string = '20vh';
+  public gridClass = 'cards-grid-9';
 
-  constructor(protected soundService: SoundOxService) {
+
+  public currentTime = 0;
+  public totalTime = 0;
+  public color = 'rgb(0,255,0)';
+  timeFormatted: string = '';
+  private clockSubs!: Subscription;
+
+  constructor(protected soundService: SoundOxService, private cs: ChangingRulesChallengeService) {
     super();
   }
 
@@ -71,6 +82,48 @@ export class GameBodyDirective extends SubscriberOxDirective {
       });
   }
 
+  protected setClock(totalTime: number, onFinish: () => void): void {
+    this.totalTime = totalTime;
+    this.currentTime = totalTime;
+    anime.remove(this);
+    anime({
+      targets: this,
+      color: ['rgb(0,255,0)', 'rgb(255,0,0)'],
+      duration: this.totalTime * 1000,
+      easing: 'linear',
+    });
+    this.destroyClockSubs();
+    this.clockSubs = interval(1000).pipe(take(this.totalTime)).subscribe(z => {
+      this.currentTime--;
+      const mins = Math.floor(this.currentTime / 60);
+      const seconds = this.currentTime - mins * 60;
+      this.timeFormatted = toToDigitStringNumber(mins) + ':' + toToDigitStringNumber(seconds);
+      if (z === this.totalTime - 1) {
+        onFinish();
+      }
+    });
+  }
+
+  protected destroyClockSubs() {
+    if (this.clockSubs) {
+      this.clockSubs.unsubscribe();
+    }
+    this.clockSubs = undefined as any;
+  }
+
+  getGridClassToUse(): string {
+    if (this.cs.getExerciseConfig().cardInTable <= 4) {
+      return 'cards-grid-4';
+    } else if (this.cs.getExerciseConfig().cardInTable <= 6) {
+      return 'cards-grid-6';
+    } else if (this.cs.getExerciseConfig().cardInTable <= 9) {
+      return 'cards-grid-9';
+    } else if (this.cs.getExerciseConfig().cardInTable <= 12) {
+      return 'cards-grid-12';
+    } else {
+      return 'cards-grid-16';
+    }
+  }
 
   cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
     const duration = 123;
@@ -163,6 +216,11 @@ export class GameBodyDirective extends SubscriberOxDirective {
     });
   }
 
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.destroyClockSubs();
+  }
+
 
 }
 
@@ -228,3 +286,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
 //     });
 // }
 
+
+function toToDigitStringNumber(n: number): string {
+  return n < 10 ? '0' + n : '' + n;
+}

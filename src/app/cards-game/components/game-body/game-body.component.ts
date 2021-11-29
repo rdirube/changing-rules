@@ -35,20 +35,14 @@ import anime from 'animejs';
   styleUrls: ['./game-body.component.scss']
 })
 
-export class GameBodyComponent extends GameBodyDirective implements OnInit{
+export class GameBodyComponent extends GameBodyDirective implements OnInit {
 
   @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
 
-  public currentTime = 0;
-  public totalTime = 0;
-  public color = 'rgb(0,255,0)';
-  timeFormatted: string = '';
-  private clockSubs!: Subscription;
 
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
-  public gridClass = 'cards-grid-9';
 
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
@@ -60,7 +54,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit{
               private microLessonCommunication: MicroLessonCommunicationService<any>,
               private feedbackService: FeedbackOxService,
               private preloaderService: PreloaderOxService) {
-    super(soundService);
+    super(soundService, challengeService);
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
       timer(1000).subscribe(zzz => {
         this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
@@ -82,36 +76,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit{
       }
     });
     this.addSubscription(this.feedbackService.endFeedback, x => this.gameActions.showNextChallenge.emit());
-  }
-
-  private setClock(totalTime: number): void {
-    this.totalTime = totalTime;
-    this.currentTime = totalTime;
-    anime.remove(this);
-    anime({
-      targets: this,
-      color: ['rgb(0,255,0)', 'rgb(255,0,0)'],
-      duration: this.totalTime * 1000,
-      easing: 'linear',
-    });
-    this.destroyClockSubs();
-    this.clockSubs = interval(1000).pipe(take(this.totalTime)).subscribe(z => {
-      this.currentTime--;
-      const mins = Math.floor(this.currentTime / 60);
-      const seconds = this.currentTime - mins * 60;
-      this.timeFormatted = toToDigitStringNumber(mins) + ':' + toToDigitStringNumber(seconds);
-      if (z === this.totalTime - 1) {
-        console.log('Clock finish.');
-        this.gameActions.microLessonCompleted.emit();
-      }
-    });
-  }
-
-  private destroyClockSubs() {
-    if (this.clockSubs) {
-      this.clockSubs.unsubscribe();
-    }
-    this.clockSubs = undefined as any;
   }
 
   answerVerificationMethod(i: number) {
@@ -146,7 +110,10 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit{
     this.countDownImageInfo = undefined;
     this.deckComponent.auxArray = [];
     if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
-      this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds);
+      this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds, () => {
+        console.log('Clock finish.');
+        this.gameActions.microLessonCompleted.emit();
+      })
     }
     this.cardsAppearenceAnimation();
   }
@@ -179,20 +146,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit{
     this.metricsService.currentMetrics.exercises++;
   }
 
-
-  getGridClassToUse(): string {
-    if (this.challengeService.exerciseConfig.cardInTable <= 4) {
-      return 'cards-grid-4';
-    } else if (this.challengeService.exerciseConfig.cardInTable <= 6) {
-      return 'cards-grid-6';
-    } else if (this.challengeService.exerciseConfig.cardInTable <= 9) {
-      return 'cards-grid-9';
-    } else if (this.challengeService.exerciseConfig.cardInTable <= 12) {
-      return 'cards-grid-12';
-    } else {
-      return 'cards-grid-16';
-    }
-  }
 
   public showHint(): void {
     this.answerComponents = [];
@@ -242,6 +195,3 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit{
 
 }
 
-function toToDigitStringNumber(n: number): string {
-  return n < 10 ? '0' + n : '' + n;
-}

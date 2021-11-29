@@ -11,6 +11,7 @@ import {RulesComponent} from '../../cards-game/components/rules/rules.component'
 import {ChangingRulesChallengeService} from '../services/changing-rules-challenge.service';
 import {interval, Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
+import { GameSetting } from '../models/types';
 
 
 @Directive({
@@ -32,8 +33,8 @@ export class GameBodyDirective extends SubscriberOxDirective {
   public deckWidth: string = '15vh';
   public deckHeight: string = '20vh';
   public gridClass = 'cards-grid-9';
-
-
+  public currentSetting!:GameSetting;
+ 
   public currentTime = 0;
   public totalTime = 0;
   public color = 'rgb(0,255,0)';

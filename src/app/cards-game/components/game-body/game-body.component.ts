@@ -101,6 +101,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
   startGame() {
     this.countDownImageInfo = undefined;
+    this.currentSetting = this.exercise.currentSetting;
     this.deckComponent.auxArray = [];
     if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
       this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds, () => {
@@ -191,16 +192,22 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       });
   }
 
+
+
   private setAnswer(): void {
     const cards = this.answerComponents.map(z => z.card);
-    const correctness = this.exercise.rule.allSatisfyRule(cards) ? 'correct' : 'wrong';
+    const equalRuleApproved = this.exercise.rule.allSatisfyRule(cards) 
+    const correctness = this.exercise.currentSetting === 'igual' ? equalRuleApproved ? 'correct' : 'wrong': ! equalRuleApproved ? 'correct' : 'wrong';
+    console.log(this.exercise.currentSetting);
+    console.log(correctness);
     this.answerService.currentAnswer = {
       parts: [
         {correctness, parts: cards.map(cardToSchemaPart)}
       ]
     };
-  }
-}
+  }}
+
+
 
 function cardToOption(z: CardInfo): OptionShowable {
   return {
@@ -214,6 +221,8 @@ function cardToOption(z: CardInfo): OptionShowable {
     ]
   };
 }
+
+
 
 function cardToSchemaPart(z: CardInfo): SchemaPart {
   return {

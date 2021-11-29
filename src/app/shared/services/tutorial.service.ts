@@ -39,7 +39,8 @@ export class TutorialService {
   this.cardInTable.updateCards(this.currentRule, this.challengeService.getExerciseConfig().cardsForCorrectAnswer);
   return  {
     currentCards: this.cardInTable.cards,
-    rule: this.currentRule
+    rule: this.currentRule,
+    currentSetting: 'igual'
   }
 }
 

@@ -28,9 +28,9 @@ export interface Replaces {
 
 
 export interface ChangingRulesExercise {
-  rule: Rule;
-  // lastCards: CardInfo[];
-  currentCards: CardInfo[]
+  rule: Rule; 
+  currentCards: CardInfo[],
+  currentSetting: GameSetting
 }
 
 export interface TutorialStep {
@@ -61,7 +61,7 @@ export interface ChangingRulesNivelation {
   cardInTable: number;
   // cardQuantityDeck: number;
   cardsForCorrectAnswer: number;
-  gameSetting: GameSetting;
+  gameSetting: GameSetting[];
   totalExercises: number;
   totalTimeInSeconds: number;
   // wildcardOn: boolean;

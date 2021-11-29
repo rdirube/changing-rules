@@ -12,3 +12,49 @@
   .no-events {
     pointer-events: none;
   }
+
+
+
+
+.tutorial-complete-container{
+  background-color:rgba($color: #000, $alpha: 0.8);
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+}
+
+
+.tutorial-comṕlete-text{
+  transform: translateY(-7vh);
+}
+
+.complete-buttom {
+  width:45vh;
+  height:25vh; 
+  z-index: 1100;
+  cursor:pointer; 
+}
+
+
+.skip-tutorial-btn {
+  z-index: 50;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-color: #1793b3;
+  background-image: -moz-linear-gradient(center top , #22CCF7, #0CB6E1);
+ background-repeat: repeat-x;
+  border-color: #0CB6E1 #0CB6E1 #087B98;
+  border-image: none;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 3.3vh;
+  cursor: pointer;  
+  position: fixed;   
+  width: 28vh;
+  height: 6.5vh;
+  text-decoration: none;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}

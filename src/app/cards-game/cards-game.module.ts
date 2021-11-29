@@ -10,7 +10,7 @@ import { TutorialComponent } from './components/tutorial/tutorial.component';
 import {GameBodyDirective} from '../shared/directives/game-body.directive';
 import {RoundProgressModule} from 'angular-svg-round-progressbar';
 import { ClockComponent } from './components/clock/clock.component';
-
+import { TutorialButtonComponent } from './components/tutorial/tutorial-button/tutorial-button.component';
 
 
 @NgModule({
@@ -22,6 +22,7 @@ import { ClockComponent } from './components/clock/clock.component';
     DeckComponent,
     TutorialComponent,
     ClockComponent,
+    TutorialButtonComponent
   ],
   exports: [
     GameBodyComponent,

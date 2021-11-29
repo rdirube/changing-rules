@@ -12,7 +12,7 @@ export class TutorialButtonComponent implements OnInit {
 
   @Input() tutorialText!:string; 
   @Input() buttonClass!:string;
-  public buttonRoute = 'colorful-heights/svg/Elementos fondo/tutorial/tutorial_botón.svg';
+  public buttonRoute = 'changing_rules/svg/elementos/tutorial_botón.svg';
 
   ngOnInit(): void {
   }

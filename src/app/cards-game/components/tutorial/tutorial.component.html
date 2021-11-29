@@ -1,6 +1,16 @@
 <div fxFlex="grow" style="background: #5ca244; position:relative"></div>
 <div class="myAbsolute" fxFlex="grow" fxFlexFill>
   <div fxFlex="grow" fxFlexFill style="position: relative" fxLayoutAlign="center center">
+    <div class="tutorial-complete-container" fxLayoutAlign="center center " fxLayout="column" *ngIf="isTutorialComplete"
+    style="position: absolute">
+  <ox-text originalText="Tutorial completado ¡A jugar!" color="white" font='dinnRegular' fontSize="6vh" class="tutorial-comṕlete-text"></ox-text>
+  <app-tutorial-button  fxLayoutAlign="center center" tutorialText="Jugar ahora" [realClick]="onTutorialEndTrue.bind(this)"
+  mlcClickeableOx 
+  class="complete-buttom"></app-tutorial-button>
+  <app-tutorial-button  fxLayoutAlign="center center" class="complete-buttom"
+  mlcClickeableOx 
+  tutorialText="Repetir tutorial" [realClick]="onSkipTutorial.bind(this)"></app-tutorial-button>
+  </div>
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
       path="changing_rules/svg/elementos/mesa.svg">
     </mlc-loaded-svg>
@@ -49,6 +59,9 @@
            fontSize="4vh"
            class="tutorial-text" style="position: absolute">
   </ox-text>
+
+  <div class="skip-tutorial-btn" (click)="onTutorialEndTrue()" style="right: 3vh; top:79vh;position: fixed;" fxLayoutAlign="center center"><span>Saltar tutorial</span></div>
+
 </div>
 <!-- <ox-comp-count-down *ngIf="countDownImageInfo"
                     [skipButtonInfo]="countDownImageInfo"
@@ -57,3 +70,6 @@
 <ox-comp-magnifier-glass *ngIf="magnifier"
                          [ngClass]="{'no-events':clicksOn}" [magnifierPosition]="magnifier"  [buttonOkActivate]="buttonOkActivate"
                          style="z-index: 100;" (okButtonClicked)="onOkButtonClicked()"></ox-comp-magnifier-glass>
+
+
+                         

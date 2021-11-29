@@ -2,7 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  OnInit, ViewChild,
+  OnInit, Output, ViewChild,
 } from '@angular/core';
 import {
   FeedbackOxService,
@@ -41,6 +41,7 @@ import {RulesComponent} from '../rules/rules.component';
 export class TutorialComponent extends GameBodyDirective implements OnInit {
 
   @ViewChild(RulesComponent) ruleComponet!: RulesComponent;
+  @Output() tutorialEnd = new EventEmitter<{ completed: boolean }>();
 
   public swiftCardOn: boolean = true;
   public tutorialExercise!: ChangingRulesExercise;
@@ -57,6 +58,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   private correctCards = new EventEmitter();
   public checkAnswerTutorial = new EventEmitter();
 
+
+  
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
               private gameActions: GameActionsService<any>,
@@ -166,6 +169,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.addStep('Listo!', () => {
       this.setMagnifierReference('initial-state');
       this.buttonOkActivate = false;
+      this.isTutorialComplete = true;
       // this.cardsToSelect();
     }, timer(3000));
   }
@@ -247,5 +251,21 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   private recursiviblySetClock(): void {
     if (this.totalTime)
       this.setClock(10, () => this.recursiviblySetClock());
+  }
+  
+
+  onTutorialEndTrue(): void{
+    this.onTutorialEnd(true);
+  }
+
+
+
+  onTutorialEnd(completed: boolean): void {
+    this.tutorialEnd.emit({completed});
+  }
+
+
+  onSkipTutorial(): void {
+    this.onTutorialEnd(false);
   }
 }

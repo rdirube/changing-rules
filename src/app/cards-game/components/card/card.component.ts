@@ -54,7 +54,7 @@ export class CardComponent implements OnInit {
     const cardSvgNocolor = getCardSvg(this.card);
     console.log(cardSvgNocolor);
     const replaces = new Map<string, string>();
-    replaces.set("#4a90d6", colorsParseFunction(this.card.color).toLowerCase());
+    replaces.set("#449ed7", colorsParseFunction(this.card.color).toLowerCase());
     this.cardPathWithReplaces = {path: cardSvgNocolor, replaces: replaces};
   }
 

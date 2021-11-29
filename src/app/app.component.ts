@@ -1,6 +1,6 @@
 import {Component, ElementRef} from '@angular/core';
 import {CommunicationOxService, I18nService, PreloaderOxService, ResourceOx, ResourceType} from 'ox-core';
-import {ResourceFinalStateOxBridge, ScreenTypeOx, HasTutorialOxBridge, anyElement, shuffle} from 'ox-types';
+import {HasTutorialOxBridge, ResourceFinalStateOxBridge, ScreenTypeOx} from 'ox-types';
 import {environment} from '../environments/environment';
 import {
   AppInfoOxService,
@@ -19,9 +19,8 @@ import {TranslocoService} from '@ngneat/transloco';
 import {HttpClient} from '@angular/common/http';
 import {PostMessageBridgeFactory} from 'ngox-post-message';
 import {ChangingRulesChallengeService} from './shared/services/changing-rules-challenge.service';
-import {ALL_RULES, CardsInTable} from './shared/models/types';
-import {CARD_COLORS, CARD_FILLERS, CARD_SHAPES} from './shared/models/const';
-import {sameCard} from './shared/models/functions';
+import {CARD_FILLERS, CARD_SHAPES} from './shared/models/const';
+import {getCardSvg} from './shared/models/functions';
 
 @Component({
   selector: 'app-root',
@@ -75,12 +74,19 @@ export class AppComponent extends BaseMicroLessonApp {
   }
 
   protected getGameResourcesToLoad(): ResourceOx[] {
-    const svgElementos: string[] = ['mesa.svg', 'dorso.svg', 'frente.svg', 'mazo.svg','tutorial_botón.svg'];
+    const svgElementos: string[] = ['mesa.svg', 'dorso.svg', 'frente.svg', 'mazo.svg', 'tutorial_botón.svg'];
     const svgIndications: string[] = ['colores_igual.svg', 'colores_igual_block.svg', 'formas_igual.svg', 'formas_igual_block.svg', 'relleno_igual.svg', 'relleno_igual_block.svg'];
-    const svgForms: string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg',
-      'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
-      'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
+    // const svgForms: string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg',
+    //   'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
+    //   'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
     const sounds = ['click.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(z => 'sounds/' + z);
+
+    const figuresSvg: string[] = [];
+    CARD_SHAPES.forEach(shape => {
+      CARD_FILLERS.forEach( fill =>{
+        figuresSvg.push(getCardSvg({fill, shape, color: 'celeste', hasBeenUsed: false}))
+      })
+    });
     return ['click.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
       [ScreenTypeOx.Game], false))
       .concat(getResourceArrayFromUrlList([], ResourceType.Svg, false))
@@ -88,8 +94,9 @@ export class AppComponent extends BaseMicroLessonApp {
         [ScreenTypeOx.Game], false)))
       .concat(svgIndications.map(x => new ResourceOx('changing_rules/svg/indicación/' + x, ResourceType.Svg,
         [ScreenTypeOx.Game], false)))
-      .concat(svgForms.map(x => new ResourceOx('changing_rules/svg/formas_sin_cara/' + x, ResourceType.Svg,
-        [ScreenTypeOx.Game], false)))
+      .concat(getResourceArrayFromUrlList(figuresSvg, ResourceType.Svg, false))
+      // .concat(svgForms.map(x => new ResourceOx('changing_rules/svg/formas_sin_cara/' + x, ResourceType.Svg,
+      //   [ScreenTypeOx.Game], false)))
       .concat(getResourceArrayFromUrlList(['mini-lessons/executive-functions/svg/buttons/Home.svg',
         'mini-lessons/executive-functions/svg/buttons/Hint.svg',
         'mini-lessons/executive-functions/svg/buttons/saltear.svg'], ResourceType.Svg, true))

@@ -44,7 +44,8 @@ export function convertPXToVH(px: number): number {
 }
 
 export function getCardSvg(card: CardInfo): string {
-  const cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
-    'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
-  return 'changing_rules/svg/formas_sin_cara/' + cardsSvg.find(z => z.includes(card.shape) && z.includes(card.fill));
+  // const cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
+  //   'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
+  // return 'changing_rules/svg/formas_sin_cara/' + cardsSvg.find(z => z.includes(card.shape) && z.includes(card.fill));
+  return 'mini-lessons/executive-functions/changing-rules/svg/figures/' + card.shape + '-' + card.fill + '.svg';
 }

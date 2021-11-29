@@ -1,6 +1,9 @@
 import {Component, Input, ElementRef, QueryList, ViewChildren, HostListener} from '@angular/core';
 import {GameRule, RuleArray} from 'src/app/shared/models/types';
 import anime from 'animejs';
+import {SubscriberOxDirective} from 'micro-lesson-components';
+import {GameActionsService} from 'micro-lesson-core';
+import {ChangingRulesChallengeService} from '../../../shared/services/changing-rules-challenge.service';
 
 
 @Component({
@@ -8,13 +11,19 @@ import anime from 'animejs';
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss']
 })
-export class RulesComponent {
+export class RulesComponent extends SubscriberOxDirective {
 
   @ViewChildren('rules') allRules!: QueryList<ElementRef>;
   currentRule!: string;
   public lowerCaseTrue: boolean = true;
 
-  public rulesArray: RuleArray[] = [
+  private readonly allRuleArray:     {
+    iconSvg: string,
+    auxForSvg: string,
+    class: string,
+    id: GameRule,
+    isOn: boolean
+  }[] = [
     {
       iconSvg: this.iconAutocomplete(false, 'colores'),
       auxForSvg: 'colores',
@@ -38,6 +47,8 @@ export class RulesComponent {
     }
   ];
 
+  public rulesArray: RuleArray[] = [];
+
   // @Input('currentRule')
   // set setCurrentRule(r: GameRule | undefined) {
   //   if (r === undefined) return;
@@ -51,7 +62,13 @@ export class RulesComponent {
   }
 
 
-  constructor(private elementRef: ElementRef) {
+  constructor(private challengeSrevice: ChangingRulesChallengeService,
+              private gameActions: GameActionsService<any>) {
+    super();
+    this.addSubscription(this.gameActions.startGame, z => {
+      this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.exerciseConfig.gameRules.includes(x.id));
+    });
+    this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.getExerciseConfig().gameRules.includes(x.id));
   }
 
 
@@ -78,7 +95,7 @@ export class RulesComponent {
 
   ruleSelectionAnimation() {
     if (!this.allRules) return;
-    this.allRules.toArray().forEach( (z: any) => anime.remove(z.nativeElement));
+    this.allRules.toArray().forEach((z: any) => anime.remove(z.nativeElement));
     anime({
       targets: this.allRules.toArray()[this.rulesArray.findIndex(z => z.isOn)].nativeElement,
       duration: 400,

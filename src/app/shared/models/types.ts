@@ -1,9 +1,6 @@
-import {initTranslocoService} from "@ngneat/transloco/lib/transloco-testing.module";
-import {random} from "animejs";
 import {anyElement, duplicateWithJSON, shuffle} from "ox-types";
 import {Observable, zip} from "rxjs";
 import {generateRandomCard, sameCard} from "./functions";
-import {cardColors, cardFillers, cardShapes, gameRules} from "./const";
 
 export type CardColor = 'naranja' | 'celeste' | 'amarillo' | 'verde' | 'violeta';
 export type CardShape = 'circulo' | 'cuadrado' | 'triangulo' | 'estrella' | 'rombo';
@@ -165,7 +162,7 @@ export class CardsInTable {
   public cards: CardInfo[] = [];
   public currentPossibleAnswerCards: CardInfo[] = [];
 
-  constructor() {
+  constructor(public cardColors: CardColor[], public cardShapes: CardShape[], public cardFillers: CardFill[]) {
   }
 
   setInitialCards(cardsInTableQuant: number, correctAnswerQuant: number): void {
@@ -204,7 +201,7 @@ export class CardsInTable {
 
 
   generateCard(ruleToApply?: Rule, cardGuideRule?: CardInfo): CardInfo {
-    const cardToAdd: CardInfo = generateRandomCard();
+    const cardToAdd: CardInfo = generateRandomCard(this.cardColors, this.cardShapes, this.cardFillers);
     if (cardGuideRule && ruleToApply) {
       ruleToApply.modifyToSatifyRule(cardGuideRule, cardToAdd);
     }

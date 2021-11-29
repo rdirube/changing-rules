@@ -1,5 +1,4 @@
-import { CardColor, CardInfo} from "./types";
-import { cardColors, cardFillers, cardShapes } from "./const";
+import {CardColor, CardFill, CardInfo, CardShape} from "./types";
 import { anyElement } from "ox-types";
 
 
@@ -28,9 +27,9 @@ export function sameCard(c1: CardInfo, c2: CardInfo): boolean {
 }
 
 
-export function generateRandomCard():CardInfo {
+export function generateRandomCard(cardColors: CardColor[], cardShapes: CardShape[], cardFillers: CardFill[]):CardInfo {
   return {
-    color:anyElement(cardColors),
+    color: anyElement(cardColors),
     shape: anyElement(cardShapes),
     fill:anyElement(cardFillers),
     hasBeenUsed: false

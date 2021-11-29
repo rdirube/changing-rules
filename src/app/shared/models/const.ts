@@ -1,10 +1,10 @@
-import { Rule, ShapeRule, FillRule, ColorRule, CardColor, CardShape, CardFill, GameRule, MagnifierPosition } from "./types";
+import { CardColor, CardShape, CardFill, GameRule, MagnifierPosition } from "./types";
 
 
-export const cardColors: CardColor[] = ['naranja', 'celeste', 'amarillo', 'violeta', 'verde'];
-export const cardShapes: CardShape[] = ['circulo', 'cuadrado', 'triangulo', 'estrella'];
-export const cardFillers: CardFill[] = ['relleno', 'rallado', 'moteado', 'vacio'];
-export const gameRules: GameRule[] = ['color', 'forma', 'relleno'];
+export const CARD_COLORS: CardColor[] = ['naranja', 'celeste', 'amarillo', 'violeta', 'verde'];
+export const CARD_SHAPES: CardShape[] = ['circulo', 'cuadrado', 'triangulo', 'estrella'];
+export const CARD_FILLERS: CardFill[] = ['relleno', 'rallado', 'moteado', 'vacio'];
+export const GAME_RULES: GameRule[] = ['color', 'forma', 'relleno'];
 
 
 

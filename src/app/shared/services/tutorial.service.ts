@@ -11,7 +11,7 @@ import {
   CardsInTable,
   ALL_RULES
 } from '../models/types';
-import { cardColors, cardShapes, cardFillers, gameRules } from '../models/const';
+import { CARD_COLORS, CARD_SHAPES, CARD_FILLERS, GAME_RULES } from '../models/const';
 import { anyElement, shuffle } from 'ox-types';
 
 
@@ -29,7 +29,7 @@ export class TutorialService {
   public rulesAvaiables = ALL_RULES;
 
   constructor() {
-    this.cardInTable = new CardsInTable();
+    this.cardInTable = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
     this.cardInTable.setInitialCards(9, 3);
   }
 
@@ -42,12 +42,12 @@ export class TutorialService {
   this.rulesAvaiables = this.rulesAvaiables.filter(z => z !== this.currentRule);
   this.cardInTable.updateCards(this.currentRule, 3);
   // if(isFirst){
-  //   // this.cardInTable.setInitialCards(cardColors,cardShapes,cardFillers,9,3);
+  //   // this.cardInTable.setInitialCards(CARD_COLORS,CARD_SHAPES,CARD_FILLERS,9,3);
   //   // this.tutorialCards = ;
-  //   // this.cardInTable.modifyInitialCards(this.currentRule,3,this.tutorialCards,cardColors,cardShapes,cardFillers,this.lastCards,9);
+  //   // this.cardInTable.modifyInitialCards(this.currentRule,3,this.tutorialCards,CARD_COLORS,CARD_SHAPES,CARD_FILLERS,this.lastCards,9);
   //   // this.tutorialCards = shuffle(this.tutorialCards.concat(this.lastCards));
   // } else {
-  //   // this.cardInTable.modifyInitialCards(this.currentRule,3,this.tutorialCards,cardColors,cardShapes,cardFillers,this.lastCards,9);
+  //   // this.cardInTable.modifyInitialCards(this.currentRule,3,this.tutorialCards,CARD_COLORS,CARD_SHAPES,CARD_FILLERS,this.lastCards,9);
   // }
 }
 

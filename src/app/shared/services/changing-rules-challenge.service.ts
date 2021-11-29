@@ -17,7 +17,6 @@ import {
   ALL_RULES
 } from '../models/types';
 import {anyElement, ExpandableInfo, equalArrays} from 'ox-types';
-import {gameRules} from '../models/const';
 
 
 @Injectable({
@@ -27,7 +26,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   public resources = new Map<string, string>();
   public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
-  public cardsInTable = new CardsInTable();
+  public cardsInTable!: CardsInTable;
 
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
@@ -45,7 +44,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
     });
-    // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+    // this.exerciseConfig = JSON.parse('{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
   }
 
 
@@ -62,12 +61,12 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
-    const currentExerciseRule: GameRule = anyElement(gameRules);
+    const currentExerciseRule: GameRule = anyElement(this.exerciseConfig.gameRules);
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     this.cardsInTable.updateCards(ruleClass, this.exerciseConfig.cardsForCorrectAnswer);
     // TODO SOLVE THIS
     // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
-    //   , this.cardInTable, cardColors, cardShapes, cardFillers, lastCards, this.exerciseConfig.cardInTable);
+    //   , this.cardInTable, CARD_COLORS, CARD_SHAPES, CARD_FILLERS, lastCards, this.exerciseConfig.cardInTable);
     return new ExerciseOx({
       rule: ruleClass,
       currentCards: this.cardsInTable.cards
@@ -81,11 +80,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
       case 'created-config':
         this.currentSubLevelPregeneratedExercisesNeeded = 1;
         this.exerciseConfig = this.getExerciseConfig();
-        // this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+        // this.exerciseConfig = JSON.parse('{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
         // this.cardInTable =
         console.log('Me llego la configu', this.exerciseConfig);
-        this.cardsInTable.setInitialCards(this.exerciseConfig.cardInTable, this.exerciseConfig.cardsForCorrectAnswer);
-        // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
+        // this.exerciseConfig = JSON.parse('{"backupReferences":"","ownerUid":"oQPbggIFzLcEHuDjp5ZNbkkVOlZ2","libraryItemType":"resource","properties":{"customConfig":{"creatorInfo":{"creatorType":"changing-rules","screenTheme":"executive-functions","type":"challenges","microLessonGameInfo":{"exerciseCount":2,"properties":{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}},"exerciseCount":"infinite","metricsType":"results"},"extraInfo":{"gameUrl":"TODO when ","exerciseCase":"created-config"}},"format":"custom-ml-nivelation","miniLessonUid":"Answer hunter","miniLessonVersion":"with-custom-config-v2","url":"https://ml-screen-manager.firebaseapp.com"},"tagIds":{},"inheritedPedagogicalObjectives":[],"customTextTranslations":{"es":{"description":{"text":"asda"},"name":{"text":"Testing 23/2/2021"},"previewData":{"path":"library/items/RC9MNGIAKo8dRmGbco57/preview-image-es"}}},"uid":"RC9MNGIAKo8dRmGbco57","isPublic":false,"supportedLanguages":{"en":false,"es":true},"type":"mini-lesson"}');
         this.setInitialExercise();
         break;
       default:
@@ -112,10 +110,12 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   private setInitialExercise(): void {
     console.log('setInitialExercise');
+    this.cardsInTable = new CardsInTable(this.exerciseConfig.colorsAvaiable, this.exerciseConfig.shapesAvaiable, this.exerciseConfig.fillsAvaiable);
+    this.cardsInTable.setInitialCards(this.exerciseConfig.cardInTable, this.exerciseConfig.cardsForCorrectAnswer);
   }
 
 
-  private getExerciseConfig(): ChangingRulesNivelation {
+  public getExerciseConfig(): ChangingRulesNivelation {
     return this.appInfo.microLessonInfo.creatorInfo?.microLessonGameInfo.properties;
   }
 }

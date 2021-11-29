@@ -58,8 +58,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   private correctCards = new EventEmitter();
   public checkAnswerTutorial = new EventEmitter();
 
-
-  
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
               private gameActions: GameActionsService<any>,
@@ -124,7 +122,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   public answerVerificationTutorial(i: number): void {
     if (!this.clicksOn) return;
     // super.answerVerification(i, this.tutorialAnswer, 3, this.checkAnswerTutorial);
-    super.updateAnswer(i, 3, () => this.checkAnswerTutorial.emit());
+    super.updateAnswer(i, this.challengeService.getExerciseConfig().cardsForCorrectAnswer,
+      () => this.checkAnswerTutorial.emit());
   }
 
   public setSteps() {
@@ -150,13 +149,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
         this.cardsToSelect();
       }, this.correctCards);
     }
-    // this.addStep('Selecciona las tres cartas una ultima vez', () => {
-    //   this.tutorialService.tutorialCardGenerator(1);
-    //   this.cardsToSelect();
-    // }, this.correctCards);
-    // this.addStep('¡Intenta completar la mayor cantidad de ejercicios antes de que el tiempo acabe!.', () => {
-    //
-    // });
     if (aux.totalTimeInSeconds) {
       this.addStep('¡Presta atencion, el tiempo corre!', () => {
         this.setMagnifierReference('clock');
@@ -166,12 +158,12 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
         this.recursiviblySetClock();
       }, this.okButtonHasBeenClick);
     }
-    this.addStep('Listo!', () => {
+    this.addStep('', () => {
       this.setMagnifierReference('initial-state');
       this.buttonOkActivate = false;
       this.isTutorialComplete = true;
       // this.cardsToSelect();
-    }, timer(3000));
+    }, this.okButtonHasBeenClick);
   }
 
 
@@ -214,8 +206,16 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
   public repeatTutorialMethod(): void {
+    this.tutorialExercise = this.tutorialService.tutorialCardGenerator(this.challengeService.getExerciseConfig().gameRules[0]);
+    this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
+    this.gridClass = this.getGridClassToUse();
+    this.clicksOn = false;
+    this.setMagnifierReference('initial-state');
     this.isTutorialComplete = false;
+    this.destroyEndStepSubscription();
     this.setSteps();
+    this.currentStep = 0;
+    this.executeCurrentStep();
   }
 
 
@@ -252,12 +252,11 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     if (this.totalTime)
       this.setClock(10, () => this.recursiviblySetClock());
   }
-  
 
-  onTutorialEndTrue(): void{
+
+  onTutorialEndTrue(): void {
     this.onTutorialEnd(true);
   }
-
 
 
   onTutorialEnd(completed: boolean): void {

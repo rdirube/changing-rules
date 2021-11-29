@@ -33,9 +33,8 @@ import {filter, take} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
-import {interval, Subscription, timer} from 'rxjs';
+import {timer} from 'rxjs';
 import {getCardSvg, sameCard} from 'src/app/shared/models/functions';
-import anime from 'animejs';
 
 @Component({
   selector: 'app-game-body',
@@ -43,7 +42,11 @@ import anime from 'animejs';
   styleUrls: ['./game-body.component.scss']
 })
 
-export class GameBodyComponent extends GameBodyDirective implements OnInit {
+export class GameBodyComponent extends GameBodyDirective implements OnInit, AfterViewInit {
+  ngAfterViewInit(): void {
+    if (this.exercise)
+      this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
+  }
 
   @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
@@ -183,12 +186,13 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
           });
         }
         this.gridClass = this.getGridClassToUse();
-        this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
+        if (this.ruleComponent)
+          this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
       });
   }
 
   private setAnswer(): void {
-    const cards = this.answerComponents.map( z => z.card);
+    const cards = this.answerComponents.map(z => z.card);
     const correctness = this.exercise.rule.allSatisfyRule(cards) ? 'correct' : 'wrong';
     this.answerService.currentAnswer = {
       parts: [
@@ -208,8 +212,9 @@ function cardToOption(z: CardInfo): OptionShowable {
       {name: 'shape', value: z.shape},
       {name: 'fill', value: z.fill}
     ]
-  }
+  };
 }
+
 function cardToSchemaPart(z: CardInfo): SchemaPart {
   return {
     format: 'image',
@@ -219,6 +224,6 @@ function cardToSchemaPart(z: CardInfo): SchemaPart {
       {name: 'shape', value: z.shape},
       {name: 'fill', value: z.fill}
     ]
-  }
+  };
 }
 

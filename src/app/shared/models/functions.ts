@@ -1,7 +1,5 @@
 import {CardColor, CardFill, CardInfo, CardShape} from "./types";
-import { anyElement } from "ox-types";
-
-
+import {anyElement} from "ox-types";
 
 
 export function colorsParseFunction(color: CardColor): string {
@@ -27,20 +25,26 @@ export function sameCard(c1: CardInfo, c2: CardInfo): boolean {
 }
 
 
-export function generateRandomCard(cardColors: CardColor[], cardShapes: CardShape[], cardFillers: CardFill[]):CardInfo {
+export function generateRandomCard(cardColors: CardColor[], cardShapes: CardShape[], cardFillers: CardFill[]): CardInfo {
   return {
     color: anyElement(cardColors),
     shape: anyElement(cardShapes),
-    fill:anyElement(cardFillers),
+    fill: anyElement(cardFillers),
     hasBeenUsed: false
-  }
-}  
+  };
+}
 
 
 export function isNotRepeated(card: CardInfo, cards: CardInfo[]): boolean {
   return !cards.some(x => sameCard(x, card));
 }
 
-export function convertPXToVH(px:number): number {
-	return px * (100 / document.documentElement.clientHeight);
+export function convertPXToVH(px: number): number {
+  return px * (100 / document.documentElement.clientHeight);
+}
+
+export function getCardSvg(card: CardInfo): string {
+  const cardsSvg = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg', 'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
+    'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
+  return 'changing_rules/svg/formas_sin_cara/' + cardsSvg.find(z => z.includes(card.shape) && z.includes(card.fill));
 }

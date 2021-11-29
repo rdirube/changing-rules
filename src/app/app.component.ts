@@ -53,25 +53,25 @@ export class AppComponent extends BaseMicroLessonApp {
     });
     // preloader.addResourcesToLoad(this.getGameResourcesToLoad());
     // preloader.loadAll().subscribe(z => this.loaded = true);
-    const probando = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
-    probando.setInitialCards(9, 3);
-    let myCheck = 0;
-    for (let i = 0; i < 1000; i++) {
-      try {
-        probando.updateCards(anyElement(ALL_RULES), 3);
-        // if (probando.currentPossibleAnswerCards.length < 3) {
-        //   throw new Error();
-        // }
-        const indexes = shuffle(probando.cards.map( (z, i) => i )).slice(0, 3);
-        indexes.forEach( i => probando.cards[i].hasBeenUsed = true);
-        if (probando.cards.some( z => probando.cards.filter( pc => sameCard(pc, z)).length > 1)) {
-          throw new Error();
-        }
-      } catch (e) {
-        myCheck++;
-      }
-    }
-    console.log('Thje count of errores was', myCheck)
+    // const probando = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
+    // probando.setInitialCards(9, 3);
+    // let myCheck = 0;
+    // for (let i = 0; i < 1000; i++) {
+    //   try {
+    //     probando.updateCards(anyElement(ALL_RULES), 3);
+    //     // if (probando.currentPossibleAnswerCards.length < 3) {
+    //     //   throw new Error();
+    //     // }
+    //     const indexes = shuffle(probando.cards.map( (z, i) => i )).slice(0, 3);
+    //     indexes.forEach( i => probando.cards[i].hasBeenUsed = true);
+    //     if (probando.cards.some( z => probando.cards.filter( pc => sameCard(pc, z)).length > 1)) {
+    //       throw new Error();
+    //     }
+    //   } catch (e) {
+    //     myCheck++;
+    //   }
+    // }
+    // console.log('Thje count of errores was', myCheck)
   }
 
   protected getGameResourcesToLoad(): ResourceOx[] {

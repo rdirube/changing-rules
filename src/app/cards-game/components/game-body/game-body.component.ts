@@ -15,10 +15,18 @@ import {
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
-import {ScreenTypeOx, ExerciseData, OxImageInfo, isEven, GameAskForScreenChangeBridge} from 'ox-types';
+import {
+  ScreenTypeOx,
+  ExerciseData,
+  OxImageInfo,
+  isEven,
+  GameAskForScreenChangeBridge,
+  MultipleChoiceSchemaData, OptionShowable, SchemaPart
+} from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
+  CardInfo,
   ChangingRulesExercise, GameRule
 } from 'src/app/shared/models/types';
 import {filter, take} from 'rxjs/operators';
@@ -26,7 +34,7 @@ import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 import {interval, Subscription, timer} from 'rxjs';
-import {sameCard} from 'src/app/shared/models/functions';
+import {getCardSvg, sameCard} from 'src/app/shared/models/functions';
 import anime from 'animejs';
 
 @Component({
@@ -56,7 +64,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
               private preloaderService: PreloaderOxService) {
     super(soundService, challengeService);
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
-      timer(1000).subscribe(zzz => {
+      this.destroyClockSubs();
+      timer(100).subscribe(zzz => {
         this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
           ScreenTypeOx.GameComplete);
       });
@@ -64,10 +73,9 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
     this.addSubscription(this.gameActions.showHint, x => this.showHint());
 
     this.addSubscription(this.gameActions.checkedAnswer, z => {
-      const ruleToApply = this.exercise.rule;
-      if (ruleToApply?.allSatisfyRule(this.answerComponents.map(z => z.card))) {
+      const correct = z.correctness === 'correct';
+      if (correct) {
         super.cardsToDeckAnimation(this.feedbackService.endFeedback);
-        // super.cardsToDeckAnimation(this.gameActions.showNextChallenge);
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
       } else {
         this.answerComponents.forEach(z => z.cardClasses = 'card-wrong');
@@ -80,29 +88,11 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
 
   answerVerificationMethod(i: number) {
     console.log('answerVerificationMethod');
+    this.gameActions.actionToAnswer.emit();
     this.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer, () => {
-      this.answerService.currentAnswer = {
-        parts: [
-          {correctness: 'correct', parts: []}
-        ]
-      };
+      this.setAnswer();
       this.answerService.onTryAnswer();
     });
-    // const cardComponentArray = this.cardComponentQueryList.toArray();
-    // if (cardComponentArray) {
-    //   this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game);
-    //   if (this.answerComponents.length <= this.challengeService.exerciseConfig.cardsForCorrectAnswer && !cardComponentArray[i].isSelected) {
-    //     this.answerComponents.push(cardComponentArray[i]);
-    //     cardComponentArray[i].cardClasses = 'card-selected';
-    //     cardComponentArray[i].isSelected = true;
-    //     if (this.answerComponents.length === this.challengeService.exerciseConfig.cardsForCorrectAnswer) {
-    //     }
-    //   } else {
-    //     this.answerComponents.splice(this.answerComponents.indexOf(cardComponentArray[i]), 1);
-    //     cardComponentArray[i].isSelected = false;
-    //     cardComponentArray[i].cardClasses = 'card-neutral';
-    //   }
-    // }
   }
 
 
@@ -113,35 +103,39 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
       this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds, () => {
         console.log('Clock finish.');
         this.gameActions.microLessonCompleted.emit();
-      })
+      });
     }
     this.cardsAppearenceAnimation();
   }
 
   private addMetric(): void {
     const myMetric = {
-      schemaType: 'generic-schema',
-      schemaData: {},
+      schemaType: 'multiple-choice',
+      schemaData: {
+        optionMode: 'dependent',
+        requiredOptions: this.challengeService.getExerciseConfig().cardsForCorrectAnswer,
+        options: this.exercise.currentCards.map(cardToOption)
+      } as MultipleChoiceSchemaData,
       userInput: {
         answers: [],
         requestedHints: 0,
         surrendered: false
       },
       finalStatus: 'to-answerComponents',
-      maxHints: 0, // TODO SET MAX HINTS
+      maxHints: 1, // TODO SET MAX HINTS
       secondsInExercise: 0,
       initialTime: new Date(),
       finishTime: new Date(), // TODO SET fnish time
       firstInteractionTime: new Date() // TODO first interacion time
     };
-    // this.addSubscription(this.gameActions.actionToAnswer.pipe(take(1)), z => {
-    //     myMetric.firstInteractionTime = new Date();
-    // });
-    // this.addSubscription(this.gameActions.checkedAnswer.pipe(take(1)),
-    //     z => {
-    //         myMetric.finishTime = new Date();
-    //         console.log('Finish metric time, it means checkAnswer');
-    //     });
+    this.addSubscription(this.gameActions.actionToAnswer.pipe(take(1)), z => {
+      myMetric.firstInteractionTime = new Date();
+    });
+    this.addSubscription(this.gameActions.checkedAnswer.pipe(take(1)),
+      z => {
+        myMetric.finishTime = new Date();
+        console.log('Finish metric time, it means checkAnswer');
+      });
     this.metricsService.addMetric(myMetric as ExerciseData);
     this.metricsService.currentMetrics.exercises++;
   }
@@ -173,8 +167,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
         console.log('Setting real exercise.');
         this.hintService.usesPerChallenge = 1;
         this.hintService.checkHintAvailable();
-        this.addMetric();
         this.exercise = exercise.exerciseData;
+        this.addMetric();
         this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
         this.answerComponents = [];
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
@@ -193,5 +187,38 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit {
       });
   }
 
+  private setAnswer(): void {
+    const cards = this.answerComponents.map( z => z.card);
+    const correctness = this.exercise.rule.allSatisfyRule(cards) ? 'correct' : 'wrong';
+    this.answerService.currentAnswer = {
+      parts: [
+        {correctness, parts: cards.map(cardToSchemaPart)}
+      ]
+    };
+  }
+}
+
+function cardToOption(z: CardInfo): OptionShowable {
+  return {
+    showable: {
+      image: getCardSvg(z)
+    },
+    customProperties: [
+      {name: 'color', value: z.color},
+      {name: 'shape', value: z.shape},
+      {name: 'fill', value: z.fill}
+    ]
+  }
+}
+function cardToSchemaPart(z: CardInfo): SchemaPart {
+  return {
+    format: 'image',
+    value: getCardSvg(z),
+    customProperties: [
+      {name: 'color', value: z.color},
+      {name: 'shape', value: z.shape},
+      {name: 'fill', value: z.fill}
+    ]
+  }
 }
 

@@ -93,6 +93,14 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
   public getMetricsInitialExpandableInfo(): ExpandableInfo {
+    const config = this.getExerciseConfig();
+    const timeSettings = {} as any;
+    if (config.totalTimeInSeconds){
+      timeSettings.timeMode = 'total';
+      timeSettings.timeMode = config.totalTimeInSeconds;
+    } else {
+      timeSettings.timeMode = 'no-time';
+    }
     return {
       exercisesData: [],
       exerciseMetadata: {
@@ -100,10 +108,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         exercisesQuantity: this.getExerciseConfig().totalExercises || 'infinite',
       },
       globalStatement: [],
-      timeSettings: {
-        timeMode: 'between-interactions',
-        totalSeconds: this.getExerciseConfig().totalTimeInSeconds ? this.getExerciseConfig().totalTimeInSeconds : undefined
-      },
+      timeSettings,
     };
   }
 

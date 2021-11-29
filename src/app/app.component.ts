@@ -74,7 +74,7 @@ export class AppComponent extends BaseMicroLessonApp {
   }
 
   protected getGameResourcesToLoad(): ResourceOx[] {
-    const svgElementos: string[] = ['mesa.svg', 'dorso.svg', 'frente.svg', 'mazo.svg', 'tutorial_botón.svg'];
+    const svgElementos: string[] = ['mesa.svg', 'dorso.svg', 'frente.svg', 'tutorial_botón.svg'];
     const svgIndications: string[] = ['colores_igual.svg', 'colores_igual_block.svg', 'formas_igual.svg', 'formas_igual_block.svg', 'relleno_igual.svg', 'relleno_igual_block.svg'];
     // const svgForms: string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg',
     //   'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
@@ -87,20 +87,17 @@ export class AppComponent extends BaseMicroLessonApp {
         figuresSvg.push(getCardSvg({fill, shape, color: 'celeste', hasBeenUsed: false}))
       })
     });
-    return ['click.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
+    return sounds.map(x => new ResourceOx('sounds/' + x, ResourceType.Audio,
       [ScreenTypeOx.Game], false))
       .concat(getResourceArrayFromUrlList([], ResourceType.Svg, false))
       .concat(svgElementos.map(x => new ResourceOx('changing_rules/svg/elementos/' + x, ResourceType.Svg,
-        [ScreenTypeOx.Game], false)))
+        [ScreenTypeOx.Game], true)))
       .concat(svgIndications.map(x => new ResourceOx('changing_rules/svg/indicación/' + x, ResourceType.Svg,
-        [ScreenTypeOx.Game], false)))
+        [ScreenTypeOx.Game], true)))
       .concat(getResourceArrayFromUrlList(figuresSvg, ResourceType.Svg, false))
-      // .concat(svgForms.map(x => new ResourceOx('changing_rules/svg/formas_sin_cara/' + x, ResourceType.Svg,
-      //   [ScreenTypeOx.Game], false)))
       .concat(getResourceArrayFromUrlList(['mini-lessons/executive-functions/svg/buttons/Home.svg',
         'mini-lessons/executive-functions/svg/buttons/Hint.svg',
-        'mini-lessons/executive-functions/svg/buttons/saltear.svg'], ResourceType.Svg, true))
-      .concat(getResourceArrayFromUrlList(sounds, ResourceType.Audio, true));
+        'mini-lessons/executive-functions/svg/buttons/saltear.svg'], ResourceType.Svg, false));
 
   }
 

@@ -2,7 +2,7 @@ import { CardColor, CardShape, CardFill, GameRule, MagnifierPosition } from "./t
 
 
 export const CARD_COLORS: CardColor[] = ['naranja', 'celeste', 'amarillo', 'violeta', 'verde'];
-export const CARD_SHAPES: CardShape[] = ['circulo', 'cuadrado', 'triangulo', 'estrella'];
+export const CARD_SHAPES: CardShape[] = ['circulo', 'cuadrado', 'triangulo', 'estrella', 'rombo'];
 export const CARD_FILLERS: CardFill[] = ['relleno', 'rallado', 'moteado', 'vacio'];
 export const GAME_RULES: GameRule[] = ['color', 'forma', 'relleno'];
 

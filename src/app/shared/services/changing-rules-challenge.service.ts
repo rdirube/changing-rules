@@ -28,7 +28,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   public resources = new Map<string, string>();
   public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
   public cardsInTable!: CardsInTable;
-
+  private lastRule!: GameRule;
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
               subLevelService: SubLevelService,
@@ -36,8 +36,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
               private feedback: FeedbackOxService,
               private appInfo: AppInfoOxService) {
     super(gameActionsService, subLevelService, preloaderService);
-
-
     gameActionsService.restartGame.subscribe(z => {
       this.cachedExercises = [];
       this.setInitialExercise();
@@ -62,7 +60,8 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
-    const currentExerciseRule: GameRule = anyElement(this.exerciseConfig.gameRules);
+    const currentExerciseRule: GameRule = anyElement(this.exerciseConfig.gameRules.filter( z => z !== this.lastRule));
+    this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting) ;
     this.cardsInTable.updateCards(ruleClass, this.exerciseConfig.cardsForCorrectAnswer);

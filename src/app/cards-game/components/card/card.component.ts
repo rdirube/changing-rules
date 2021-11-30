@@ -16,7 +16,6 @@ import {LoadedSvgComponent} from 'micro-lesson-components';
 
 export class CardComponent implements OnInit {
 
-
   @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
@@ -52,7 +51,6 @@ export class CardComponent implements OnInit {
 
   setCard(): void {
     const cardSvgNocolor = getCardSvg(this.card);
-    console.log(cardSvgNocolor);
     const replaces = new Map<string, string>();
     replaces.set("#449ed7", colorsParseFunction(this.card.color).toLowerCase());
     this.cardPathWithReplaces = {path: cardSvgNocolor, replaces: replaces};

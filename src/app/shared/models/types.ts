@@ -10,6 +10,7 @@ export type GameSetting = 'igual' | 'distinto' | 'aleatorio';
 export type GameMode = 'limpiar la mesa' | 'Set convencional';
 export type PositionXAxis = "right" | "left" | "center";
 export type PositionYAxis = "top" | "bottom" | "center";
+export type ChangingRulesScoreCriteria = 'fácil' | 'media' | 'difícil' | 'lengendario';
 
 export interface CardInfo {
   color: CardColor;
@@ -52,7 +53,6 @@ export interface ChangingRulesCard {
   svg: string;
 }
 
-
 export interface ChangingRulesNivelation {
   gameRules: GameRule[];
   shapesAvaiable: CardShape[];
@@ -68,6 +68,7 @@ export interface ChangingRulesNivelation {
   // minWildcardQuantity: number;
   // maxWildcardQuantity: number;
   gameMode: GameMode;
+  timeScoreCriteria: ChangingRulesScoreCriteria;
   // rulesForAnswer: number;
 }
 

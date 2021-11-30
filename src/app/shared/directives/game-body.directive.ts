@@ -40,6 +40,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
   public color = 'rgb(0,255,0)';
   timeFormatted: string = '';
   private clockSubs!: Subscription;
+  cardsInteractable: boolean = false;
 
   constructor(protected soundService: SoundOxService, private cs: ChangingRulesChallengeService) {
     super();
@@ -55,7 +56,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
         this.answerComponents.push(cardComponentArray[i]);
         cardComponentArray[i].cardClasses = 'card-selected';
         cardComponentArray[i].isSelected = true;
-        console.log(this.answerComponents);
+        // console.log(this.answerComponents);
         if (this.answerComponents.length === cardsForCorrect) {
           cardsForCheckReached();
         }
@@ -64,7 +65,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
         cardComponentArray[i].isSelected = false;
         cardComponentArray[i].cardClasses = 'card-neutral';
       }
-      console.log(this.answerComponents.length);
+      // console.log(this.answerComponents.length);
     }
   }
 
@@ -79,6 +80,10 @@ export class GameBodyDirective extends SubscriberOxDirective {
           opacity: 1,
           duration: 1,
           delay: 200,
+          complete: () => {
+            console.log('Cards are now Interactable.');
+            this.cardsInteractable = true;
+          }
         });
       });
   }
@@ -191,8 +196,11 @@ export class GameBodyDirective extends SubscriberOxDirective {
       duration: 300,
       opacity: 1, // TODO validate added
       easing: 'linear',
-      complete: () =>
-        this.swiftToggle()
+      complete: () => {
+        this.swiftToggle();
+        console.log('Cards are now Interactable.');
+        this.cardsInteractable = true;
+      }
     });
     // anime({
     //   targets: '.card-component',
@@ -213,7 +221,15 @@ export class GameBodyDirective extends SubscriberOxDirective {
     }).concat([{value: 0, duration: 50}]);
     anime({
       targets: this.answerComponents.map(z => z.elementRef.nativeElement),
-      rotate
+      rotate,
+      complete: () => {
+        this.cardsInteractable = true;
+        this.answerComponents.forEach(z => {
+          z.isSelected = false;
+          z.cardClasses = 'card-neutral';
+        });
+        this.answerComponents = [];
+      }
     });
   }
 

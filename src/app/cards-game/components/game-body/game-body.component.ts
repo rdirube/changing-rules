@@ -1,27 +1,20 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ViewChildren,
-  QueryList,
-  ElementRef,
-  EventEmitter,
-  ChangeDetectorRef
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {
   FeedbackOxService,
   GameActionsService,
-  HintService, MicroLessonCommunicationService,
+  HintService,
+  MicroLessonCommunicationService,
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
 import {
-  ScreenTypeOx,
   ExerciseData,
-  OxImageInfo,
-  isEven,
   GameAskForScreenChangeBridge,
-  MultipleChoiceSchemaData, OptionShowable, SchemaPart
+  MultipleChoiceSchemaData,
+  OptionShowable,
+  OxImageInfo,
+  SchemaPart,
+  ScreenTypeOx
 } from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
@@ -37,6 +30,7 @@ import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 import {timer} from 'rxjs';
 import {getCardSvg, sameCard, allDifferentProperties, satisfyRuleCards, santiMode} from 'src/app/shared/models/functions';
 import { GAME_RULES } from 'src/app/shared/models/const';
+import anime from 'animejs';
 
 @Component({
   selector: 'app-game-body',
@@ -68,6 +62,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
               private feedbackService: FeedbackOxService,
               private preloaderService: PreloaderOxService) {
     super(soundService, challengeService);
+    // @ts-ignore
+    anime.suspendWhenDocumentHidden = false;
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
       this.destroyClockSubs();
       timer(100).subscribe(zzz => {
@@ -92,9 +88,12 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
   answerVerificationMethod(i: number) {
-    console.log('answerVerificationMethod');
+    if (!this.cardsInteractable) {
+      return;
+    }
     this.gameActions.actionToAnswer.emit();
     this.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer, () => {
+      this.cardsInteractable = false;
       this.setAnswer();
       this.answerService.onTryAnswer();
     });
@@ -102,6 +101,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   startGame() {
+    this.soundService.playWoosh(ScreenTypeOx.Game);
     this.countDownImageInfo = undefined;
     this.currentSetting = this.exercise.currentSetting;
     this.deckComponent.auxArray = [];
@@ -140,7 +140,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.addSubscription(this.gameActions.checkedAnswer.pipe(take(1)),
       z => {
         myMetric.finishTime = new Date();
-        console.log('Finish metric time, it means checkAnswer');
+        // console.log('Finish metric time, it means checkAnswer');
       });
     this.metricsService.addMetric(myMetric as ExerciseData);
     this.metricsService.currentMetrics.exercises++;
@@ -181,7 +181,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
           this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
         } else {
           this.deckClass = 'filled';
-
+          this.cardsInteractable = true;
         }
         if (this.cardComponentQueryList) {
           this.cardComponentQueryList.toArray().forEach((z, i) => {
@@ -208,9 +208,15 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         {correctness, parts: cards.map(cardToSchemaPart)}
       ]
     };
-  }}
+  }
 
 
+  
+
+  onCountDownTimeUpdated() {
+    this.soundService.playSoundEffect('sounds/bubble01.mp3', ScreenTypeOx.Game);
+  }
+}
 
 function cardToOption(z: CardInfo): OptionShowable {
   return {

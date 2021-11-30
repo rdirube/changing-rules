@@ -1,75 +1,97 @@
 .card-container {
-    width:12vh;
-    height: 12vh;
-    position:relative;
-    width: 100%;
-    height: 100%;
+  width: 12vh;
+  height: 12vh;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .card-selected {
-    @extend .card-neutral;
-    border: 0.8vh solid #ffd700;
-    border-radius: 1.7vh;
-    animation: card-selected-animation 0.1s linear forwards;
+  @extend .card-neutral;
+  border: 0.8vh solid #ffd700;
+  border-radius: 1.7vh;
+  animation: card-selected-animation 0.1s linear forwards;
 }
 
 @keyframes card-selected-animation {
-    0%{transform: scale(1);}
-    100%{transform: scale(1.15);}
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15);
+  }
 }
 
 
 .card-correct {
-    @extend .card-neutral;
-    border: 0.5vh solid green;
-    //animation: card-correct-animation 0.58s ease-in-out;
+  @extend .card-neutral;
+  //border: 0.5vh solid #56d63c;
+  background: #56d63c;
+  border-radius: 1vh;
+  padding: 0.5vh;
+  transform: scale(1.1);
+  //animation: card-correct-animation 0.58s ease-in-out;
 }
 
 @keyframes card-correct-animation {
-    0%{transform: scale(1.10)}
-    25%{transform: scale(1)}
-    50%{transform: scale(1.10)}
-    75%{transform:scale(1)}
-    100%{transform: scale(1.10)}
+  0% {
+    transform: scale(1.10)
+  }
+  25% {
+    transform: scale(1)
+  }
+  50% {
+    transform: scale(1.10)
+  }
+  75% {
+    transform: scale(1)
+  }
+  100% {
+    transform: scale(1.10)
+  }
 }
-
-
 
 
 .card-wrong {
-    @extend .card-neutral;
-    border: 0.5vh solid red;
+  @extend .card-neutral;
+  //border: 0.5vh solid red;
+  background: #d62922;
+  border-radius: 1vh;
+  padding: 0.5vh;
+  transform: scale(1.1);
 }
 
 
-
-
-
-.card-neutral{
-    position: absolute;
+.card-neutral {
+  position: absolute;
 }
 
 
 .current-card-symbol {
-    position:absolute;
-    width: 75%;
+  position: absolute;
+  width: 75%;
 }
 
 .full-deck {
-    box-shadow:0 3vh rgb(208, 43, 39);
+  box-shadow: 0 3vh rgb(208, 43, 39);
 }
 
 
 .card-to-select-tutorial {
-    @extend .card-neutral;
-    animation: card-to-select 2.5s infinite;
+  @extend .card-neutral;
+  animation: card-to-select 2.5s infinite;
 }
 
 @keyframes card-to-select {
-    0%{filter:brightness(0.5) }
-    50%{filter:brightness(1.5);}
-    100%{filter:brightness(0.5)
-    }
+  0% {
+    filter: brightness(0.5)
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(0.5)
+  }
 }
 
 

@@ -50,6 +50,7 @@
   <app-rules ></app-rules>
 </div>
 <ox-comp-count-down *ngIf="countDownImageInfo"
+                    (timeUpdated)="onCountDownTimeUpdated()"
                     [skipButtonInfo]="countDownImageInfo"
                     (started)="startGame()"
                     class="myAbsolute" fxFlex="grow" style="z-index: 123"></ox-comp-count-down>

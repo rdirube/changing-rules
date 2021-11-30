@@ -212,7 +212,14 @@ export class GameBodyDirective extends SubscriberOxDirective {
     }).concat([{value: 0, duration: 50}]);
     anime({
       targets: this.answerComponents.map(z => z.elementRef.nativeElement),
-      rotate
+      rotate,
+      complete: () => {
+        this.answerComponents.forEach(z => {
+          z.isSelected = false;
+          z.cardClasses = 'card-neutral';
+        });
+        this.answerComponents = [];
+      }
     });
   }
 

@@ -1,35 +1,25 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ViewChildren,
-  QueryList,
-  ElementRef,
-  EventEmitter,
-  ChangeDetectorRef
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {
   FeedbackOxService,
   GameActionsService,
-  HintService, MicroLessonCommunicationService,
+  HintService,
+  MicroLessonCommunicationService,
   MicroLessonMetricsService,
   SoundOxService
 } from 'micro-lesson-core';
 import {
-  ScreenTypeOx,
   ExerciseData,
-  OxImageInfo,
-  isEven,
   GameAskForScreenChangeBridge,
-  MultipleChoiceSchemaData, OptionShowable, SchemaPart
+  MultipleChoiceSchemaData,
+  OptionShowable,
+  OxImageInfo,
+  SchemaPart,
+  ScreenTypeOx
 } from 'ox-types';
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
-import {
-  CardInfo,
-  ChangingRulesExercise, GameRule
-} from 'src/app/shared/models/types';
-import {filter, take} from 'rxjs/operators';
+import {CardInfo, ChangingRulesExercise, GameRule} from 'src/app/shared/models/types';
+import {take} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
@@ -100,6 +90,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   startGame() {
+    this.soundService.playWoosh(ScreenTypeOx.Game);
     this.countDownImageInfo = undefined;
     this.deckComponent.auxArray = [];
     if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
@@ -199,6 +190,10 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         {correctness, parts: cards.map(cardToSchemaPart)}
       ]
     };
+  }
+
+  onCountDownTimeUpdated() {
+    this.soundService.playSoundEffect('sounds/bubble01.mp3', ScreenTypeOx.Game);
   }
 }
 

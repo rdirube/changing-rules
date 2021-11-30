@@ -10,6 +10,7 @@ export type GameSetting = 'igual' | 'distinto' | 'aleatorio';
 export type GameMode = 'limpiar la mesa' | 'Set convencional';
 export type PositionXAxis = "right" | "left" | "center";
 export type PositionYAxis = "top" | "bottom" | "center";
+export type ChangingRulesScoreCriteria = 'fácil' | 'media' | 'difícil' | 'lengendario';
 
 export interface CardInfo {
   color: CardColor;
@@ -54,6 +55,7 @@ export interface ChangingRulesCard {
 
 
 export interface ChangingRulesNivelation {
+  timeDifficulty: ChangingRulesScoreCriteria;
   gameRules: GameRule[];
   shapesAvaiable: CardShape[];
   colorsAvaiable: CardColor[];

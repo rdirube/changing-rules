@@ -8,8 +8,15 @@
 
 .card-selected {
   @extend .card-neutral;
-  border: 0.8vh solid #ffd700;
+  //border: 0.8vh solid #ffd700;
   border-radius: 1.7vh;
+  // --- //
+  background: #ffd700;
+  //border-radius: 1vh;
+  padding: 0.5vh;
+  //transform: scale(1.1);
+  // --- //
+
   animation: card-selected-animation 0.1s linear forwards;
 }
 

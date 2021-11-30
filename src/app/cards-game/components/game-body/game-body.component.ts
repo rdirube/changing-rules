@@ -25,6 +25,7 @@ import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 import {timer} from 'rxjs';
 import {getCardSvg, sameCard} from 'src/app/shared/models/functions';
+import anime from 'animejs';
 
 @Component({
   selector: 'app-game-body',
@@ -56,6 +57,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
               private feedbackService: FeedbackOxService,
               private preloaderService: PreloaderOxService) {
     super(soundService, challengeService);
+    // @ts-ignore
+    anime.suspendWhenDocumentHidden = false;
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
       this.destroyClockSubs();
       timer(100).subscribe(zzz => {
@@ -80,9 +83,12 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
   answerVerificationMethod(i: number) {
-    console.log('answerVerificationMethod');
+    if (!this.cardsInteractable) {
+      return;
+    }
     this.gameActions.actionToAnswer.emit();
     this.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer, () => {
+      this.cardsInteractable = false;
       this.setAnswer();
       this.answerService.onTryAnswer();
     });
@@ -128,7 +134,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.addSubscription(this.gameActions.checkedAnswer.pipe(take(1)),
       z => {
         myMetric.finishTime = new Date();
-        console.log('Finish metric time, it means checkAnswer');
+        // console.log('Finish metric time, it means checkAnswer');
       });
     this.metricsService.addMetric(myMetric as ExerciseData);
     this.metricsService.currentMetrics.exercises++;
@@ -169,7 +175,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
           this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
         } else {
           this.deckClass = 'filled';
-
+          this.cardsInteractable = true;
         }
         if (this.cardComponentQueryList) {
           this.cardComponentQueryList.toArray().forEach((z, i) => {

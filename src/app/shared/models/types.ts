@@ -53,9 +53,7 @@ export interface ChangingRulesCard {
   svg: string;
 }
 
-
 export interface ChangingRulesNivelation {
-  timeDifficulty: ChangingRulesScoreCriteria;
   gameRules: GameRule[];
   shapesAvaiable: CardShape[];
   colorsAvaiable: CardColor[];
@@ -70,6 +68,7 @@ export interface ChangingRulesNivelation {
   // minWildcardQuantity: number;
   // maxWildcardQuantity: number;
   gameMode: GameMode;
+  timeScoreCriteria: ChangingRulesScoreCriteria;
   // rulesForAnswer: number;
 }
 

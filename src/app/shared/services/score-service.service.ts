@@ -19,7 +19,7 @@ export class ScoreServiceService extends ScoreStarsService<any> {
     const maxCorrectExercises = (config.totalTimeInSeconds && config.totalExercises)
     || config.totalTimeInSeconds <= 0 ?
       config.totalExercises
-      : config.totalTimeInSeconds / getStimatedTimeByDifficulty(config.timeDifficulty);
+      : config.totalTimeInSeconds / (config.cardsForCorrectAnswer * getStimatedTimeForCardByDifficulty(config.timeScoreCriteria));
     const correctExerciseValue = maxValue / maxCorrectExercises;
     const wrongExerciseValue = -correctExerciseValue / 2;
 
@@ -38,19 +38,19 @@ export class ScoreServiceService extends ScoreStarsService<any> {
   }
 }
 
-function getStimatedTimeByDifficulty(c: ChangingRulesScoreCriteria): number {
+function getStimatedTimeForCardByDifficulty(c: ChangingRulesScoreCriteria): number {
   switch (c) {
     case 'fácil':
-      return 10;
-    case 'media':
-      return 7;
-    case 'difícil':
       return 4;
+    case 'media':
+      return 3;
+    case 'difícil':
+      return 2;
     case 'lengendario':
-      return 2.5;
+      return 1;
     default:
       console.error('There was not difficulty to calculate the score. Using media.');
-      return getStimatedTimeByDifficulty('media');
+      return getStimatedTimeForCardByDifficulty('media');
     // throw new Error('There was not difficulty to calculate the score.')
   }
 }

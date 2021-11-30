@@ -26,6 +26,7 @@ import {
 import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
 import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
+  ALL_RULES,
   CardInfo,
   ChangingRulesExercise, GameRule
 } from 'src/app/shared/models/types';
@@ -34,7 +35,8 @@ import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 import {timer} from 'rxjs';
-import {getCardSvg, sameCard} from 'src/app/shared/models/functions';
+import {getCardSvg, sameCard, allDifferentProperties, satisfyRuleCards, santiMode} from 'src/app/shared/models/functions';
+import { GAME_RULES } from 'src/app/shared/models/const';
 
 @Component({
   selector: 'app-game-body',
@@ -195,11 +197,12 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   private setAnswer(): void {
-    const cards = this.answerComponents.map(z => z.card);
-    const equalRuleApproved = this.exercise.rule.allSatisfyRule(cards) 
-    const correctness = this.exercise.currentSetting === 'igual' ? equalRuleApproved ? 'correct' : 'wrong': ! equalRuleApproved ? 'correct' : 'wrong';
-    console.log(this.exercise.currentSetting);
-    console.log(correctness);
+    const cards = this.answerComponents.map(z => z.card)
+    const uniqueValues:boolean[]=[];
+    console.log(allDifferentProperties(cards));
+    const correctness =   santiMode(cards,GAME_RULES) ||  allDifferentProperties(cards) ? 'correct' : 'wrong';
+    // const equalRuleApproved = this.exercise.rule.allSatisfyRule(cards) 
+    // const correctness = this.exercise.currentSetting === 'igual' ? equalRuleApproved ? 'correct' : 'wrong': ! equalRuleApproved ? 'correct' : 'wrong';
     this.answerService.currentAnswer = {
       parts: [
         {correctness, parts: cards.map(cardToSchemaPart)}

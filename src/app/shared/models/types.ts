@@ -98,6 +98,8 @@ export abstract class Rule {
 
   abstract modifyToSatifyRule(randomCardFromTable: CardInfo, myCard: CardInfo): CardInfo;
 
+  abstract uniqueRuleValue(cardForChecked:CardInfo, cards:CardInfo[]):boolean;
+
   allSatisfyRule(cards: CardInfo[]): boolean {
     return cards.every(card => this.satisfyRule(card, cards[0]));
   }
@@ -124,7 +126,14 @@ export class ShapeRule extends Rule {
     toModifyCard.shape = primaryCard.shape;
     return toModifyCard;
   }
+
+  uniqueRuleValue(cardForCheck:CardInfo, cards:CardInfo[]):boolean {
+    return cards.filter(card => card.shape === cardForCheck.shape).length === 1;
+  }
+
+
 }
+
 
 
 export class ColorRule extends Rule {
@@ -139,6 +148,11 @@ export class ColorRule extends Rule {
     return toModifyCard;
   }
 
+  uniqueRuleValue(cardForCheck:CardInfo, cards:CardInfo[]):boolean {
+    return cards.filter(card => card.color === cardForCheck.color).length === 1;
+  }
+
+
 
 }
 
@@ -146,9 +160,18 @@ export class ColorRule extends Rule {
 export class FillRule extends Rule {
   id = 'relleno' as GameRule;
 
+
+
   satisfyRule(c1: CardInfo, c2: CardInfo): boolean {
     return c1.fill === c2.fill;
   }
+
+
+  uniqueRuleValue(cardForCheck:CardInfo, cards:CardInfo[]):boolean {
+    return cards.filter(card => card.fill === cardForCheck.fill).length === 1;
+  }
+
+
 
   modifyToSatifyRule(primaryCard: CardInfo, toModifyCard: CardInfo): CardInfo {
     toModifyCard.fill = primaryCard.fill;

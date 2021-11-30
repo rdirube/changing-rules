@@ -58,6 +58,8 @@ export class CardComponent implements OnInit {
     this.cardPathWithReplaces = {path: cardSvgNocolor, replaces: replaces};
   }
 
+
+  
   public updateCard(): void {
     this.cardSvg = 'changing_rules/svg/elementos/frente.svg';
     this.faceDown = false;

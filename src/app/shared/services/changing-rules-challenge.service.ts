@@ -64,7 +64,8 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting) ;
-    this.cardsInTable.updateCards(ruleClass, this.exerciseConfig.cardsForCorrectAnswer);
+    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer);
+    console.log(this.cardsInTable.cards)
     // TODO SOLVE THIS
     // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
     //   , this.cardInTable, CARD_COLORS, CARD_SHAPES, CARD_FILLERS, lastCards, this.exerciseConfig.cardInTable);

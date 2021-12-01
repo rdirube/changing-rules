@@ -21,14 +21,14 @@ import {ExerciseOx, PreloaderOxService} from 'ox-core';
 import {
   ALL_RULES,
   CardInfo,
-  ChangingRulesExercise, GameRule
+  ChangingRulesExercise, GameRule, GameSetting
 } from 'src/app/shared/models/types';
 import {filter, take} from 'rxjs/operators';
 import {CardComponent} from '../card/card.component';
 import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
 import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
 import {timer} from 'rxjs';
-import {getCardSvg, sameCard, allDifferentProperties, satisfyRuleCards, santiMode} from 'src/app/shared/models/functions';
+import {getCardSvg, sameCard, allDifferentProperties, satisfyRuleCardsNew} from 'src/app/shared/models/functions';
 import { GAME_RULES } from 'src/app/shared/models/const';
 import anime from 'animejs';
 
@@ -50,7 +50,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
-
+  public currentSetting!:GameSetting;
   constructor(private challengeService: ChangingRulesChallengeService,
               private metricsService: MicroLessonMetricsService<any>,
               private gameActions: GameActionsService<any>,
@@ -200,7 +200,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     const cards = this.answerComponents.map(z => z.card)
     const uniqueValues:boolean[]=[];
     console.log(allDifferentProperties(cards));
-    const correctness =   santiMode(cards,GAME_RULES) ||  allDifferentProperties(cards) ? 'correct' : 'wrong';
+    const correctness =   satisfyRuleCardsNew(cards,GAME_RULES) ||  allDifferentProperties(cards) ? 'correct' : 'wrong';
     // const equalRuleApproved = this.exercise.rule.allSatisfyRule(cards) 
     // const correctness = this.exercise.currentSetting === 'igual' ? equalRuleApproved ? 'correct' : 'wrong': ! equalRuleApproved ? 'correct' : 'wrong';
     this.answerService.currentAnswer = {

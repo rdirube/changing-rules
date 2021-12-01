@@ -1,7 +1,8 @@
+import { random } from "animejs";
 import {anyElement, duplicateWithJSON, shuffle} from "ox-types";
 import {Observable, zip} from "rxjs";
 import { CARD_COLORS, CARD_FILLERS, CARD_SHAPES, GAME_RULES } from "./const";
-import {allDifferentProperties, generateRandomCard, sameCard, satisfyRuleCardsNew, satisfyRuleFilter} from "./functions";
+import { allDifferentProperties, generateRandomCard, sameCard, satisfyRuleCardsNew, satisfyRuleFilter} from "./functions";
 
 export type CardColor = 'naranja' | 'celeste' | 'amarillo' | 'verde' | 'violeta';
 export type CardShape = 'circulo' | 'cuadrado' | 'triangulo' | 'estrella' | 'rombo';
@@ -11,6 +12,8 @@ export type GameSetting = 'igual' | 'distinto' | 'aleatorio';
 export type GameMode = 'limpiar la mesa' | 'Set convencional';
 export type PositionXAxis = "right" | "left" | "center";
 export type PositionYAxis = "top" | "bottom" | "center";
+export type ChangingRulesScoreCriteria = 'fácil' | 'media' | 'difícil' | 'lengendario';
+
 
 // let colorsAvaiable = CARD_COLORS;
 // const shapesAvaiable = CARD_SHAPES;
@@ -38,6 +41,7 @@ export interface ChangingRulesExercise {
   currentCards: CardInfo[],
   currentSetting: GameSetting
 }
+
 
 export interface TutorialStep {
   text: string;
@@ -70,6 +74,8 @@ export interface ChangingRulesNivelation {
   gameSetting: GameSetting[];
   totalExercises: number;
   totalTimeInSeconds: number;
+  timeScoreCriteria: ChangingRulesScoreCriteria;
+
   // wildcardOn: boolean;
   // minWildcardQuantity: number;
   // maxWildcardQuantity: number;
@@ -205,12 +211,11 @@ export class CardsInTable {
 
   setInitialCards(cardsInTableQuant: number, correctAnswerQuant: number): void {
   this.cards = [];
-    // for (let i = 0; i < cardsInTableQuant - correctAnswerQuant; i++) {
   for (let i = 0; i < cardsInTableQuant; i++) {
       this.cards.push(this.generateCard([]));
     }
-  const indexes = shuffle(this.cards.map((z, i) => i)).slice(0, correctAnswerQuant);
-  indexes.forEach(i => this.cards[i].hasBeenUsed = true);
+  // const indexes = shuffle(this.cards.map((z, i) => i)).slice(0, correctAnswerQuant);
+  // indexes.forEach(i => this.cards[i].hasBeenUsed = true);
   }
 
 
@@ -254,6 +259,10 @@ export class CardsInTable {
   }
 
 
+  cardNotRepeated(cards:CardInfo[], card:CardInfo): CardInfo {
+    // const randomCard = generateRandomCard(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
+    return this.isNotRepeated(card, cards) ? card : this.cardNotRepeated(cards, card);
+  }
 
 
   isNotRepeated(card: CardInfo, extraCardArray: CardInfo[]): boolean {
@@ -263,21 +272,26 @@ export class CardsInTable {
 
 
 
-  generateCardAltMode(randomCard:CardInfo, newCards:CardInfo[]):any{
-   const modeToUse:string[] = ['different', 'same'];
-   const randomMode:string = anyElement(modeToUse); 
-   const cardGuideRule = anyElement(ALL_RULES); 
-   switch(randomMode) {
-     case'different': return this.returnDifferentPropertiesCard(newCards);
-     case 'same': return this.returnEqualProperty(cardGuideRule, randomCard);
-   }
-  }
+  // generateCardAltMode(newCards:CardInfo[], randomCard:CardInfo):any{
+  //  const modeToUse:string[] = ['different', 'same'];
+  //  const randomMode:string = anyElement(modeToUse); 
+  //  const cardGuideRule = anyElement(ALL_RULES);
+  //  console.log(randomMode);
+  //  console.log(cardGuideRule);
+  //  if(randomCard) {
+  //   switch(randomMode) {
+  //     case'different': return this.returnDifferentPropertiesCard(newCards);
+  //     case 'same': return this.returnEqualProperty(cardGuideRule, randomCard);
+  //   }} else {
+  //     this.isNotRepeated(randomCard,newCards) ? randomCard : this.generateCardAltMode(newCards, randomCard);
+  //   }
+  // }
 
 
 
 
   updateCards(rule: Rule, minToCorrectAnswer: number): void {
-    const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
+    const indexesToReplace: number[] = this.cards.map((z,i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
     const cardsThatWillRemain = this.cards.filter(z => !z.hasBeenUsed);
     const randomCardFromTable = anyElement(cardsThatWillRemain);
@@ -298,14 +312,37 @@ export class CardsInTable {
 
 
 
+    addCard(cards: CardInfo[]): void {
+      const properties = GAME_RULES;
+      const cardForAdd = {
+        color: this.getValidProperty<CardColor>(cards.map(z => z.color), CARD_COLORS),
+        shape: this.getValidProperty<CardShape>(cards.map(z => z.shape), CARD_SHAPES),
+        fill: this.getValidProperty<CardFill>(cards.map(z => z.fill), CARD_FILLERS),
+        hasBeenUsed: false
+      }
+      this.cardNotRepeated(this.cards, cardForAdd);
+      // cards.push({
+      //   color: this.getValidProperty<CardColor>(cards.map(z => z.color), CARD_COLORS),
+      //   shape: this.getValidProperty<CardShape>(cards.map(z => z.shape), CARD_SHAPES),
+      //   fill: this.getValidProperty<CardFill>(cards.map(z => z.fill), CARD_FILLERS),
+      //   hasBeenUsed: false
+      // })
+    }
 
-   returnDifferentPropertiesCard(differentCards:CardInfo[]):CardInfo {
-      return {
-      color: anyElement(CARD_COLORS.filter(z => differentCards.map(z => z.color).includes(z))),
-      shape: anyElement(CARD_SHAPES.filter(c => differentCards.map(z => z.shape).includes(c))),
-      fill: anyElement(CARD_FILLERS.filter(m => differentCards.map(z => z.fill).includes(m))),
-      hasBeenUsed: false
-    }}
+    getValidProperty<T>(currentPropeteries: T[], allProperties: T[]): T {
+      const different = currentPropeteries.some(aProperty => aProperty !== currentPropeteries[0])
+      return different ? anyElement(allProperties.filter( z => !currentPropeteries.includes(z)))
+      : currentPropeteries[0]
+    }
+
+
+  //  returnDifferentPropertiesCard(differentCards:CardInfo[]):CardInfo {
+  //     return {
+  //     color: anyElement(CARD_COLORS.filter(z => differentCards.map(z => z.color).includes(z))),
+  //     shape: anyElement(CARD_SHAPES.filter(c => differentCards.map(z => z.shape).includes(c))),
+  //     fill: anyElement(CARD_FILLERS.filter(m => differentCards.map(z => z.fill).includes(m))),
+  //     hasBeenUsed: false
+  //   }}
 
 
 
@@ -317,25 +354,27 @@ export class CardsInTable {
 
 
 
-  updateCardsNewModel(minToCorrectAnswer:number):void {
+  updateCardsNewModel(cardsForCorrect:number):void {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
-    const cardsThatWillRemain = this.cards.filter(z => !z.hasBeenUsed);
-    const randomCardFromTable = anyElement(cardsThatWillRemain);
-    this.currentPossibleAnswerCards = cardsThatWillRemain.filter(z => satisfyRuleCardsNew(cardsThatWillRemain, GAME_RULES))
-    const cardsToAddSatisyingRule = minToCorrectAnswer - this.currentPossibleAnswerCards.length;
-    const newCards: CardInfo[] = [];
-    for(let i = 0; i < cardsToAddSatisyingRule; i++) {
-        if(newCards.length < cardsToAddSatisyingRule) {
-          this.generateCardAltMode(randomCardFromTable, newCards);
-        } else {
-          newCards.push(this.generateCard(newCards));
-        }
+    const cardsThatRemain:CardInfo[] = this.cards.filter(z => !z.hasBeenUsed);
+    const cardsForCheck:CardInfo[] = [];
+    if(this.cards.some(card => card.hasBeenUsed !== false)) {
+      for(let i = 0 ; i < 2; i++) {
+        cardsForCheck.push(anyElement(cardsThatRemain.filter(z => !cardsForCheck.includes(z))))
+      }
+      for (let i = 0; i < cardsForCorrect - 2; i++) {
+        this.addCard(cardsForCheck);
+      }
+      for (let i = 0; i < this.cards.length - cardsThatRemain.length - 1; i++) {
+        this.cardNotRepeated(this.cards,generateRandomCard(CARD_COLORS, CARD_SHAPES, CARD_FILLERS))
+      }
+      indexesToReplace.forEach((index, i) => {
+        this.cards[index] = cardsForCheck[i];
+      });
     }
-    indexesToReplace.forEach((index, i) => {
-      this.cards[index] = newCards[i];
-    });
-  }
+    }
+    
 }
 
 

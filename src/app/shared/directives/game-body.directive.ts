@@ -41,6 +41,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
   timeFormatted: string = '';
   private clockSubs!: Subscription;
   cardsInteractable: boolean = false;
+  public faceDown:boolean = false;
 
   constructor(protected soundService: SoundOxService, private cs: ChangingRulesChallengeService) {
     super();
@@ -116,6 +117,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
     }
     this.clockSubs = undefined as any;
   }
+  
 
   getGridClassToUse(): string {
     if (this.cs.getExerciseConfig().cardInTable <= 4) {
@@ -130,6 +132,8 @@ export class GameBodyDirective extends SubscriberOxDirective {
       return 'cards-grid-16';
     }
   }
+
+
 
   cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
     const duration = 123;
@@ -157,7 +161,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
                 answerCard.cardSvg = 'changing_rules/svg/elementos/dorso.svg';
                 answerCard.cardClasses = 'card-neutral';
                 answerCard.isSelected = false;
-                answerCard.faceDown = true;
+                this.faceDown = true;
               },
               easing: 'easeOutExpo',
               complete: () => {

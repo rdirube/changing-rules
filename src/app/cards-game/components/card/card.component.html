@@ -1,21 +1,6 @@
-<div fxLayoutAlign="center center" style="width: 100%; height: 100%;">
-  <mlc-loaded-svg #cardPlaceholder
-    [ngClass]="{'cover-everything': faceDown, 'little-down-4': !faceDown}"
-    path="changing_rules/svg/elementos/dorso.svg" [class]="cardClasses">
-  </mlc-loaded-svg>
-  <mlc-loaded-svg #cardPlaceholder
-    [ngClass]="{'cover-everything': faceDown, 'little-down-3': !faceDown}"
-    path="changing_rules/svg/elementos/dorso.svg" [class]="cardClasses">
-  </mlc-loaded-svg>
-  <mlc-loaded-svg #cardPlaceholder
-    [ngClass]="{'cover-everything': faceDown, 'little-down-2': !faceDown}"
-    path="changing_rules/svg/elementos/dorso.svg" [class]="cardClasses">
-  </mlc-loaded-svg>
-  <mlc-loaded-svg #cardPlaceholder
-    [ngClass]="{'cover-everything': faceDown, 'little-down-1': !faceDown}"
-    path="changing_rules/svg/elementos/dorso.svg" [class]="cardClasses">
-  </mlc-loaded-svg>
-<!--  style = "transform: translateY(0.65vh)">-->
+<div fxLayoutAlign="center center" style="width: 100%; height: 100%;"> 
+  <!-- <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill  path="changing_rules/svg/elementos/dorso.svg">
+  </mlc-loaded-svg> -->
   <mlc-loaded-svg
     [path]="cardSvg" [class]="cardClasses" style="z-index: 2">
   </mlc-loaded-svg> 

@@ -23,27 +23,24 @@
          style="transform: translateX(-52vh);">
       </app-deck>
     </div>
-      <div [ngClass]="gridClass" *ngIf="exercise">
-<!--        <div fxFlex="grow" fxLayoutAlign="start center" style="pointer-events: none" class="myAbsolute">-->
-<!--&lt;!&ndash;          <app-deck [deckClass]="deckClass" [cardsPlayed]="cardsPlayed"></app-deck>&ndash;&gt;-->
-<!--          <mlc-loaded-svg-->
-<!--            path="svg/reglas_cambiantes/elementos/dorso.svg" style="width: 5vh; height: 12vh">-->
-<!--          </mlc-loaded-svg>-->
-<!--   
-       </div>-->
-
+  <div [ngClass]="gridClass" *ngIf="exercise">
       <div #cardContainer *ngFor="let item of exercise?.currentCards; let i = index"
       [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
-      (click)="answerVerificationMethod(i)" style="position: absolute;">
-        <app-card [cardInfo]="item" #aCard
+      (click)="answerVerificationMethod(i)" style="position: relative;">
+        <app-card [cardInfo]="item" #aCard [faceDown]="faceDown"
                   [cardClasses]="stateByCards[i]"
                   [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
       </app-card>
-        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
+        <!-- <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
+        </mlc-loaded-svg> -->
+        <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill [ngClass]=" faceDown? 'cover-everything':'little-down-1'" path="changing_rules/svg/elementos/dorso.svg">
         </mlc-loaded-svg>
-      </div>
+    </div>
   </div>
+ </div>
 </div>
+
+
 <!-- <div fxLayout="column" class="card-to-select" style="height: auto">
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
     <ox-text [originalText]="currentSetting" color="white" font="dinnRegular" fontSize="4vh"></ox-text>

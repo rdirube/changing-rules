@@ -20,7 +20,7 @@ export class CardComponent implements OnInit {
   public isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
   public cardSvg: string = 'changing_rules/svg/elementos/frente.svg';
-
+  @Input() faceDown!:boolean;
   @Input() swiftCardOn!: boolean;
 
   @Input('cardInfo')
@@ -36,7 +36,6 @@ export class CardComponent implements OnInit {
   card!: CardInfo;
 
 
-  faceDown = false;
 
 
   constructor(public elementRef: ElementRef, private gameActions: GameActionsService<any>,
@@ -63,5 +62,7 @@ export class CardComponent implements OnInit {
     this.faceDown = false;
   }
 
+
+  
 
 }

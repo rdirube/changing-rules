@@ -156,6 +156,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     });
   }
 
+  
   ngOnInit(): void {
     // this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
     this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
@@ -200,7 +201,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     const cards = this.answerComponents.map(z => z.card)
     const uniqueValues:boolean[]=[];
     console.log(allDifferentProperties(cards));
-    const correctness =   satisfyRuleCardsNew(cards,GAME_RULES) ||  allDifferentProperties(cards) ? 'correct' : 'wrong';
+    const correctness =   satisfyRuleCardsNew(cards, GAME_RULES) ? 'correct' : 'wrong';
     // const equalRuleApproved = this.exercise.rule.allSatisfyRule(cards) 
     // const correctness = this.exercise.currentSetting === 'igual' ? equalRuleApproved ? 'correct' : 'wrong': ! equalRuleApproved ? 'correct' : 'wrong';
     this.answerService.currentAnswer = {

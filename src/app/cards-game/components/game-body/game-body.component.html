@@ -29,10 +29,12 @@
 <!--          <mlc-loaded-svg-->
 <!--            path="svg/reglas_cambiantes/elementos/dorso.svg" style="width: 5vh; height: 12vh">-->
 <!--          </mlc-loaded-svg>-->
-<!--        </div>-->
+<!--   
+       </div>-->
+
       <div #cardContainer *ngFor="let item of exercise?.currentCards; let i = index"
       [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
-      (click)="answerVerificationMethod(i)" style="position: relative;">
+      (click)="answerVerificationMethod(i)" style="position: absolute;">
         <app-card [cardInfo]="item" #aCard
                   [cardClasses]="stateByCards[i]"
                   [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
@@ -40,7 +42,6 @@
         <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
         </mlc-loaded-svg>
       </div>
-    </div>
   </div>
 </div>
 <!-- <div fxLayout="column" class="card-to-select" style="height: auto">

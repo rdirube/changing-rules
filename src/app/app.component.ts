@@ -1,6 +1,6 @@
 import {Component, ElementRef} from '@angular/core';
 import {CommunicationOxService, I18nService, PreloaderOxService, ResourceOx, ResourceType} from 'ox-core';
-import {HasTutorialOxBridge, ResourceFinalStateOxBridge, ScreenTypeOx} from 'ox-types';
+import {anyElement, HasTutorialOxBridge, ResourceFinalStateOxBridge, ScreenTypeOx, shuffle} from 'ox-types';
 import {environment} from '../environments/environment';
 import {
   AppInfoOxService,
@@ -19,8 +19,9 @@ import {TranslocoService} from '@ngneat/transloco';
 import {HttpClient} from '@angular/common/http';
 import {PostMessageBridgeFactory} from 'ngox-post-message';
 import {ChangingRulesChallengeService} from './shared/services/changing-rules-challenge.service';
-import {CARD_FILLERS, CARD_SHAPES} from './shared/models/const';
-import {getCardSvg} from './shared/models/functions';
+import {CARD_COLORS, CARD_FILLERS, CARD_SHAPES, GAME_RULES} from './shared/models/const';
+import {allDifferentProperties, getCardSvg, sameCard, satisfyRuleCardsNew} from './shared/models/functions';
+import { ALL_RULES, CardsInTable } from './shared/models/types';
 
 @Component({
   selector: 'app-root',
@@ -50,27 +51,24 @@ export class AppComponent extends BaseMicroLessonApp {
         microLessonCommunicationService.sendMessageMLToManager(ResourceFinalStateOxBridge, resourceStateService.currentState.value);
       }
     });
-    // preloader.addResourcesToLoad(this.getGameResourcesToLoad());
-    // preloader.loadAll().subscribe(z => this.loaded = true);
+    // // preloader.addResourcesToLoad(this.getGameResourcesToLoad());
+    // // preloader.loadAll().subscribe(z => this.loaded = true);
     // const probando = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
     // probando.setInitialCards(9, 3);
     // let myCheck = 0;
     // for (let i = 0; i < 1000; i++) {
     //   try {
-    //     probando.updateCards(anyElement(ALL_RULES), 3);
-    //     // if (probando.currentPossibleAnswerCards.length < 3) {
-    //     //   throw new Error();
-    //     // }
-    //     const indexes = shuffle(probando.cards.map( (z, i) => i )).slice(0, 3);
-    //     indexes.forEach( i => probando.cards[i].hasBeenUsed = true);
-    //     if (probando.cards.some( z => probando.cards.filter( pc => sameCard(pc, z)).length > 1)) {
+    //     const indexes = shuffle(probando.cards.map((z, i) => i )).slice(0, 3);
+    //     indexes.forEach(i => probando.cards[i].hasBeenUsed = true);
+    //     probando.updateCardsNewModel(3);
+    //     if (!satisfyRuleCardsNew(probando.currentPossibleAnswerCards, GAME_RULES)) {
     //       throw new Error();
     //     }
     //   } catch (e) {
     //     myCheck++;
     //   }
     // }
-    // console.log('Thje count of errores was', myCheck)
+    // console.log('The count of errores was', myCheck)
   }
 
   protected getGameResourcesToLoad(): ResourceOx[] {

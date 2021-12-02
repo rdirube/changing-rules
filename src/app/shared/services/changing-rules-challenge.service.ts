@@ -64,8 +64,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting) ;
-    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer);
-    console.log(this.cardsInTable.cards)
+    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer, true);
     // TODO SOLVE THIS
     // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
     //   , this.cardInTable, CARD_COLORS, CARD_SHAPES, CARD_FILLERS, lastCards, this.exerciseConfig.cardInTable);
@@ -119,8 +118,10 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   private setInitialExercise(): void {
     console.log('setInitialExercise');
+    const isFirst = true;
     this.cardsInTable = new CardsInTable(this.exerciseConfig.colorsAvaiable, this.exerciseConfig.shapesAvaiable, this.exerciseConfig.fillsAvaiable);
     this.cardsInTable.setInitialCards(this.exerciseConfig.cardInTable, this.exerciseConfig.cardsForCorrectAnswer);
+    // this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer);
   }
 
 

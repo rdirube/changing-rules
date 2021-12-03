@@ -1,0 +1,14 @@
+<div #cardContainer
+      [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
+       style="position: relative;">
+        <app-card [cardInfo]="cardInfo" #aCard [faceDown]="faceDown"
+                  [cardClasses]="cardClasses"
+                  [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
+       </app-card>
+       <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill [ngClass]=" faceDown? 'cover-everything':'little-down-1'" path="changing_rules/svg/elementos/dorso.svg">
+    </mlc-loaded-svg>
+</div>
+<mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg>
+<mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill  path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg>

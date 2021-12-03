@@ -11,6 +11,7 @@ import {GameBodyDirective} from '../shared/directives/game-body.directive';
 import {RoundProgressModule} from 'angular-svg-round-progressbar';
 import { ClockComponent } from './components/clock/clock.component';
 import { TutorialButtonComponent } from './components/tutorial/tutorial-button/tutorial-button.component';
+import { DeckPerCardComponent } from './components/deck-per-card/deck-per-card.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { TutorialButtonComponent } from './components/tutorial/tutorial-button/t
     DeckComponent,
     TutorialComponent,
     ClockComponent,
-    TutorialButtonComponent
+    TutorialButtonComponent,
+    DeckPerCardComponent
   ],
   exports: [
     GameBodyComponent,

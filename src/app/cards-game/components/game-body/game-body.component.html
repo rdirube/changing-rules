@@ -24,18 +24,7 @@
       </app-deck>
     </div>
   <div [ngClass]="gridClass" *ngIf="exercise">
-      <div #cardContainer *ngFor="let item of exercise?.currentCards; let i = index"
-      [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
-      (click)="answerVerificationMethod(i)" style="position: relative;">
-        <app-card [cardInfo]="item" #aCard [faceDown]="faceDown"
-                  [cardClasses]="stateByCards[i]"
-                  [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
-      </app-card>
-        <!-- <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute" path="changing_rules/svg/elementos/dorso.svg">
-        </mlc-loaded-svg> -->
-        <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill [ngClass]=" faceDown? 'cover-everything':'little-down-1'" path="changing_rules/svg/elementos/dorso.svg">
-        </mlc-loaded-svg>
-    </div>
+    <app-deck-per-card [cardInfo]="exercise.currentCards[i]" *ngFor="let item of exercise?.currentCards; let i = index" [cardClasses]="stateByCards[i]" (click)="answerVerificationMethod(i)"></app-deck-per-card>
   </div>
  </div>
 </div>

@@ -260,7 +260,6 @@ export class CardsInTable {
 
 
 
-
   cardNotRepeatedLargeRandom(newCards: CardInfo[]): CardInfo {
     const randomCard = generateRandomCard(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
     return this.isNotRepeated(randomCard, newCards) ? randomCard : this.cardNotRepeatedLargeRandom(newCards);
@@ -321,17 +320,6 @@ export class CardsInTable {
 
 
 
-  cardForcedGenerator(cards: CardInfo[]): CardInfo {
-    return {
-      color: this.getValidProperty<CardColor>(cards.map(z => z.color), CARD_COLORS),
-      shape: this.getValidProperty<CardShape>(cards.map(z => z.shape), CARD_SHAPES),
-      fill: this.getValidProperty<CardFill>(cards.map(z => z.fill), CARD_FILLERS),
-      hasBeenUsed: false
-    }
-  }
-
-
-
   addForcedCard(cards: CardInfo[]): CardInfo {
     return {
       color: this.getValidProperty<CardColor>(cards.map(z => z.color), CARD_COLORS),
@@ -374,23 +362,27 @@ export class CardsInTable {
     const cardsThatRemain: CardInfo[] = this.cards.filter(z => !z.hasBeenUsed);
     const newCards: CardInfo[] = [];
     this.currentPossibleAnswerCards = [];
-
       for (let i = 0; i < 2; i++) {
         this.currentPossibleAnswerCards.push(anyElement(cardsThatRemain.filter(z => !this.currentPossibleAnswerCards.includes(z))))
       }
       for (let i = 0; i < cardsForCorrect - 2; i++) {
-        const forcedCardsToAdd = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, this.currentPossibleAnswerCards);
+        const forcedCardsToAdd = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, cardsThatRemain);
         this.currentPossibleAnswerCards.push(forcedCardsToAdd);
         newCards.push(forcedCardsToAdd);
       }
       for (let i = 0; i < 2; i++) {
-      const randomCardToAdd =  this.cardNotRepeatedLargeRandom(this.currentPossibleAnswerCards);
+      const randomCardToAdd =  this.cardNotRepeatedLargeRandom(cardsThatRemain.concat(newCards));
       newCards.push(randomCardToAdd);
       }     
+      console.log(newCards);
         indexesToReplace.forEach((index, i) => {
           this.cards[index] = newCards[i];
         })
-  }}
+  }
+
+
+
+}
         
         
         

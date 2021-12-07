@@ -1,7 +1,6 @@
-<div fxFlex="grow" fxLayout="column" fxLayoutGap="-147%">
+<div fxFlex="grow" fxLayout="column" fxLayoutGap="-137%">
   <mlc-loaded-svg [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
-                  *ngFor="let i of auxArray"
+                  *ngFor="let element of auxArray; let i = index"
                   path="changing_rules/svg/elementos/dorso.svg">
   </mlc-loaded-svg>
 </div>
-

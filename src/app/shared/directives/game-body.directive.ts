@@ -12,7 +12,7 @@ import {ChangingRulesChallengeService} from '../services/changing-rules-challeng
 import {interval, Subscription} from 'rxjs';
 import {take} from 'rxjs/operators';
 import { GameSetting } from '../models/types';
-
+import { DeckPerCardComponent } from 'src/app/cards-game/components/deck-per-card/deck-per-card.component';
 
 @Directive({
   selector: '[appGameBody]'
@@ -21,19 +21,19 @@ import { GameSetting } from '../models/types';
 
 export class GameBodyDirective extends SubscriberOxDirective {
 
-  @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
+  @ViewChildren(DeckPerCardComponent) cardDeckComponentQueryList!: QueryList<DeckPerCardComponent>;
   @ViewChild('tutorialText') tutorialText!: TextComponent;
   @ViewChild(RulesComponent) ruleComponent!: RulesComponent;
   @ViewChild(DeckComponent) deckComponent!: DeckComponent;
   stateByCards: string[] = [];
-  public answerComponents: CardComponent[] = [];
+  public answerComponents: DeckPerCardComponent[] = [];
   public swiftCardOn: boolean = false;
   public deckClass: string = "empty";
-  public cardsPlayed: number = 0;
   public deckWidth: string = '15vh';
   public deckHeight: string = '20vh';
   public gridClass = 'cards-grid-9';
   public currentSetting!:GameSetting;
+  
  
   public currentTime = 0;
   public totalTime = 0;
@@ -45,49 +45,53 @@ export class GameBodyDirective extends SubscriberOxDirective {
 
   constructor(protected soundService: SoundOxService, private cs: ChangingRulesChallengeService) {
     super();
+    this.swiftCardOn = true;
+
   }
 
 
   // answerVerification(i: number,answerComponents:CardComponent[], cardsForCorrect:number, emit: () => void) {
   updateAnswer(i: number, cardsForCorrect: number, cardsForCheckReached: () => void) {
-    const cardComponentArray = this.cardComponentQueryList.toArray() as CardComponent[];
-    if (cardComponentArray) {
+    const cardDeckComponentArray = this.cardDeckComponentQueryList.toArray() as DeckPerCardComponent[];
+    if (cardDeckComponentArray) {
       this.soundService.playSoundEffect('sounds/bubble.mp3', ScreenTypeOx.Game);
-      if (this.answerComponents.length < cardsForCorrect && !cardComponentArray[i]?.isSelected) {
-        this.answerComponents.push(cardComponentArray[i]);
-        cardComponentArray[i].cardClasses = 'card-selected';
-        cardComponentArray[i].isSelected = true;
+      if (this.answerComponents.length < cardsForCorrect && !cardDeckComponentArray[i]?.isSelected) {
+        this.answerComponents.push(cardDeckComponentArray[i]);
+        cardDeckComponentArray[i].cardClass = 'card-selected';
+        cardDeckComponentArray[i].isSelected = true;
         // console.log(this.answerComponents);
         if (this.answerComponents.length === cardsForCorrect) {
           cardsForCheckReached();
         }
-      } else if (cardComponentArray[i].isSelected) {
-        this.answerComponents.splice(this.answerComponents.indexOf(cardComponentArray[i]), 1);
-        cardComponentArray[i].isSelected = false;
-        cardComponentArray[i].cardClasses = 'card-neutral';
+      } else if (cardDeckComponentArray[i].isSelected) {
+        this.answerComponents.splice(this.answerComponents.indexOf(cardDeckComponentArray[i]), 1);
+        cardDeckComponentArray[i].isSelected = false;
+        cardDeckComponentArray[i].cardClass = 'card-neutral';
       }
       // console.log(this.answerComponents.length);
     }
   }
 
 
-  cardsAppearenceNew() {
-    this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
-    this.answerComponents.forEach(
-      (answerCard, i) => {
-        anime.remove(answerCard.elementRef.nativeElement);
-        anime({
-          targets: answerCard.elementRef.nativeElement,
-          opacity: 1,
-          duration: 1,
-          delay: 200,
-          complete: () => {
-            console.log('Cards are now Interactable.');
-            this.cardsInteractable = true;
-          }
-        });
-      });
-  }
+  // cardsAppearenceNew() {
+  //   this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
+  //   this.answerComponents.forEach(
+  //     (answerCard, i) => {
+  //       anime.remove(answerCard.elementRef.nativeElement);
+  //       anime({
+  //         targets: answerCard.elementRef.nativeElement,
+  //         opacity: 1,
+  //         duration: 1,
+  //         delay: 200,
+  //         complete: () => {
+  //           console.log('Cards are now Interactable.');
+  //           this.cardsInteractable = true;
+  //         }
+  //       });
+  //     });
+  // }
+
+
 
   protected setClock(totalTime: number, onFinish: () => void): void {
     this.totalTime = totalTime;
@@ -120,6 +124,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
   
 
   getGridClassToUse(): string {
+  
     if (this.cs.getExerciseConfig().cardInTable <= 4) {
       return 'cards-grid-4';
     } else if (this.cs.getExerciseConfig().cardInTable <= 6) {
@@ -135,62 +140,62 @@ export class GameBodyDirective extends SubscriberOxDirective {
 
 
 
-  cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
-    const duration = 123;
-    const scale = Array.from(Array(5).keys()).map((z, i) => {
-      return {value: isEven(i) ? 1 : 1.15, duration};
-    }).concat([{value: 1, duration}]);
-    this.answerComponents.forEach((answerCard, i) => {
-      answerCard.card.hasBeenUsed = true;
-      answerCard.cardClasses = 'card-correct';
-      const deckRect = this.deckComponent.elementRef.nativeElement.getBoundingClientRect();
-      const answerRect = answerCard.elementRef.nativeElement.getBoundingClientRect();
-      anime.remove(answerCard.elementRef.nativeElement);
-      anime({
-          targets: answerCard.elementRef.nativeElement,
-          easing: 'easeInOutExpo',
-          scale,
-          complete: () => {
-            anime({
-              targets: answerCard.elementRef.nativeElement,
-              translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
-              translateY: convertPXToVH(deckRect.y * (1 - this.deckComponent.auxArray.length * 0.023)) - convertPXToVH(answerRect.y) + 'vh',
-              delay: 700,
-              duration: 600,
-              begin: () => {
-                answerCard.cardSvg = 'changing_rules/svg/elementos/dorso.svg';
-                answerCard.cardClasses = 'card-neutral';
-                answerCard.isSelected = false;
-                this.faceDown = true;
-              },
-              easing: 'easeOutExpo',
-              complete: () => {
-                anime({
-                  targets: answerCard.elementRef.nativeElement,
-                  translateX: 0,
-                  translateY: 0,
-                  opacity: 0,
-                  duration: 1,
-                  complete: () => {
-                    if (i + 1 === 1) {
-                      this.deckWidth = answerCard.cardPlaceholder.elementRef.nativeElement.offsetWidth;
-                      this.deckHeight = answerCard.cardPlaceholder.elementRef.nativeElement.offsetHeight;
-                      this.deckWidth = convertPXToVH(+this.deckWidth) + 'vh';
-                      this.deckHeight = convertPXToVH(+this.deckHeight) + 'vh';
-                      // this.deck = 'filled';
-                      nextStepEmitter.emit();
-                      this.cardsAppearenceNew();
-                      this.cardsPlayed += 3;
-                    }
-                  }
-                });
-              }
-            });
-          }
-        }
-      );
-    });
-  }
+  // cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
+  //   const duration = 123;
+  //   const scale = Array.from(Array(5).keys()).map((z, i) => {
+  //     return {value: isEven(i) ? 1 : 1.15, duration};
+  //   }).concat([{value: 1, duration}]);
+  //   this.answerComponents.forEach((answerCard, i) => {
+  //     answerCard.card.hasBeenUsed = true;
+  //     answerCard.cardClasses = 'card-correct';
+  //     const deckRect = this.deckComponent.elementRef.nativeElement.getBoundingClientRect();
+  //     const answerRect = answerCard.elementRef.nativeElement.getBoundingClientRect();
+  //     anime.remove(answerCard.elementRef.nativeElement);
+  //     anime({
+  //         targets: answerCard.elementRef.nativeElement,
+  //         easing: 'easeInOutExpo',
+  //         scale,
+  //         complete: () => {
+  //           anime({
+  //             targets: answerCard.elementRef.nativeElement,
+  //             translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
+  //             translateY: convertPXToVH(deckRect.y * (1 - this.deckComponent.auxArray.length * 0.023)) - convertPXToVH(answerRect.y) + 'vh',
+  //             delay: 700,
+  //             duration: 600,
+  //             begin: () => {
+  //               answerCard.cardSvg = 'changing_rules/svg/elementos/dorso.svg';
+  //               answerCard.cardClasses = 'card-neutral';
+  //               answerCard.isSelected = false;
+  //               this.faceDown = true;
+  //             },
+  //             easing: 'easeOutExpo',
+  //             complete: () => {
+  //               anime({
+  //                 targets: answerCard.elementRef.nativeElement,
+  //                 translateX: 0,
+  //                 translateY: 0,
+  //                 opacity: 0,
+  //                 duration: 1,
+  //                 complete: () => {
+  //                   if (i + 1 === 1) {
+  //                     this.deckWidth = answerCard.cardPlaceholder.elementRef.nativeElement.offsetWidth;
+  //                     this.deckHeight = answerCard.cardPlaceholder.elementRef.nativeElement.offsetHeight;
+  //                     this.deckWidth = convertPXToVH(+this.deckWidth) + 'vh';
+  //                     this.deckHeight = convertPXToVH(+this.deckHeight) + 'vh';
+  //                     // this.deck = 'filled';
+  //                     nextStepEmitter.emit();
+  //                     this.cardsAppearenceNew();
+  //                     this.cardsPlayed += 3;
+  //                   }
+  //                 }
+  //               });
+  //             }
+  //           });
+  //         }});});}
+
+
+
+
 
   cardsAppearenceAnimation() {
     anime.remove('.card-component');
@@ -201,7 +206,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
       opacity: 1, // TODO validate added
       easing: 'linear',
       complete: () => {
-        this.swiftToggle();
+        this.swiftCardOn = true;
         console.log('Cards are now Interactable.');
         this.cardsInteractable = true;
       }
@@ -215,9 +220,11 @@ export class GameBodyDirective extends SubscriberOxDirective {
     // });
   }
 
-  swiftToggle() {
-    this.swiftCardOn = !this.swiftCardOn;
-  }
+
+
+
+
+
 
   protected playWrongAnimation() {
     const rotate = Array.from(Array(8).keys()).map((z, i) => {
@@ -230,7 +237,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
         this.cardsInteractable = true;
         this.answerComponents.forEach(z => {
           z.isSelected = false;
-          z.cardClasses = 'card-neutral';
+          z.cardClass = 'card-neutral';
         });
         this.answerComponents = [];
       }

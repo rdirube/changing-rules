@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { AnswerService, GameActionsService, MicroLessonMetricsService } from 'micro-lesson-core';
 import { ChangingRulesChallengeService } from './changing-rules-challenge.service';
 import { ExpandedShowable, PartCorrectness, UserAnswer } from 'ox-types';
@@ -9,6 +9,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ChangingRulesAnswerService extends AnswerService {
+   
+  cardsToDeckAnimationEmitter:EventEmitter<void> = new EventEmitter();
+  cardsToDeckAnimationEmitterTutorial:EventEmitter<void> = new EventEmitter();
+
   constructor(private gameActionsService: GameActionsService<any>,
     m: MicroLessonMetricsService<any>,
     private challenge: ChangingRulesChallengeService) {

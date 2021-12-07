@@ -17,21 +17,23 @@
       [totalTime]="totalTime" [color]="color" [timeFormatted]="timeFormatted" [currentTime]="currentTime"></app-clock>
     </div>
     <div fxFlex="grow" fxLayoutAlign="center center" [ngClass]="{'hide': deckWidth?.length === 0}" class="myAbsolute">
-      <app-deck
+      <app-deck 
         [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
         [deckHeight]="deckHeight" [deckWidth]="deckWidth"
          style="transform: translateX(-52vh);">
       </app-deck>
     </div>
-  <div [ngClass]="gridClass" *ngIf="exercise">
-    <app-deck-per-card [cardInfo]="exercise.currentCards[i]" *ngFor="let item of exercise?.currentCards; let i = index" [cardClasses]="stateByCards[i]" (click)="answerVerificationMethod(i)"></app-deck-per-card>
+  <div [ngClass]="gridClass" >
+    <app-deck-per-card style="height: 100%;" [cardInfo]="exercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
+     *ngFor="let item of exercise?.currentCards; let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationMethod(i)" [swiftCardOn]="swiftCardOn">
+    </app-deck-per-card>
   </div>
  </div>
 </div>
 
 
-<!-- <div fxLayout="column" class="card-to-select" style="height: auto">
-  <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
+<!-- <div fxLayout="column" class="card-to-select" style="height: auto"> -->
+  <!-- <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
     <ox-text [originalText]="currentSetting" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
   </div>
   <app-rules ></app-rules>

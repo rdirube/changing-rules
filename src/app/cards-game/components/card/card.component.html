@@ -1,10 +1,10 @@
 <div fxLayoutAlign="center center" style="width: 100%; height: 100%;"> 
-  <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill  path="changing_rules/svg/elementos/dorso.svg">
-  </mlc-loaded-svg>
+ 
   <mlc-loaded-svg
-    [path]="cardSvg" [class]="cardClasses" style="z-index: 2">
+    [path]="cardSvg" [class]="cardClass" style="z-index: 2">
   </mlc-loaded-svg> 
-    <mlc-loaded-svg   class="current-card-symbol" style="z-index: 3"
+    <mlc-loaded-svg   class="current-card-symbol"  [ngStyle]="{'opacity': swiftCardOn ?  1 : 0}" 
     [pathWithReplaces]="cardPathWithReplaces" fxFlex="grow" fxLayoutAlign="center center">
   </mlc-loaded-svg> 
 </div>
+<!-- [ngStyle]="{'z-index': swiftCardOn ?  3 : -1}" -->

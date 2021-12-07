@@ -30,17 +30,9 @@
       </app-deck>
     </div>
     <div [ngClass]="gridClass">
-      <div #cardContainer *ngFor="let item of tutorialExercise?.currentCards; let i = index"
-           [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
-           style="position: relative;">
-        <app-card [cardInfo]="item" #aCard (click)="answerVerificationTutorial(i)"
-                  [cardClasses]="stateByCards[i]"
-                  [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
-        </app-card>
-        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute"
-                        path="changing_rules/svg/elementos/dorso.svg">
-        </mlc-loaded-svg>
-      </div>
+      <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialConvExercise[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
+      *ngFor="let item of tutorialConvExercise let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerTutorialConv)" [swiftCardOn]="swiftCardOn">
+     </app-deck-per-card>
     </div>
   </div>
 </div>
@@ -52,9 +44,9 @@
   <app-rules></app-rules>
 </div>
 
-<!--<div class="deck-container">-->
-<!--  <app-deck [deckClass]="deckClass"></app-deck>-->
-<!--</div>-->
+<div class="deck-container">
+  <app-deck ></app-deck>
+</div>
 <div class="text-tutorial-container" style="position: absolute; z-index: 101" fxLayoutAlign="center center">
   <ox-text #tutorialText
            [ignoreLowerCase]="true"

@@ -71,12 +71,17 @@
 
 .card-neutral {
   position: absolute;
+  transform: translateY(0.4vh);
+
 }
 
 
 .current-card-symbol {
   position: absolute;
   width: 75%;
+  z-index: 3;
+  transform: translateY(0.4vh);
+
 }
 
 .full-deck {

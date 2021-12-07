@@ -132,15 +132,15 @@ export function auxGetPropertyValue(card: CardInfo, prop: GameRule) {
 
 
 
-export function equalPropertyArrayNew(cards: CardInfo[], allProperties: GameRule[]) {
-  return allProperties.every(prop => {
-    const properties = cards.map(card => auxGetPropertyValue(card, prop));
-    return properties.every(anchorProperty => {
-      const length = properties.filter(aProperty => aProperty === anchorProperty).length;
-      return length;
-    })
-  });
-}
+// export function equalPropertyArrayNew(cards: CardInfo[], allProperties: GameRule[]) {
+//   return allProperties.every(prop => {
+//     const properties = cards.map(card => auxGetPropertyValue(card, prop));
+//     return properties.every(anchorProperty => {
+//       const length = properties.filter(aProperty => aProperty === anchorProperty).length;
+//       return length;
+//     })
+//   });
+// }
 
 
 

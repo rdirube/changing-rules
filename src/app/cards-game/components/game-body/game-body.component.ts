@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import {
   FeedbackOxService,
   GameActionsService,
@@ -14,23 +14,25 @@ import {
   OptionShowable,
   OxImageInfo,
   SchemaPart,
-  ScreenTypeOx
+  ScreenTypeOx,
+  OxTextInfo
 } from 'ox-types';
-import {ChangingRulesChallengeService} from 'src/app/shared/services/changing-rules-challenge.service';
-import {ExerciseOx, PreloaderOxService} from 'ox-core';
+import { ChangingRulesChallengeService } from 'src/app/shared/services/changing-rules-challenge.service';
+import { ExerciseOx, PreloaderOxService } from 'ox-core';
 import {
   ALL_RULES,
   CardInfo,
   ChangingRulesExercise, GameRule, GameSetting
 } from 'src/app/shared/models/types';
-import {filter, take} from 'rxjs/operators';
-import {CardComponent} from '../card/card.component';
-import {ChangingRulesAnswerService} from 'src/app/shared/services/changing-rules-answer.service';
-import {GameBodyDirective} from 'src/app/shared/directives/game-body.directive';
-import {timer} from 'rxjs';
-import {getCardSvg, sameCard, allDifferentProperties, satisfyRuleCardsNew} from 'src/app/shared/models/functions';
+import { filter, take } from 'rxjs/operators';
+import { CardComponent } from '../card/card.component';
+import { ChangingRulesAnswerService } from 'src/app/shared/services/changing-rules-answer.service';
+import { GameBodyDirective } from 'src/app/shared/directives/game-body.directive';
+import { timer } from 'rxjs';
+import { getCardSvg, sameCard, allDifferentProperties, satisfyRuleCardsNew } from 'src/app/shared/models/functions';
 import { GAME_RULES } from 'src/app/shared/models/const';
 import anime from 'animejs';
+import { DeckPerCardComponent } from '../deck-per-card/deck-per-card.component';
 
 @Component({
   selector: 'app-game-body',
@@ -44,23 +46,23 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
   }
 
-  @ViewChildren(CardComponent) cardComponentQueryList!: QueryList<CardComponent>;
+  @ViewChildren(DeckPerCardComponent) cardComponentDeckQueryList!: QueryList<DeckPerCardComponent>;
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
 
 
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
-  public currentSetting!:GameSetting;
+  public currentSetting!: GameSetting;
   constructor(private challengeService: ChangingRulesChallengeService,
-              private metricsService: MicroLessonMetricsService<any>,
-              private gameActions: GameActionsService<any>,
-              private cdr: ChangeDetectorRef,
-              private hintService: HintService,
-              protected soundService: SoundOxService,
-              private answerService: ChangingRulesAnswerService,
-              private microLessonCommunication: MicroLessonCommunicationService<any>,
-              private feedbackService: FeedbackOxService,
-              private preloaderService: PreloaderOxService) {
+    private metricsService: MicroLessonMetricsService<any>,
+    private gameActions: GameActionsService<any>,
+    private cdr: ChangeDetectorRef,
+    private hintService: HintService,
+    protected soundService: SoundOxService,
+    private answerService: ChangingRulesAnswerService,
+    private microLessonCommunication: MicroLessonCommunicationService<any>,
+    private feedbackService: FeedbackOxService,
+    private preloaderService: PreloaderOxService) {
     super(soundService, challengeService);
     // @ts-ignore
     anime.suspendWhenDocumentHidden = false;
@@ -70,22 +72,40 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
           ScreenTypeOx.GameComplete);
       });
+      this.challengeService.cardsPlayed = 0;
+      this.challengeService.cardDecksPivot = 0;
+      this.challengeService.cardsGeneratorStopper = 0;
+      this.challengeService.addCardToDeckValidator = 0;
     });
     this.addSubscription(this.gameActions.showHint, x => this.showHint());
 
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       const correct = z.correctness === 'correct';
       if (correct) {
-        super.cardsToDeckAnimation(this.feedbackService.endFeedback);
+        this.answerComponents.map(z => z.cardInfo).forEach(card => card.hasBeenUsed = true);
+        this.answerService.cardsToDeckAnimationEmitter.emit();
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
-      } else {
-        this.answerComponents.forEach(z => z.cardClasses = 'card-wrong');
+        this.challengeService.cardsPlayed += 3;
+        this.challengeService.cardsGeneratorStopper = 0;
+        if (this.challengeService.cardsPlayed > 9 * this.challengeService.cardDecksPivot) {
+          this.challengeService.cardDecksPivot += 1;
+          this.cardDeckComponentQueryList.toArray().forEach(card => {
+          card.cardsDeckQ.shift();
+          })
+        }
+      }
+      else {
+        this.answerComponents.forEach(z => z.cardClass = 'card-wrong');
         this.soundService.playSoundEffect('sounds/wrongAnswer.mp3', ScreenTypeOx.Game);
         this.playWrongAnimation();
       }
     });
-    this.addSubscription(this.feedbackService.endFeedback, x => this.gameActions.showNextChallenge.emit());
+    this.addSubscription(this.feedbackService.endFeedback, x => {
+      this.gameActions.showNextChallenge.emit();
+    });
   }
+
+
 
   answerVerificationMethod(i: number) {
     if (!this.cardsInteractable) {
@@ -98,6 +118,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       this.answerService.onTryAnswer();
     });
   }
+
+
 
 
   startGame() {
@@ -113,6 +135,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     }
     this.cardsAppearenceAnimation();
   }
+
+
 
   private addMetric(): void {
     const myMetric = {
@@ -147,16 +171,21 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
 
+
+
   public showHint(): void {
-    this.answerComponents = [];
     const answer = this.challengeService.cardsInTable.currentPossibleAnswerCards.slice(0, this.challengeService.exerciseConfig.cardsForCorrectAnswer - 1);
+    console.log(this.challengeService.cardsInTable.currentPossibleAnswerCards);
     timer(300).subscribe(z => {
-      this.stateByCards = (this.cardComponentQueryList.toArray() as CardComponent[])
-        .map(cardComp => answer.some(a => sameCard(cardComp.card, a)) ? 'card-to-select-tutorial' : 'card-neutral');
+      this.stateByCards = (this.cardComponentDeckQueryList.toArray() as DeckPerCardComponent[])
+        .map(cardComp => answer.some(a => sameCard(cardComp.cardInfo, a)) ? 'card-to-select-tutorial' : 'card-neutral');
     });
+    console.log(this.stateByCards);
   }
 
-  
+
+
+
   ngOnInit(): void {
     // this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
     this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
@@ -179,16 +208,16 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
         this.answerComponents = [];
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
-          this.countDownImageInfo = {data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg')};
+          this.countDownImageInfo = { data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg') };
         } else {
           this.deckClass = 'filled';
           this.cardsInteractable = true;
         }
-        if (this.cardComponentQueryList) {
-          this.cardComponentQueryList.toArray().forEach((z, i) => {
-            z.updateCard();
-          });
-        }
+        // if (this.cardComponentDeckQueryList) {
+        //   this.cardComponentDeckQueryList.toArray().forEach((z, i) => {
+        //     // z.updateCard();
+        //   });
+        // }
         this.gridClass = this.getGridClassToUse();
         if (this.ruleComponent)
           this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
@@ -197,27 +226,27 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
 
+
   private setAnswer(): void {
-    const cards = this.answerComponents.map(z => z.card)
-    const uniqueValues:boolean[]=[];
-    console.log(allDifferentProperties(cards));
-    const correctness =   satisfyRuleCardsNew(cards, GAME_RULES) ? 'correct' : 'wrong';
-    // const equalRuleApproved = this.exercise.rule.allSatisfyRule(cards) 
-    // const correctness = this.exercise.currentSetting === 'igual' ? equalRuleApproved ? 'correct' : 'wrong': ! equalRuleApproved ? 'correct' : 'wrong';
+    const cards = this.answerComponents.map(z => z.cardInfo)
+    const correctness = satisfyRuleCardsNew(cards, GAME_RULES) ? 'correct' : 'wrong';
     this.answerService.currentAnswer = {
       parts: [
-        {correctness, parts: cards.map(cardToSchemaPart)}
+        { correctness, parts: cards.map(cardToSchemaPart) }
       ]
     };
   }
 
 
-  
+
 
   onCountDownTimeUpdated() {
     this.soundService.playSoundEffect('sounds/bubble01.mp3', ScreenTypeOx.Game);
   }
 }
+
+
+
 
 function cardToOption(z: CardInfo): OptionShowable {
   return {
@@ -225,12 +254,13 @@ function cardToOption(z: CardInfo): OptionShowable {
       image: getCardSvg(z)
     },
     customProperties: [
-      {name: 'color', value: z.color},
-      {name: 'shape', value: z.shape},
-      {name: 'fill', value: z.fill}
+      { name: 'color', value: z.color },
+      { name: 'shape', value: z.shape },
+      { name: 'fill', value: z.fill }
     ]
   };
 }
+
 
 
 
@@ -239,9 +269,9 @@ function cardToSchemaPart(z: CardInfo): SchemaPart {
     format: 'image',
     value: getCardSvg(z),
     customProperties: [
-      {name: 'color', value: z.color},
-      {name: 'shape', value: z.shape},
-      {name: 'fill', value: z.fill}
+      { name: 'color', value: z.color },
+      { name: 'shape', value: z.shape },
+      { name: 'fill', value: z.fill }
     ]
   };
 }

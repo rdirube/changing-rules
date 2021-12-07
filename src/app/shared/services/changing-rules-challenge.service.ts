@@ -23,12 +23,18 @@ import {anyElement, ExpandableInfo, equalArrays} from 'ox-types';
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   public resources = new Map<string, string>();
   public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
   public cardsInTable!: CardsInTable;
   private lastRule!: GameRule;
+  public cardsPlayed:number = 0;
+  public cardDecksPivot:number = 1;
+  public addCardToDeckValidator = 0;
+  public cardsGeneratorStopper:number = 0;
 
   constructor(gameActionsService: GameActionsService<any>, private levelService: LevelService,
               subLevelService: SubLevelService,
@@ -47,6 +53,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+
   nextChallenge(): void {
     this.cachedExercises.push(this.generateNextChallenge(0));
   }
@@ -59,12 +66,13 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+
   protected generateNextChallenge(subLevel: number): ExerciseOx<ChangingRulesExercise> {
     const currentExerciseRule: GameRule = anyElement(this.exerciseConfig.gameRules.filter( z => z !== this.lastRule));
     this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
-    const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting) ;
-    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer, true);
+    const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting);
+    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer);
     // TODO SOLVE THIS
     // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
     //   , this.cardInTable, CARD_COLORS, CARD_SHAPES, CARD_FILLERS, lastCards, this.exerciseConfig.cardInTable);
@@ -76,6 +84,8 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+
+
   beforeStartGame(): void {
     const gameCase = 'created-config';
     // this.appInfo.microLessonInfo.extraInfo.exerciseCase
@@ -84,7 +94,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         this.currentSubLevelPregeneratedExercisesNeeded = 1;
         // this.exerciseConfig = this.getExerciseConfig();
         // this.exerciseConfig = JSON.parse('{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
-        // this.cardInTable =
+        // this.cardInTable = 
         this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["naranja","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":["igual", "distinto", "aleatorio"],"totalTimeInSeconds":130,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
         console.log('Me llego la configu', this.exerciseConfig.gameSetting);
         this.setInitialExercise();
@@ -95,6 +105,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+  
   public getMetricsInitialExpandableInfo(): ExpandableInfo {
     const config = this.getExerciseConfig();
     const timeSettings = {} as any;
@@ -116,6 +127,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
   }
 
 
+  
   private setInitialExercise(): void {
     console.log('setInitialExercise');
     const isFirst = true;
@@ -123,6 +135,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.cardsInTable.setInitialCards(this.exerciseConfig.cardInTable, this.exerciseConfig.cardsForCorrectAnswer);
     // this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer);
   }
+
 
 
   public getExerciseConfig(): ChangingRulesNivelation {

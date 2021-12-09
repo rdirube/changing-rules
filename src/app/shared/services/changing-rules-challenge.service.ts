@@ -28,7 +28,8 @@ import {anyElement, ExpandableInfo, equalArrays} from 'ox-types';
 export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
   public resources = new Map<string, string>();
-  public exerciseConfig!: ChangingRulesNivelation; // TODO definy type
+  public exerciseConfig: ChangingRulesNivelation  = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["naranja","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":["igual", "distinto", "aleatorio"],"totalTimeInSeconds":130,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+
   public cardsInTable!: CardsInTable;
   private lastRule!: GameRule;
   public cardsPlayed:number = 0;
@@ -72,7 +73,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting);
-    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer);
+    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer,() => this.cardsInTable.cardNotRepeatedLargeForced(this.cardsInTable.currentPossibleAnswerCards, this.cardsInTable.cards.filter(card => !card.hasBeenUsed)));
     // TODO SOLVE THIS
     // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
     //   , this.cardInTable, CARD_COLORS, CARD_SHAPES, CARD_FILLERS, lastCards, this.exerciseConfig.cardInTable);
@@ -96,7 +97,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
         // this.exerciseConfig = JSON.parse('{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella"],"colorsAvaiable":["rojo","celeste","amarillo","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardQuantityDeck":32, "cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
         // this.cardInTable = 
         this.exerciseConfig = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["naranja","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":["igual", "distinto", "aleatorio"],"totalTimeInSeconds":130,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
-        console.log('Me llego la configu', this.exerciseConfig.gameSetting);
         this.setInitialExercise();
         break;
       default:

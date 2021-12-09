@@ -125,13 +125,13 @@ export class GameBodyDirective extends SubscriberOxDirective {
 
   getGridClassToUse(): string {
   
-    if (this.cs.getExerciseConfig().cardInTable <= 4) {
+    if (this.cs.exerciseConfig.cardInTable <= 4) {
       return 'cards-grid-4';
-    } else if (this.cs.getExerciseConfig().cardInTable <= 6) {
+    } else if (this.cs.exerciseConfig.cardInTable <= 6) {
       return 'cards-grid-6';
-    } else if (this.cs.getExerciseConfig().cardInTable <= 9) {
+    } else if (this.cs.exerciseConfig.cardInTable <= 9) {
       return 'cards-grid-9';
-    } else if (this.cs.getExerciseConfig().cardInTable <= 12) {
+    } else if (this.cs.exerciseConfig.cardInTable <= 12) {
       return 'cards-grid-12';
     } else {
       return 'cards-grid-16';

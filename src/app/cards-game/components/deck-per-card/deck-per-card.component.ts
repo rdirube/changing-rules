@@ -55,12 +55,12 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
       //   this.removeCardFromDeckValidator+=1;
       // }
     })
-  this.addSubscription(this.answerService.cardsToDeckAnimationEmitterTutorial, f=> {
-    this.cardsToDeckAnimation();
+  this.addSubscription(this.answerService.cardsToDeckAnimationEmitterTutorial, f => {
+   this.cardsToDeckAnimation(this.answerService.correctCards)
   }) 
   
     this.render.setStyle(this.elementRef.nativeElement, 'position', 'relative');
-  }
+  } 
 
 
 
@@ -109,10 +109,12 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
                 complete: () => {
                   if (this.challengeService.cardsGeneratorStopper < 1) {
                     this.challengeService.cardsGeneratorStopper += 1;
-                    this.swiftCardOn = true;
                     nextStepEmitter?.emit();
-                    this.cardsAppearenceNew();
-                  }}
+                  }
+                  this.swiftCardOn = true;
+                  this.cardsAppearenceNew();
+
+                }
               });}
           });
         }

@@ -66,9 +66,9 @@ export class RulesComponent extends SubscriberOxDirective {
               private gameActions: GameActionsService<any>) {
     super();
     this.addSubscription(this.gameActions.startGame, z => {
-      this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.exerciseConfig.gameRules.includes(x.id));
+      // this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.exerciseConfig.gameRules.includes(x.id));
     });
-    this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.getExerciseConfig().gameRules.includes(x.id));
+    // this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.getExerciseConfig().gameRules.includes(x.id));
   }
 
 

@@ -12,6 +12,8 @@ export class ChangingRulesAnswerService extends AnswerService {
    
   cardsToDeckAnimationEmitter:EventEmitter<void> = new EventEmitter();
   cardsToDeckAnimationEmitterTutorial:EventEmitter<void> = new EventEmitter();
+  correctCards = new EventEmitter();
+
 
   constructor(private gameActionsService: GameActionsService<any>,
     m: MicroLessonMetricsService<any>,

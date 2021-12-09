@@ -202,6 +202,7 @@ export class CardsInTable {
 
   public cards: CardInfo[] = [];
   public currentPossibleAnswerCards: CardInfo[] = [];
+  tutorialService: any;
 
 
   constructor(public cardColors: CardColor[], public cardShapes: CardShape[], public cardFillers: CardFill[]) {
@@ -266,7 +267,7 @@ export class CardsInTable {
   }
 
 
-  cardNotRepeatedLargeForced(cardsForCheck:CardInfo[], newCards:CardInfo[]):CardInfo {
+  cardNotRepeatedLargeForced(cardsForCheck: CardInfo[], newCards: CardInfo[]): CardInfo {
     const forcedCard = this.addForcedCard(cardsForCheck);
     return this.isNotRepeated(forcedCard, newCards) ? forcedCard : this.cardNotRepeatedLargeForced(cardsForCheck, newCards);
   }
@@ -320,6 +321,8 @@ export class CardsInTable {
 
 
 
+
+
   addForcedCard(cards: CardInfo[]): CardInfo {
     return {
       color: this.getValidProperty<CardColor>(cards.map(z => z.color), CARD_COLORS),
@@ -336,6 +339,41 @@ export class CardsInTable {
     return different ? anyElement(allProperties.filter(z => !currentPropeteries.includes(z)))
       : currentPropeteries[0]
   }
+
+
+
+  addForcedCardConv(cards: CardInfo[], propertyFixed?: any): CardInfo {
+    return {
+      color: this.getValidPropertyConv<CardColor>(cards.map(z => z.color), CARD_COLORS, propertyFixed),
+      shape: this.getValidPropertyConv<CardShape>(cards.map(z => z.shape), CARD_SHAPES, propertyFixed),
+      fill: this.getValidPropertyConv<CardFill>(cards.map(z => z.fill), CARD_FILLERS, propertyFixed),
+      hasBeenUsed: false
+    }
+  }
+
+
+
+  getValidPropertyConv<T>(currentProperty: T[], allProperties: T[], propertyFixed: T[]): T {
+    const isPropertyFixedInAll = allProperties.find(prop => propertyFixed.includes(prop));
+    return isPropertyFixedInAll ? isPropertyFixedInAll : anyElement(allProperties.filter(z => !currentProperty.includes(z)));
+  }
+
+
+
+
+  setStepArray(card: CardInfo, property: GameRule): any {
+    let propertyFixed = '';
+    switch (property) {
+      case 'color': propertyFixed = card.color;
+        break
+      case 'forma': propertyFixed = card.shape;
+        break
+      case 'relleno': propertyFixed = card.fill;
+        break
+    }
+    return propertyFixed
+  }
+
 
 
   //  returnDifferentPropertiesCard(differentCards:CardInfo[]):CardInfo {
@@ -356,38 +394,62 @@ export class CardsInTable {
 
 
 
-  updateCardsNewModel(cardsForCorrect: number, isFirst?:boolean): void {
+  updateCardsNewModel(cardsForCorrect: number, addForcedCard: () => CardInfo): void {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
     const cardsThatRemain: CardInfo[] = this.cards.filter(z => !z.hasBeenUsed);
     const newCards: CardInfo[] = [];
     this.currentPossibleAnswerCards = [];
-      for (let i = 0; i < 2; i++) {
-        this.currentPossibleAnswerCards.push(anyElement(cardsThatRemain.filter(z => !this.currentPossibleAnswerCards.includes(z))))
-      }
-      for (let i = 0; i < cardsForCorrect - 2; i++) {
-        const forcedCardsToAdd = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, cardsThatRemain);
-        this.currentPossibleAnswerCards.push(forcedCardsToAdd);
-        newCards.push(forcedCardsToAdd);
-      }
-      for (let i = 0; i < 2; i++) {
-      const randomCardToAdd =  this.cardNotRepeatedLargeRandom(cardsThatRemain.concat(newCards));
+    for (let i = 0; i < 2; i++) {
+      this.currentPossibleAnswerCards.push(anyElement(cardsThatRemain.filter(z => !this.currentPossibleAnswerCards.includes(z))))
+    }
+    for (let i = 0; i < cardsForCorrect - 2; i++) {
+      const forcedCardsToAdd = addForcedCard();
+      this.currentPossibleAnswerCards.push(forcedCardsToAdd);
+      newCards.push(forcedCardsToAdd);
+    }
+    for (let i = 0; i < 2; i++) {
+      const randomCardToAdd = this.cardNotRepeatedLargeRandom(cardsThatRemain.concat(newCards));
       newCards.push(randomCardToAdd);
-      }     
-      console.log(newCards);
-        indexesToReplace.forEach((index, i) => {
-          this.cards[index] = newCards[i];
-        })
+    }
+    indexesToReplace.forEach((index, i) => {
+      this.cards[index] = newCards[i];
+    })
+  }
+
+
+
+  updateCardsTutorialConventional(cardsForCorrect: number, property: GameRule[], propertyFixed: any[], numberOfEqualProp:number) {
+    const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
+      .filter(z => z !== undefined) as number[];
+    const cardsThatRemain: CardInfo[] = this.cards.filter(z => !z.hasBeenUsed);
+    const newCards: CardInfo[] = [];
+    this.currentPossibleAnswerCards = [];
+    const anchorCard = anyElement(cardsThatRemain);
+    this.currentPossibleAnswerCards.push(anchorCard);
+    for(let v = 0; v < numberOfEqualProp; v++) {
+      propertyFixed.push(this.setStepArray(anchorCard, property[v])) ;
+    }
+    for (let i = 0; i < cardsForCorrect - 1; i++) {
+      const cardToAddAnswer = this.addForcedCardConv(this.currentPossibleAnswerCards, propertyFixed);
+      newCards.push(cardToAddAnswer);
+      this.currentPossibleAnswerCards.push(cardToAddAnswer);
+    }
+    const randomCardFiller = this.generateCard(cardsThatRemain);
+    newCards.push(randomCardFiller);
+    indexesToReplace.forEach((index, i) => {
+      this.cards[index] = newCards[i];
+    })
   }
 
 
 
 }
-        
-        
-        
-        
-        
+
+
+
+
+
 
 
 

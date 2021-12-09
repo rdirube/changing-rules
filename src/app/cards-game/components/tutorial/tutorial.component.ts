@@ -43,6 +43,7 @@ import { MagnifierGlassComponent } from 'ox-components';
   styleUrls: ['./tutorial.component.scss']
 })
 
+
 export class TutorialComponent extends GameBodyDirective implements OnInit {
 
   @ViewChild(RulesComponent) ruleComponet!: RulesComponent;
@@ -63,6 +64,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   public checkAnswerTutorial = new EventEmitter();
   public checkAnswerTutorialConv = new EventEmitter();
   public tutorialConvExercise!: CardInfo[];
+
 
   constructor(private challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
@@ -88,6 +90,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       }
     });
 
+
     this.addSubscription(this.answerService.correctCards, z => {
       // this.tutorialService.tutorialCardGenerator();
       // this.answerComponents.forEach((z, i) => {
@@ -103,11 +106,19 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
     this.addSubscription(this.checkAnswerTutorialConv, x => {
       if (satisfyRuleCardsNew(this.answerComponents.map(z => z.cardInfo), GAME_RULES)) {
-        this.answerRight()
-      } else {
+        this.answerRight();
+        if(this.answerComponents[this.answerComponents.length-1]) {
+          this.answerService.cardsToDeckAnimationEmitterTutorial.emit(this.answerService.correctCards)
+        } else {
+          this.answerService.cardsToDeckAnimationEmitterTutorial.emit()
+        }
+       } else {
         this.answerWrong();
       }
     })
+  
+    
+  
   }
 
 
@@ -119,19 +130,24 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   }
 
 
+
   ngAfterViewInit(): void {
     this.executeCurrentStep();
     this.tutorialConvExercise = this.tutorialService.cardInTable.cards;
   }
 
 
+
   private addStep(text: string, actions: () => void, completedSub: Observable<any>) {
     this.steps.push({ text, actions, completedSub });
   }
 
+
+
   private setMagnifierReference(ref: string) {
     this.magnifier = this.magnifierPositions.find(z => z.reference === ref);
   }
+
 
 
   public answerVerificationTutorial(i: number, checkTutorial: EventEmitter<any>): void {
@@ -143,9 +159,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
   public answerRight() {
-    const cardsInTable = this.cardDeckComponentQueryList.toArray().map(z => z?.cardInfo as CardInfo);
     this.answerComponents.forEach(z => z.cardInfo.hasBeenUsed = true);
-    this.answerService.cardsToDeckAnimationEmitterTutorial.emit();
     this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
   }
 
@@ -213,20 +227,20 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     },
       this.answerService.correctCards);
     this.addStep('Ahora revisa que las cartas iluminadas comparten las propiedades ' + this.tutorialService.property[0] as string + ' y ' + this.tutorialService.property[1] as string + ', seleccionalas', () => {
-      this.setConventionalStepGen(2)
+      this.setConventionalStepGen(2);
+      this.challengeService.cardsGeneratorStopper = 0;
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
     this.addStep('Observa que las cartas iluminadas no comparten ninguna propiedad, en este caso, tambien son correctas', ()=> {
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
       this.setConventionalStepGen(0)
     }, this.answerService.correctCards);
-
     this.addStep('En caso de seleccionar un grupo de cartas que comparten alguna propiedad que no es poseída por todo el conjunto de cartas seleccionado, se generará una respuesta incorrecta', ()=> {
     this.setConventionalStepGen(1)
     this.cardsToSelectWrongAnswer(this.tutorialService.cardInTable.currentPossibleAnswerCards); 
     }, this.answerService.correctCards)
-     
   }
+
 
 
   setConventionalStepGen(quant:number) {
@@ -234,6 +248,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.clicksOn = true;
     this.tutorialService.tutorialCardGeneratorSetConv(quant);
   }
+
+
 
   cardsToSelect(answerCards: CardInfo[]): void {
     this.answerComponents = [];
@@ -243,6 +259,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     } );
   }
 
+
+
   cardsToSelectWrongAnswer(answerCards: CardInfo[]): void {
     this.answerComponents = [];
     timer(300).subscribe(z => {
@@ -250,6 +268,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
         .map(cardComp => answerCards.some(a => !sameCard(cardComp.cardInfo, a)) ? 'card-to-select-tutorial' : 'card-neutral').slice(0,3);
     } );
   }
+
 
 
   textChangeAnimation(text: string): void {

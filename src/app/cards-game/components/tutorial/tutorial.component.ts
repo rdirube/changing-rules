@@ -104,14 +104,17 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     });
     this.setMagnifierReference('initial-state');
 
-    this.addSubscription(this.checkAnswerTutorialConv, x => {
+    this.addSubscription(this.checkAnswerTutorialConv, __ => {
       if (satisfyRuleCardsNew(this.answerComponents.map(z => z.cardInfo), GAME_RULES)) {
-        this.answerRight();
-        if(this.answerComponents[this.answerComponents.length-1]) {
-          this.answerService.cardsToDeckAnimationEmitterTutorial.emit(this.answerService.correctCards)
-        } else {
-          this.answerService.cardsToDeckAnimationEmitterTutorial.emit()
-        }
+        this.answerRight()
+        this.answerComponents.forEach((z, i) => {
+          z.cardsToDeckAnimation( i === 0 ? this.answerService.correctCards : undefined);
+        });
+        // if(x === this.answerComponents[0]) {
+        //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit(this.answerService.correctCards)
+        // } else {
+        //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit()
+        // }
        } else {
         this.answerWrong();
       }
@@ -153,7 +156,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   public answerVerificationTutorial(i: number, checkTutorial: EventEmitter<any>): void {
     if (!this.clicksOn) return;
     super.updateAnswer(i, this.challengeService.exerciseConfig.cardsForCorrectAnswer,
-      () => checkTutorial.emit());
+      () => checkTutorial.emit(this.cardDeckComponentQueryList.toArray()[i]));
   }
 
 
@@ -232,8 +235,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
     this.addStep('Observa que las cartas iluminadas no comparten ninguna propiedad, en este caso, tambien son correctas', ()=> {
-      this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
       this.setConventionalStepGen(0)
+      this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
     this.addStep('En caso de seleccionar un grupo de cartas que comparten alguna propiedad que no es poseída por todo el conjunto de cartas seleccionado, se generará una respuesta incorrecta', ()=> {
     this.setConventionalStepGen(1)

@@ -35,7 +35,6 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   public deckHeight: string = '27.5vh';
   public deck: string = 'empty';
   public cardsUp: boolean = false;
-  public cardsDeckQ:number[] = Array.from(Array(4).keys());
   public cardGeneratorStopper:number = 0;
 
 
@@ -51,9 +50,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
     this.addSubscription(this.answerService.cardsToDeckAnimationEmitter, x => {
       this.cardsToDeckAnimation(this.feedbackService.endFeedback);
       this.cardsPlayed = this.challengeService.cardsPlayed;
-      // if(this.challengeService.cardsPlayed > 9*this.removeCardFromDeckValidator) {
-      //   this.removeCardFromDeckValidator+=1;
-      // }
+ 
     })
   this.addSubscription(this.answerService.cardsToDeckAnimationEmitterTutorial, f => {
   this.cardsToDeckAnimation(f)
@@ -74,10 +71,9 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   const scale = Array.from(Array(5).keys()).map((z, i) => {
   return { value: isEven(i) ? 1 : 1.15, duration };
     }).concat([{ value: 1, duration }]);
-    console.log(this.cardComponent.card.hasBeenUsed);
     if (this.cardComponent.card.hasBeenUsed) {
-      this.cardComponent.cardClass = 'card-correct';
-        const deckRect = this.deckComponent.nativeElement.getBoundingClientRect();
+      this.cardClass = 'card-correct';
+      const deckRect = this.deckComponent.nativeElement.getBoundingClientRect();
       const answerRect = this.cardComponent.elementRef.nativeElement.getBoundingClientRect();
       anime.remove(this.cardComponent.elementRef.nativeElement);
       anime({
@@ -90,7 +86,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
             translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
             translateY: convertPXToVH(deckRect.y) - convertPXToVH(answerRect.y) - 5  + 'vh',
             delay: 700,
-            duration: 600,
+            duration: 1600,
             begin: () => {
               this.cardComponent.cardSvg = 'changing_rules/svg/elementos/dorso.svg';
               this.cardComponent.cardClass = 'card-neutral';
@@ -106,14 +102,15 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
                 opacity: 0,
                 duration: 1,
                 complete: () => {
-                    nextStepEmitter?.emit(); 
+                  nextStepEmitter?.emit(); 
                   this.swiftCardOn = true;
                   this.cardsAppearenceNew();
-                
+                  this.cardsPlayed = this.challengeService.cardsPlayed;           
                 }})
           }});
         }
-      });;}}
+      });
+    }}
 
 
 
@@ -121,29 +118,24 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   cardsAppearenceNew() {
     this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
     anime.remove(this.cardComponent.elementRef.nativeElement);
-    anime({
-      targets: this.cardComponent.elementRef.nativeElement,
-      opacity: 1,
-      duration: 1,    
-      complete: () => {
-        this.cardClass = 'neutral-card';
-        this.cardsInteractable = true;
-        this.cardComponent.card.hasBeenUsed = false;
-      }
-    });
+      anime({
+        targets: this.cardComponent.elementRef.nativeElement,
+        opacity: 1,
+        duration: 1,    
+        complete: () => {
+          this.cardClass = 'neutral-card';
+          this.cardsInteractable = true;
+          this.cardComponent.card.hasBeenUsed = false;
+          this.swiftCardOn = false;
+
+        }
+      });    
   }
 
 
 
 
-  @HostListener('document:keydown', ['$event'])
-  asdasd($event:KeyboardEvent) {
-    if($event.key==="h") {
-
-          this.cardComponent.cardClass = 'card-correct';
-          console.log("hola");
-        
-      }} 
+  
 
 
 

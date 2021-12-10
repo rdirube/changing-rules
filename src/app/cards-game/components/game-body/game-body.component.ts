@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import {
   FeedbackOxService,
   GameActionsService,
@@ -15,7 +15,9 @@ import {
   OxImageInfo,
   SchemaPart,
   ScreenTypeOx,
-  OxTextInfo
+  OxTextInfo,
+  anyElement,
+  shuffle
 } from 'ox-types';
 import { ChangingRulesChallengeService } from 'src/app/shared/services/changing-rules-challenge.service';
 import { ExerciseOx, PreloaderOxService } from 'ox-core';
@@ -83,15 +85,13 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       const correct = z.correctness === 'correct';
       if (correct) {
         this.answerComponents.map(z => z.cardInfo).forEach(card => card.hasBeenUsed = true);
-        this.answerService.cardsToDeckAnimationEmitter.emit();
+        this.answerComponents.forEach((z, i) => {
+          z.cardsToDeckAnimation(i === 0 ? this.feedbackService.endFeedback : undefined);
+        });
         this.soundService.playSoundEffect('sounds/rightAnswer.mp3', ScreenTypeOx.Game);
         this.challengeService.cardsPlayed += 3;
-        this.challengeService.cardsGeneratorStopper = 0;
         if (this.challengeService.cardsPlayed > 9 * this.challengeService.cardDecksPivot) {
           this.challengeService.cardDecksPivot += 1;
-          this.cardDeckComponentQueryList.toArray().forEach(card => {
-          card.cardsDeckQ.shift();
-          })
         }
       }
       else {
@@ -104,6 +104,35 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       this.gameActions.showNextChallenge.emit();
     });
   }
+
+
+
+
+  @HostListener('document:keydown', ['$event'])
+  asdasd($event: KeyboardEvent) {
+    if ($event.key === "h") {
+      const randomIndexes = shuffle(this.cardDeckComponentQueryList.toArray().map( (z, i) => i)).slice(0, 3);
+      randomIndexes.forEach(index  =>  {
+        // this.cardDeckComponentQueryList.toArray()[index].cardInfo.hasBeenUsed = true;
+        // this.cardDeckComponentQueryList.toArray()[index].cardsToDeckAnimation();
+        this.answerVerificationMethod(index)
+      });
+      // let cardsDeckavaiable = this.cardComponentDeckQueryList.toArray();
+      // for (let i = 0; i < 3; i++) {
+      //   const deckToPush = anyElement(cardsDeckavaiable);
+      //   this.answerComponents.push(deckToPush);
+      //   cardsDeckavaiable = cardsDeckavaiable.filter(z => z !== deckToPush);
+      // }
+      // this.cardComponentDeckQueryList.toArray().forEach((deck, i) => {
+      //   if (this.answerComponents.find(card => sameCard(card.cardInfo, deck.cardInfo))) {
+      //     deck.cardInfo.hasBeenUsed = true;
+      //     this.cardComponentDeckQueryList.toArray()[i].cardsToDeckAnimation();
+      //   }
+      // })
+    }
+  }
+
+
 
 
 
@@ -129,12 +158,12 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.deckComponent.auxArray = [];
     if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
       this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds, () => {
-        console.log('Clock finish.');
         this.gameActions.microLessonCompleted.emit();
       });
     }
     this.cardsAppearenceAnimation();
   }
+
 
 
 
@@ -173,14 +202,14 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
 
+
   public showHint(): void {
     const answer = this.challengeService.cardsInTable.currentPossibleAnswerCards.slice(0, this.challengeService.exerciseConfig.cardsForCorrectAnswer - 1);
-    console.log(this.challengeService.cardsInTable.currentPossibleAnswerCards);
     timer(300).subscribe(z => {
       this.stateByCards = (this.cardComponentDeckQueryList.toArray() as DeckPerCardComponent[])
         .map(cardComp => answer.some(a => sameCard(cardComp.cardInfo, a)) ? 'card-to-select-tutorial' : 'card-neutral');
     });
-    console.log(this.stateByCards);
+    console.log(this.challengeService.cardsInTable.currentPossibleAnswerCards);
   }
 
 
@@ -225,6 +254,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
 
+  
 
 
   private setAnswer(): void {

@@ -267,9 +267,9 @@ export class CardsInTable {
   }
 
 
-  cardNotRepeatedLargeForced(cardsForCheck: CardInfo[], newCards: CardInfo[]): CardInfo {
-    const forcedCard = this.addForcedCard(cardsForCheck);
-    return this.isNotRepeated(forcedCard, newCards) ? forcedCard : this.cardNotRepeatedLargeForced(cardsForCheck, newCards);
+  cardNotRepeatedLargeForced(cardsForCheck: CardInfo[], newCards: CardInfo[], addForcedCard: () => CardInfo): CardInfo {
+    const forcedCard = addForcedCard();
+    return this.isNotRepeated(forcedCard, newCards) ? forcedCard : this.cardNotRepeatedLargeForced(cardsForCheck, newCards, addForcedCard);
   }
 
 
@@ -302,13 +302,13 @@ export class CardsInTable {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
     const cardsThatWillRemain = this.cards.filter(z => !z.hasBeenUsed);
-    const randomCardFromTable = anyElement(cardsThatWillRemain);
-    this.currentPossibleAnswerCards = rule.getSatisfyCards(randomCardFromTable, cardsThatWillRemain).slice(0, minToCorrectAnswer);
+    const anchorCard = anyElement(cardsThatWillRemain);
+    this.currentPossibleAnswerCards = rule.getSatisfyCards(anchorCard, cardsThatWillRemain).slice(0, minToCorrectAnswer);
     const cardsToAddSatisyingRule = minToCorrectAnswer - this.currentPossibleAnswerCards.length;
     const newCards: CardInfo[] = [];
     for (let i = 0; i < indexesToReplace.length; i++) {
       if (newCards.length < cardsToAddSatisyingRule) {
-        const card = this.generateCard(newCards, rule, randomCardFromTable);
+        const card = this.generateCard(newCards, rule, anchorCard);
         newCards.push(card);
         this.currentPossibleAnswerCards.push(card);
       } else
@@ -361,7 +361,7 @@ export class CardsInTable {
 
 
 
-  setStepArray(card: CardInfo, property: GameRule): any {
+  setStepFixedProp(card: CardInfo, property: GameRule): any {
     let propertyFixed = '';
     switch (property) {
       case 'color': propertyFixed = card.color;
@@ -419,6 +419,33 @@ export class CardsInTable {
 
 
 
+
+  generateWrongCards(property: GameRule, cardsForCorrect: number) {
+  const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
+    .filter(z => z !== undefined) as number[];
+  const cardsThatRemain: CardInfo[] = this.cards.filter(z => !z.hasBeenUsed);
+  const newCards: CardInfo[] = [];
+  this.currentPossibleAnswerCards = [];
+  const anchorCard = anyElement(cardsThatRemain.filter(z => !this.currentPossibleAnswerCards.includes(z)));
+  this.currentPossibleAnswerCards.push(anchorCard);
+  const propertyFixed = this.setStepFixedProp(anchorCard, property);
+  const forcedCardEqual = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, newCards,() =>  this.addForcedCardConv(this.currentPossibleAnswerCards, propertyFixed))
+  this.currentPossibleAnswerCards.push(forcedCardEqual);
+  newCards.push(forcedCardEqual);
+  const forcedCardDifferent = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, newCards,() =>  this.addForcedCardConv(this.currentPossibleAnswerCards, undefined));
+  this.currentPossibleAnswerCards.push(forcedCardDifferent);
+  newCards.push(forcedCardDifferent);
+  for(let i = 0; i < cardsForCorrect - 2; i++) {
+    newCards.push(this.cardNotRepeatedLargeRandom(cardsThatRemain.concat(newCards)));
+  }
+  indexesToReplace.forEach((index, i) => {
+    this.cards[index] = newCards[i];
+  })
+}
+
+
+
+
   updateCardsTutorialConventional(cardsForCorrect: number, property: GameRule[], propertyFixed: any[], numberOfEqualProp:number) {
     const indexesToReplace: number[] = this.cards.map((z, i) => z.hasBeenUsed ? i : undefined)
       .filter(z => z !== undefined) as number[];
@@ -428,14 +455,14 @@ export class CardsInTable {
     const anchorCard = anyElement(cardsThatRemain);
     this.currentPossibleAnswerCards.push(anchorCard);
     for(let v = 0; v < numberOfEqualProp; v++) {
-      propertyFixed.push(this.setStepArray(anchorCard, property[v])) ;
+      propertyFixed.push(this.setStepFixedProp(anchorCard, property[v])) ;
     }
     for (let i = 0; i < cardsForCorrect - 1; i++) {
-      const cardToAddAnswer = this.addForcedCardConv(this.currentPossibleAnswerCards, propertyFixed);
+      const cardToAddAnswer =  this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, newCards,() =>  this.addForcedCardConv(this.currentPossibleAnswerCards, propertyFixed))
       newCards.push(cardToAddAnswer);
       this.currentPossibleAnswerCards.push(cardToAddAnswer);
     }
-    const randomCardFiller = this.generateCard(cardsThatRemain);
+    const randomCardFiller = this.generateCard(cardsThatRemain.concat(newCards));
     newCards.push(randomCardFiller);
     indexesToReplace.forEach((index, i) => {
       this.cards[index] = newCards[i];

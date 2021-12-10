@@ -61,6 +61,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
         cardDeckComponentArray[i].isSelected = true;
         // console.log(this.answerComponents);
         if (this.answerComponents.length === cardsForCorrect) {
+          console.log(this.answerComponents)
           cardsForCheckReached();
         }
       } else if (cardDeckComponentArray[i].isSelected) {

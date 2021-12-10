@@ -41,7 +41,7 @@
        fxLayoutAlign="center center">
     <ox-text originalText="IGUAL" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
   </div>
-  <app-rules></app-rules>
+  <app-rules *ngIf="challengeService.exerciseConfig.gameMode === 'limpiar la mesa'"></app-rules>
 </div>
 
 <div class="deck-container">

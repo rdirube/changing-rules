@@ -66,7 +66,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
   public tutorialConvExercise!: CardInfo[];
 
 
-  constructor(private challengeService: ChangingRulesChallengeService,
+  constructor(public challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
     private gameActions: GameActionsService<any>,
     private hintService: HintService,
@@ -106,10 +106,13 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
     this.addSubscription(this.checkAnswerTutorialConv, __ => {
       if (satisfyRuleCardsNew(this.answerComponents.map(z => z.cardInfo), GAME_RULES)) {
-        this.answerRight()
-        this.answerComponents.forEach((z, i) => {
-          z.cardsToDeckAnimation( i === 0 ? this.answerService.correctCards : undefined);
-        });
+        this.answerRight();
+        timer(100).subscribe(z=> {
+          this.answerComponents.forEach((z, i) => {
+            z.cardsToDeckAnimation( i === 0 ? this.answerService.correctCards : undefined);
+          });
+        })
+
         // if(x === this.answerComponents[0]) {
         //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit(this.answerService.correctCards)
         // } else {
@@ -141,7 +144,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
 
-  private addStep(text: string, actions: () => void, completedSub: Observable<any>) {
+  private addStep(text: string, actions: () => void,  completedSub: Observable<any>) {
     this.steps.push({ text, actions, completedSub });
   }
 
@@ -222,7 +225,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.destroyClock();
     const aux = this.challengeService.getExerciseConfig();
     this.addStep('¡Buenas! El objetivo del juego consiste en seleccionar cartas que compartan entre todas una o mas propiedades o bien que no compartan ninguna propiedad', () => {
-    }, timer(4000));
+    }, timer(40));
     this.addStep('Observa que las cartas iluminadas comparten la propiedad ' + this.tutorialService.property[0] as string + ', seleccionalas para formar la respuesta correcta', () => {
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
       this.buttonOkActivate = false;
@@ -230,26 +233,26 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     },
       this.answerService.correctCards);
     this.addStep('Ahora revisa que las cartas iluminadas comparten las propiedades ' + this.tutorialService.property[0] as string + ' y ' + this.tutorialService.property[1] as string + ', seleccionalas', () => {
-      this.setConventionalStepGen(2);
+      this.setConventionalStepGen(2, () => this.tutorialService.tutorialCardGeneratorSetConv(2));
       this.challengeService.cardsGeneratorStopper = 0;
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
     this.addStep('Observa que las cartas iluminadas no comparten ninguna propiedad, en este caso, tambien son correctas', ()=> {
-      this.setConventionalStepGen(0)
+      this.setConventionalStepGen(0,() => this.tutorialService.tutorialCardGeneratorSetConv(0))
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
     this.addStep('En caso de seleccionar un grupo de cartas que comparten alguna propiedad que no es poseída por todo el conjunto de cartas seleccionado, se generará una respuesta incorrecta', ()=> {
-    this.setConventionalStepGen(1)
-    this.cardsToSelectWrongAnswer(this.tutorialService.cardInTable.currentPossibleAnswerCards); 
+    this.setConventionalStepGen(1, () =>  this.tutorialService.tutorialWrongCardGenerator())
+    this.cardsToSelectWrongAnswer(this.tutorialService.cardInTable.cards); 
     }, this.answerService.correctCards)
   }
 
 
 
-  setConventionalStepGen(quant:number) {
+  setConventionalStepGen(quant:number, cardsGenerator: () => void) {
     this.buttonOkActivate = false;
     this.clicksOn = true;
-    this.tutorialService.tutorialCardGeneratorSetConv(quant);
+    cardsGenerator();
   }
 
 
@@ -264,13 +267,24 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
 
-  cardsToSelectWrongAnswer(answerCards: CardInfo[]): void {
+  cardsToSelectWrongAnswer(cards: CardInfo[]): void {
     this.answerComponents = [];
     timer(300).subscribe(z => {
       this.stateByCards = (this.cardDeckComponentQueryList.toArray() as DeckPerCardComponent[])
-        .map(cardComp => answerCards.some(a => !sameCard(cardComp.cardInfo, a)) ? 'card-to-select-tutorial' : 'card-neutral').slice(0,3);
+        .map(cardComp => cards.some(a => !sameCard(cardComp.cardInfo, a)) ? 'card-to-select-tutorial' : 'card-neutral').slice(0,3);
     } );
   }
+
+
+  // export function satisfyRuleCardsNew(cards:CardInfo[], allProperties: GameRule[]) {
+  //   return allProperties.every(prop => {
+  //     const properties = cards.map(card => auxGetPropertyValue(card, prop));
+  //     return properties.every(anchorProperty => {
+  //       const length = properties.filter(aProperty => aProperty === anchorProperty).length;
+  //       return length === 1 || length === properties.length
+  //     })
+  //   });
+  // }
 
 
 

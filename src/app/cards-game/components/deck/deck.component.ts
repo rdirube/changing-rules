@@ -29,7 +29,6 @@ export class DeckComponent extends SubscriberOxDirective implements OnInit {
     super();
     this.addSubscription(this.feedBack.endFeedback, z => {
       if (this.metricsService.currentMetrics.expandableInfo !== undefined) {
-        console.log(this.challengeService.cardsPlayed);
         if(this.challengeService.cardsPlayed >= 6*this.challengeService.addCardToDeckValidator && this.challengeService.cardsPlayed < 42) {
           this.challengeService.addCardToDeckValidator+=1;
           this.auxArray.push(0);

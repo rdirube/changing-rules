@@ -58,14 +58,21 @@ export class TutorialService {
 
 
   tutorialCardGeneratorSetConv(numberOfEqualProp:number) {
+    this.property = [];
+    this.propertyFixed = [];
     for(let y = 0; y < numberOfEqualProp; y++) {
       this.property.push(anyElement(this.propertiesAvaiable));
      this.propertiesAvaiable =  this.propertiesAvaiable.filter(prop => !this.property.includes(prop));
     }
     this.cardInTable.updateCardsTutorialConventional(3, this.property, this.propertyFixed, numberOfEqualProp);
-    console.log(this.cardInTable.cards);
+    
+  }
+
+  tutorialWrongCardGenerator() {
     this.property = [];
-    this.propertyFixed = [];
+    this.propertiesAvaiable =  GAME_RULES;
+    this.property.push(anyElement(this.propertiesAvaiable));
+    this.cardInTable.generateWrongCards(this.property[0], 3);
   }
 
 

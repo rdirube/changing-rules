@@ -22,7 +22,7 @@ import {ChangingRulesChallengeService} from './shared/services/changing-rules-ch
 import {CARD_COLORS, CARD_FILLERS, CARD_SHAPES, GAME_RULES} from './shared/models/const';
 import {allDifferentProperties, getCardSvg, sameCard, satisfyRuleCardsNew} from './shared/models/functions';
 import { ALL_RULES, CardsInTable } from './shared/models/types';
-
+import anime from 'animejs'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -51,6 +51,7 @@ export class AppComponent extends BaseMicroLessonApp {
         microLessonCommunicationService.sendMessageMLToManager(ResourceFinalStateOxBridge, resourceStateService.currentState.value);
       }
     });
+    (anime as any).suspendWhenDocumentHidden = false;
     // // preloader.addResourcesToLoad(this.getGameResourcesToLoad());
     // // preloader.loadAll().subscribe(z => this.loaded = true);
     // const probando = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);

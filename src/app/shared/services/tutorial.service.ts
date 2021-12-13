@@ -46,7 +46,7 @@ export class TutorialService {
   tutorialCardGenerator(gameRule: GameRule): ChangingRulesExercise {
     this.currentRule = ALL_RULES.find(z => gameRule === z.id) as Rule;
     // this.rulesAvaiables = this.rulesAvaiables.filter(z => z !== this.currentRule.id);
-    this.cardInTable.updateCards(this.currentRule, this.challengeService.getExerciseConfig().cardsForCorrectAnswer);
+    this.cardInTable.updateCards(this.currentRule, this.challengeService.exerciseConfig.cardsForCorrectAnswer);
     return {
       currentCards: this.cardInTable.cards,
       rule: this.currentRule,
@@ -57,7 +57,7 @@ export class TutorialService {
 
 
 
-  tutorialCardGeneratorSetConv(numberOfEqualProp:number) {
+  tutorialCardGeneratorSetConv(numberOfEqualProp:number): ChangingRulesExercise{
     this.property = [];
     this.propertyFixed = [];
     for(let y = 0; y < numberOfEqualProp; y++) {
@@ -65,12 +65,18 @@ export class TutorialService {
      this.propertiesAvaiable =  this.propertiesAvaiable.filter(prop => !this.property.includes(prop));
     }
     this.cardInTable.updateCardsTutorialConventional(3, this.property, this.propertyFixed, numberOfEqualProp);
-    
+    return {
+      currentCards: this.cardInTable.cards,
+      rule: this.currentRule,
+      currentSetting: 'igual'
+    }
   }
+
+  
 
   tutorialWrongCardGenerator() {
     this.property = [];
-    this.propertiesAvaiable =  GAME_RULES;
+    this.propertiesAvaiable = GAME_RULES;
     this.property.push(anyElement(this.propertiesAvaiable));
     this.cardInTable.generateWrongCards(this.property[0], 3);
   }

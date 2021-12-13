@@ -17,7 +17,7 @@
       [totalTime]="totalTime" [color]="color" [timeFormatted]="timeFormatted" [currentTime]="currentTime"></app-clock>
     </div>
     <div fxFlex="grow" fxLayoutAlign="center center" [ngClass]="{'hide': deckWidth?.length === 0}" class="myAbsolute">
-      <app-deck 
+      <app-deck [auxArray]="auxArray"
         [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
         [deckHeight]="deckHeight" [deckWidth]="deckWidth"
          style="transform: translateX(-52vh);">
@@ -25,7 +25,7 @@
     </div>
   <div [ngClass]="gridClass" >
     <app-deck-per-card style="height: 100%;" [cardInfo]="exercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
-     *ngFor="let item of exercise?.currentCards; let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationMethod(i)" [swiftCardOn]="swiftCardOn">
+     *ngFor="let item of exercise?.currentCards; let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationMethod(i)"  [swiftCardOn]="swiftCardOn"  [firstSwiftCard]="firstSwiftCard">
     </app-deck-per-card>
   </div>
  </div>

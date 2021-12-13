@@ -13,6 +13,7 @@ export class ChangingRulesAnswerService extends AnswerService {
   cardsToDeckAnimationEmitter:EventEmitter<void> = new EventEmitter();
   cardsToDeckAnimationEmitterTutorial:EventEmitter<any> = new EventEmitter();
   correctCards = new EventEmitter();
+  wrongCards = new EventEmitter();
 
 
   constructor(private gameActionsService: GameActionsService<any>,

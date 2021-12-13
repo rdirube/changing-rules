@@ -27,14 +27,13 @@ export class GameBodyDirective extends SubscriberOxDirective {
   @ViewChild(DeckComponent) deckComponent!: DeckComponent;
   stateByCards: string[] = [];
   public answerComponents: DeckPerCardComponent[] = [];
-  public swiftCardOn: boolean = false;
   public deckClass: string = "empty";
   public deckWidth: string = '15vh';
   public deckHeight: string = '20vh';
   public gridClass = 'cards-grid-9';
   public currentSetting!:GameSetting;
-  
- 
+  public firstSwiftCard!:boolean;
+  public swiftCardOn!:boolean;
   public currentTime = 0;
   public totalTime = 0;
   public color = 'rgb(0,255,0)';
@@ -43,10 +42,11 @@ export class GameBodyDirective extends SubscriberOxDirective {
   cardsInteractable: boolean = false;
   public faceDown:boolean = false;
 
+
   constructor(protected soundService: SoundOxService, private cs: ChangingRulesChallengeService) {
     super();
-    this.swiftCardOn = true;
-
+    this.firstSwiftCard = false;
+    this.swiftCardOn = false;
   }
 
 
@@ -207,6 +207,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
       opacity: 1, // TODO validate added
       easing: 'linear',
       complete: () => {
+        this.firstSwiftCard = true;
         this.swiftCardOn = true;
         console.log('Cards are now Interactable.');
         this.cardsInteractable = true;

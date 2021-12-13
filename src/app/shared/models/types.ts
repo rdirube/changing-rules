@@ -432,12 +432,13 @@ export class CardsInTable {
   const forcedCardEqual = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, newCards,() =>  this.addForcedCardConv(this.currentPossibleAnswerCards, propertyFixed))
   this.currentPossibleAnswerCards.push(forcedCardEqual);
   newCards.push(forcedCardEqual);
-  const forcedCardDifferent = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, newCards,() =>  this.addForcedCardConv(this.currentPossibleAnswerCards, undefined));
+  const forcedCardDifferent = this.cardNotRepeatedLargeForced(this.currentPossibleAnswerCards, newCards,() =>  this.addForcedCardConv(this.currentPossibleAnswerCards, "undefined"));
   this.currentPossibleAnswerCards.push(forcedCardDifferent);
   newCards.push(forcedCardDifferent);
   for(let i = 0; i < cardsForCorrect - 2; i++) {
     newCards.push(this.cardNotRepeatedLargeRandom(cardsThatRemain.concat(newCards)));
   }
+  console.log(this.currentPossibleAnswerCards);
   indexesToReplace.forEach((index, i) => {
     this.cards[index] = newCards[i];
   })

@@ -55,6 +55,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
   public currentSetting!: GameSetting;
+  public auxArray:number[] = [];
   constructor(private challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
     private gameActions: GameActionsService<any>,
@@ -70,14 +71,15 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     anime.suspendWhenDocumentHidden = false;
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
       this.destroyClockSubs();
+
       timer(100).subscribe(zzz => {
         this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
           ScreenTypeOx.GameComplete);
       });
       this.challengeService.cardsPlayed = 0;
       this.challengeService.cardDecksPivot = 0;
-      this.challengeService.cardsGeneratorStopper = 0;
       this.challengeService.addCardToDeckValidator = 0;
+      this.deckClass = 'empty';
     });
     this.addSubscription(this.gameActions.showHint, x => this.showHint());
 
@@ -220,7 +222,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         if (exercise === undefined) {
-          this.swiftCardOn = false;
+          this.firstSwiftCard = false;
           this.answerComponents = [];
           if (this.exercise) {
             this.exercise.currentCards = [];
@@ -237,6 +239,12 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
         this.answerComponents = [];
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
+          this.firstSwiftCard = false;
+          this.swiftCardOn = false;
+          this.deckClass = 'empty';
+          this.challengeService.cardsPlayed = 0;
+          this.challengeService.cardDecksPivot = 0;
+          this.challengeService.addCardToDeckValidator = 0;
           this.countDownImageInfo = { data: this.preloaderService.getResourceData('mini-lessons/executive-functions/svg/buttons/saltear.svg') };
         } else {
           this.deckClass = 'filled';

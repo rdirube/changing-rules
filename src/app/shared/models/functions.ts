@@ -1,6 +1,7 @@
 import { ALL_RULES, CardColor, CardFill, CardInfo, CardShape, ColorRule, GameRule, Rule } from "./types";
 import { anyElement } from "ox-types";
 import { CARD_COLORS, CARD_FILLERS, CARD_SHAPES } from "./const";
+import anime from "animejs";
 
 
 export function colorsParseFunction(color: CardColor): string {
@@ -166,7 +167,12 @@ export function satisfyRuleCardsNew(cards:CardInfo[], allProperties: GameRule[])
 
 // }
 
-
+export function cancelAnimation (animation: anime.AnimeInstance | undefined) {
+  if (!animation) return;
+  const activeInstances = anime.running;
+  const index = activeInstances.indexOf(animation);
+  activeInstances.splice(index, 1);
+}
 
 
 export function satisfyRuleFilter(card:CardInfo[], cards:CardInfo[], properties:GameRule[]) {

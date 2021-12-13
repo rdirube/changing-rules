@@ -18,7 +18,7 @@
          [cardInfo]="cardInfo" #aCard 
                   [cardClass]="cardClass"
                   class="card-component"
-                  [ngClass]="{'card-on': swiftCardOn,  'card-off': !swiftCardOn } ">
+                  [ngClass]="{'card-on': firstSwiftCard ,  'card-off': !firstSwiftCard } ">
        </app-card>
 
      <mlc-loaded-svg fxFlex="grow" #cardPlaceHolder fxFlexFill [ngClass]="swiftCardOn ? 'card-back-up': 'card-back'" path="changing_rules/svg/elementos/dorso.svg">

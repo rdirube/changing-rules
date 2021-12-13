@@ -107,18 +107,18 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.addSubscription(this.checkAnswerTutorialConv, __ => {
       if (satisfyRuleCardsNew(this.answerComponents.map(z => z.cardInfo), GAME_RULES)) {
         this.answerRight();
-        timer(100).subscribe(z=> {
-          this.answerComponents.forEach((z, i) => {
-            z.cardsToDeckAnimation( i === 0 ? this.answerService.correctCards : undefined);
-          });
-        })
-
+        this.answerComponents.forEach((z, i) => {
+          z.cardsToDeckAnimation( i === 0 ? this.answerService.correctCards : undefined);
+        });
         // if(x === this.answerComponents[0]) {
         //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit(this.answerService.correctCards)
         // } else {
         //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit()
         // }
        } else {
+        this.answerComponents.forEach((z, i) => {
+           i === 0 ? this.answerService.wrongCards.emit() : undefined
+        });
         this.answerWrong();
       }
     })
@@ -131,7 +131,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
   ngOnInit(): void {
     this.tutorialService.cardInTable.setInitialCards(9, 3);
-    this.tutorialService.tutorialCardGeneratorSetConv(1);
     this.setStepConventional();
   }
 
@@ -222,18 +221,22 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
   public setStepConventional() {
+    this.swiftCardOn = true;
+    this.firstSwiftCard = true;
     this.destroyClock();
+    this.tutorialExercise = this.tutorialService.tutorialCardGeneratorSetConv(1);
     const aux = this.challengeService.getExerciseConfig();
     this.addStep('¡Buenas! El objetivo del juego consiste en seleccionar cartas que compartan entre todas una o mas propiedades o bien que no compartan ninguna propiedad', () => {
-    }, timer(40));
+    }, timer(4500));
     this.addStep('Observa que las cartas iluminadas comparten la propiedad ' + this.tutorialService.property[0] as string + ', seleccionalas para formar la respuesta correcta', () => {
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
       this.buttonOkActivate = false;
       this.clicksOn = true;
     },
       this.answerService.correctCards);
-    this.addStep('Ahora revisa que las cartas iluminadas comparten las propiedades ' + this.tutorialService.property[0] as string + ' y ' + this.tutorialService.property[1] as string + ', seleccionalas', () => {
+    this.addStep('', () => {
       this.setConventionalStepGen(2, () => this.tutorialService.tutorialCardGeneratorSetConv(2));
+      this.textChangeAnimation('Ahora revisa que las cartas iluminadas comparten las propiedades ' + this.tutorialService.property[0] as string + ' y ' + this.tutorialService.property[1] as string + ', seleccionalas')
       this.challengeService.cardsGeneratorStopper = 0;
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
@@ -241,10 +244,15 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
       this.setConventionalStepGen(0,() => this.tutorialService.tutorialCardGeneratorSetConv(0))
       this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards);
     }, this.answerService.correctCards);
-    this.addStep('En caso de seleccionar un grupo de cartas que comparten alguna propiedad que no es poseída por todo el conjunto de cartas seleccionado, se generará una respuesta incorrecta', ()=> {
+    this.addStep('En caso de seleccionar un grupo de cartas que comparten alguna propiedad que no es poseída por todas como en el ejemplo en pantalla, se generará una respuesta incorrecta', ()=> {
     this.setConventionalStepGen(1, () =>  this.tutorialService.tutorialWrongCardGenerator())
-    this.cardsToSelectWrongAnswer(this.tutorialService.cardInTable.cards); 
-    }, this.answerService.correctCards)
+    this.cardsToSelect(this.tutorialService.cardInTable.currentPossibleAnswerCards); 
+    }, this.answerService.wrongCards);
+    this.addStep('',()=> {
+      timer(1000).subscribe(z=> {
+        this.isTutorialComplete = true;
+      })
+    }, this.okButtonHasBeenClick)
   }
 
 
@@ -267,13 +275,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
 
-  cardsToSelectWrongAnswer(cards: CardInfo[]): void {
-    this.answerComponents = [];
-    timer(300).subscribe(z => {
-      this.stateByCards = (this.cardDeckComponentQueryList.toArray() as DeckPerCardComponent[])
-        .map(cardComp => cards.some(a => !sameCard(cardComp.cardInfo, a)) ? 'card-to-select-tutorial' : 'card-neutral').slice(0,3);
-    } );
-  }
 
 
   // export function satisfyRuleCardsNew(cards:CardInfo[], allProperties: GameRule[]) {
@@ -321,18 +322,34 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
 
-  public repeatTutorialMethod(): void {
-    this.tutorialExercise = this.tutorialService.tutorialCardGenerator(this.challengeService.getExerciseConfig().gameRules[0]);
+  public repeatTutorialPartial(cardGenerator:() => any): void {
+    this.tutorialService.propertiesAvaiable = GAME_RULES;
+    this.tutorialExercise = cardGenerator();
+    this.setMagnifierReference('initial-state');
+    
+  }
+
+
+  public repeatTutorialComplete() {
+    this.challengeService.exerciseConfig.gameMode === 'Set convencional' ? 
+    this.repeatTutorialPartial(() => this.tutorialService.tutorialCardGeneratorSetConv(1)) :
+    this.repeatTutorialPartial(() => this.tutorialService.tutorialCardGenerator(this.challengeService.exerciseConfig.gameRules[0])) ;
+    this.repeatTutorialElementInCommon();
+  }
+
+
+
+  public repeatTutorialElementInCommon() {
+    this.clicksOn = false;
     this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
     this.gridClass = this.getGridClassToUse();
-    this.clicksOn = false;
-    this.setMagnifierReference('initial-state');
     this.isTutorialComplete = false;
     this.destroyEndStepSubscription();
     this.setSteps();
     this.currentStep = 0;
     this.executeCurrentStep();
   }
+
 
 
   private executeCurrentStep() {

@@ -12,7 +12,7 @@
       <app-tutorial-button fxLayoutAlign="center center" class="complete-buttom"
                            mlcClickeableOx
                            tutorialText="Repetir tutorial"
-                           [realClick]="repeatTutorialMethod.bind(this)"></app-tutorial-button>
+                           [realClick]="repeatTutorialComplete.bind(this)"></app-tutorial-button>
     </div>
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
                     path="changing_rules/svg/elementos/mesa.svg">
@@ -30,8 +30,8 @@
       </app-deck>
     </div>
     <div [ngClass]="gridClass">
-      <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialConvExercise[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
-      *ngFor="let item of tutorialConvExercise let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerTutorialConv)" [swiftCardOn]="swiftCardOn">
+      <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialExercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
+      *ngFor="let item of tutorialConvExercise let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerTutorialConv)" [swiftCardOn]="swiftCardOn" [firstSwiftCard]="firstSwiftCard">
      </app-deck-per-card>
     </div>
   </div>
@@ -44,9 +44,6 @@
   <app-rules *ngIf="challengeService.exerciseConfig.gameMode === 'limpiar la mesa'"></app-rules>
 </div>
 
-<div class="deck-container">
-  <app-deck ></app-deck>
-</div>
 <div class="text-tutorial-container" style="position: absolute; z-index: 101" fxLayoutAlign="center center">
   <ox-text #tutorialText
            [ignoreLowerCase]="true"

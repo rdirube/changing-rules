@@ -4,7 +4,7 @@ import { LoadedSvgComponent, SubscriberOxDirective } from 'micro-lesson-componen
 import { FeedbackOxService, GameActionsService, SoundOxService } from 'micro-lesson-core';
 import { isEven, ScreenTypeOx } from 'ox-types';
 import { timer } from 'rxjs';
-import { convertPXToVH } from 'src/app/shared/models/functions';
+import { cancelAnimation, convertPXToVH } from 'src/app/shared/models/functions';
 import { CardInfo } from 'src/app/shared/models/types';
 import { ChangingRulesAnswerService } from 'src/app/shared/services/changing-rules-answer.service';
 import { ChangingRulesChallengeService } from 'src/app/shared/services/changing-rules-challenge.service';
@@ -22,7 +22,6 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
 
   @ViewChild('cardComponent') cardComponent!: CardComponent;
   @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
-  @Input() swiftCardOn!: boolean;
   @Input() cardInfo!: CardInfo;
   @Input() faceDown!: boolean;
   @Input() cardClass!: string;
@@ -31,12 +30,17 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   @Input() cardsInteractable!: boolean;
   @Input() isSelected!: boolean;
   @Input() cardsPlayed!: number;
+  @Input() firstSwiftCard!: boolean;
+  @Input() swiftCardOn!: boolean;
+
+
   public deckWidth: string = '15vh';
   public deckHeight: string = '27.5vh';
   public deck: string = 'empty';
   public cardsUp: boolean = false;
   public cardGeneratorStopper:number = 0;
 
+  private currentAnimation: anime.AnimeInstance | undefined;
 
   constructor(public elementRef: ElementRef,
     private feedbackService: FeedbackOxService,
@@ -50,13 +54,23 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
     this.addSubscription(this.answerService.cardsToDeckAnimationEmitter, x => {
       this.cardsToDeckAnimation(this.feedbackService.endFeedback);
       this.cardsPlayed = this.challengeService.cardsPlayed;
- 
+
     })
   this.addSubscription(this.answerService.cardsToDeckAnimationEmitterTutorial, f => {
   this.cardsToDeckAnimation(f)
-  }) 
+  })
+  this.swiftCardOn = true;
   this.render.setStyle(this.elementRef.nativeElement, 'position', 'relative');
-  } 
+  this.addSubscription(this.gameActions.microLessonCompleted, x => {
+    if(this.currentAnimation) {
+      this.currentAnimation.pause();
+      this.currentAnimation.complete = () => {};
+    }
+    anime.remove(this.cardComponent.elementRef.nativeElement);
+    cancelAnimation(this.currentAnimation);
+  })
+
+  }
 
 
 
@@ -72,21 +86,24 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   return { value: isEven(i) ? 1 : 1.15, duration };
     }).concat([{ value: 1, duration }]);
     if (this.cardComponent.card.hasBeenUsed) {
+      this.swiftCardOn = true;
+      this.elementRef.nativeElement.style.zIndex = 10000;
       this.cardClass = 'card-correct';
       const deckRect = this.deckComponent.nativeElement.getBoundingClientRect();
       const answerRect = this.cardComponent.elementRef.nativeElement.getBoundingClientRect();
       anime.remove(this.cardComponent.elementRef.nativeElement);
-      anime({
+      this.currentAnimation = anime({
         targets: this.cardComponent.elementRef.nativeElement,
+        zIndex: 1000,
         easing: 'easeInOutExpo',
         scale,
         complete: () => {
-          anime({
+          this.currentAnimation = anime({
             targets: this.cardComponent.elementRef.nativeElement,
             translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
             translateY: convertPXToVH(deckRect.y) - convertPXToVH(answerRect.y) - 5  + 'vh',
             delay: 700,
-            duration: 1600,
+            duration: 1000,
             begin: () => {
               this.cardComponent.cardSvg = 'changing_rules/svg/elementos/dorso.svg';
               this.cardComponent.cardClass = 'card-neutral';
@@ -95,18 +112,21 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
             },
             easing: 'easeOutExpo',
             complete: () => {
-              anime({
+              this.currentAnimation = anime({
                 targets: this.cardComponent.elementRef.nativeElement,
                 translateX: 0,
                 translateY: 0,
                 opacity: 0,
+                zIndex:0,
                 duration: 1,
                 complete: () => {
-                  nextStepEmitter?.emit(); 
+                  console.log("animacion completa testing");
+                  nextStepEmitter?.emit();
                   this.swiftCardOn = true;
                   this.cardsAppearenceNew();
-                  this.cardsPlayed = this.challengeService.cardsPlayed;           
-                }})
+                  this.cardsPlayed = this.challengeService.cardsPlayed;
+                  this.elementRef.nativeElement.style.zIndex = 0;
+    }})
           }});
         }
       });
@@ -118,24 +138,20 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   cardsAppearenceNew() {
     this.soundService.playSoundEffect('sounds/woosh.mp3', ScreenTypeOx.Game);
     anime.remove(this.cardComponent.elementRef.nativeElement);
-      anime({
+      this.currentAnimation = anime({
         targets: this.cardComponent.elementRef.nativeElement,
         opacity: 1,
-        duration: 1,    
+        duration: 1,
         complete: () => {
           this.cardClass = 'neutral-card';
           this.cardsInteractable = true;
-          this.cardComponent.card.hasBeenUsed = false;
-          this.swiftCardOn = false;
-
         }
-      });    
+      });
   }
 
 
 
 
-  
 
 
 
@@ -143,5 +159,6 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
 
 
 
-  
+
+
 }

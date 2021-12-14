@@ -35,6 +35,7 @@ import { getCardSvg, sameCard, allDifferentProperties, satisfyRuleCardsNew } fro
 import { GAME_RULES } from 'src/app/shared/models/const';
 import anime from 'animejs';
 import { DeckPerCardComponent } from '../deck-per-card/deck-per-card.component';
+import { DeckComponent } from '../deck/deck.component';
 
 @Component({
   selector: 'app-game-body',
@@ -70,8 +71,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     // @ts-ignore
     anime.suspendWhenDocumentHidden = false;
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
-      this.destroyClockSubs();
-
+      
       timer(100).subscribe(zzz => {
         this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
           ScreenTypeOx.GameComplete);
@@ -105,6 +105,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.addSubscription(this.feedbackService.endFeedback, x => {
       this.gameActions.showNextChallenge.emit();
     });
+
+  
   }
 
 
@@ -115,22 +117,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     if ($event.key === "h") {
       const randomIndexes = shuffle(this.cardDeckComponentQueryList.toArray().map( (z, i) => i)).slice(0, 3);
       randomIndexes.forEach(index  =>  {
-        // this.cardDeckComponentQueryList.toArray()[index].cardInfo.hasBeenUsed = true;
-        // this.cardDeckComponentQueryList.toArray()[index].cardsToDeckAnimation();
         this.answerVerificationMethod(index)
       });
-      // let cardsDeckavaiable = this.cardComponentDeckQueryList.toArray();
-      // for (let i = 0; i < 3; i++) {
-      //   const deckToPush = anyElement(cardsDeckavaiable);
-      //   this.answerComponents.push(deckToPush);
-      //   cardsDeckavaiable = cardsDeckavaiable.filter(z => z !== deckToPush);
-      // }
-      // this.cardComponentDeckQueryList.toArray().forEach((deck, i) => {
-      //   if (this.answerComponents.find(card => sameCard(card.cardInfo, deck.cardInfo))) {
-      //     deck.cardInfo.hasBeenUsed = true;
-      //     this.cardComponentDeckQueryList.toArray()[i].cardsToDeckAnimation();
-      //   }
-      // })
     }
   }
 
@@ -157,12 +145,16 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.soundService.playWoosh(ScreenTypeOx.Game);
     this.countDownImageInfo = undefined;
     this.currentSetting = this.exercise.currentSetting;
-    this.deckComponent.auxArray = [];
+    (this.deckComponent as DeckComponent).auxArray = [];  
     if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
       this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds, () => {
-        this.gameActions.microLessonCompleted.emit();
+        this.cardsInteractable = false;
+        timer(1800).subscribe(z=> {
+          this.gameActions.microLessonCompleted.emit();
+        })
       });
     }
+    this.clockAnimation.play();
     this.cardsAppearenceAnimation();
   }
 
@@ -195,7 +187,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.addSubscription(this.gameActions.checkedAnswer.pipe(take(1)),
       z => {
         myMetric.finishTime = new Date();
-        // console.log('Finish metric time, it means checkAnswer');
       });
     this.metricsService.addMetric(myMetric as ExerciseData);
     this.metricsService.currentMetrics.exercises++;
@@ -239,6 +230,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         this.stateByCards = exercise.exerciseData.currentCards.map(z => 'card-neutral');
         this.answerComponents = [];
         if (this.metricsService.currentMetrics.expandableInfo?.exercisesData.length === 1) {
+          this.destroyClockSubs();
           this.firstSwiftCard = false;
           this.swiftCardOn = false;
           this.deckClass = 'empty';
@@ -279,6 +271,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   onCountDownTimeUpdated() {
+    this.clockAnimation.pause();
     this.soundService.playSoundEffect('sounds/bubble01.mp3', ScreenTypeOx.Game);
   }
 }

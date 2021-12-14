@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import {
   Rule,
   GameRule,
@@ -21,20 +21,14 @@ import { ChangingRulesChallengeService } from './changing-rules-challenge.servic
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class TutorialService {
-
-
   public currentRule!: Rule;
   public cardInTable;
-  public propertyStep1!: GameRule;
-  public propertyStep2A!: GameRule;
-  public propertyStep2B!: GameRule;
   public propertyFixed: any[] = [];
-  public stepAllCards: CardInfo[] = [];
-  public stepAnswerCards: CardInfo[] = [];
   public property: GameRule[] = [];
   public propertiesAvaiable = GAME_RULES;
-
   constructor(private challengeService: ChangingRulesChallengeService) {
     const aux = this.challengeService.exerciseConfig;
     this.cardInTable = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
@@ -45,7 +39,6 @@ export class TutorialService {
 
   tutorialCardGenerator(gameRule: GameRule): ChangingRulesExercise {
     this.currentRule = ALL_RULES.find(z => gameRule === z.id) as Rule;
-    // this.rulesAvaiables = this.rulesAvaiables.filter(z => z !== this.currentRule.id);
     this.cardInTable.updateCards(this.currentRule, this.challengeService.exerciseConfig.cardsForCorrectAnswer);
     return {
       currentCards: this.cardInTable.cards,

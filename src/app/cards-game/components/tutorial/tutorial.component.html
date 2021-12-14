@@ -30,8 +30,8 @@
       </app-deck>
     </div>
     <div [ngClass]="gridClass">
-      <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialExercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
-      *ngFor="let item of tutorialConvExercise let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerTutorialConv)" [swiftCardOn]="swiftCardOn" [firstSwiftCard]="firstSwiftCard">
+      <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialService.cardInTable.cards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent?.elementRef"
+      *ngFor="let item of tutorialService.cardInTable.cards; let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerTutorialConv)" [swiftCardOn]="swiftCardOn" [firstSwiftCard]="firstSwiftCard">
      </app-deck-per-card>
     </div>
   </div>

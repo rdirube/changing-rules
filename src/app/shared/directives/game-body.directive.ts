@@ -36,6 +36,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
   public swiftCardOn!:boolean;
   public currentTime = 0;
   public totalTime = 0;
+  public clockAnimation!:any;
   public color = 'rgb(0,255,0)';
   timeFormatted: string = '';
   private clockSubs!: Subscription;
@@ -50,7 +51,6 @@ export class GameBodyDirective extends SubscriberOxDirective {
   }
 
 
-  // answerVerification(i: number,answerComponents:CardComponent[], cardsForCorrect:number, emit: () => void) {
   updateAnswer(i: number, cardsForCorrect: number, cardsForCheckReached: () => void) {
     const cardDeckComponentArray = this.cardDeckComponentQueryList.toArray() as DeckPerCardComponent[];
     if (cardDeckComponentArray) {
@@ -59,9 +59,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
         this.answerComponents.push(cardDeckComponentArray[i]);
         cardDeckComponentArray[i].cardClass = 'card-selected';
         cardDeckComponentArray[i].isSelected = true;
-        // console.log(this.answerComponents);
         if (this.answerComponents.length === cardsForCorrect) {
-          console.log(this.answerComponents)
           cardsForCheckReached();
         }
       } else if (cardDeckComponentArray[i].isSelected) {
@@ -69,7 +67,6 @@ export class GameBodyDirective extends SubscriberOxDirective {
         cardDeckComponentArray[i].isSelected = false;
         cardDeckComponentArray[i].cardClass = 'card-neutral';
       }
-      // console.log(this.answerComponents.length);
     }
   }
 
@@ -98,7 +95,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
     this.totalTime = totalTime;
     this.currentTime = totalTime;
     anime.remove(this);
-    anime({
+    this.clockAnimation = anime({
       targets: this,
       color: ['rgb(0,255,0)', 'rgb(255,0,0)'],
       duration: this.totalTime * 1000,

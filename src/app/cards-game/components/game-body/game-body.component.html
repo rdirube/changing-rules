@@ -25,7 +25,7 @@
     </div>
   <div [ngClass]="gridClass" >
     <app-deck-per-card style="height: 100%;" [cardInfo]="exercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent.elementRef"
-     *ngFor="let item of exercise?.currentCards; let i = index" [cardClass]="stateByCards[i]" (click)="answerVerificationMethod(i)"  [swiftCardOn]="swiftCardOn"  [firstSwiftCard]="firstSwiftCard">
+     *ngFor="let item of exercise?.currentCards; let i = index" [position]="i" [cardClass]="stateByCards[i]" (click)="answerVerificationMethod(i)"  [swiftCardOn]="swiftCardOn"  [firstSwiftCard]="firstSwiftCard">
     </app-deck-per-card>
   </div>
  </div>

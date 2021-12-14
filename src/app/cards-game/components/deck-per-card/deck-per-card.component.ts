@@ -23,15 +23,15 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   @ViewChild('cardComponent') cardComponent!: CardComponent;
   @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
   @Input() cardInfo!: CardInfo;
-  @Input() faceDown!: boolean;
   @Input() cardClass!: string;
-  @Input() deckComponent!: ElementRef;
+  @Input() deckComponent!: ElementRef | undefined;
   @Input() answerComponent!: CardComponent;
   @Input() cardsInteractable!: boolean;
   @Input() isSelected!: boolean;
   @Input() cardsPlayed!: number;
   @Input() firstSwiftCard!: boolean;
   @Input() swiftCardOn!: boolean;
+  @Input() position!:number;
 
 
   public deckWidth: string = '15vh';
@@ -39,7 +39,6 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   public deck: string = 'empty';
   public cardsUp: boolean = false;
   public cardGeneratorStopper:number = 0;
-
   private currentAnimation: anime.AnimeInstance | undefined;
 
   constructor(public elementRef: ElementRef,
@@ -61,15 +60,6 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   })
   this.swiftCardOn = true;
   this.render.setStyle(this.elementRef.nativeElement, 'position', 'relative');
-  this.addSubscription(this.gameActions.microLessonCompleted, x => {
-    if(this.currentAnimation) {
-      this.currentAnimation.pause();
-      this.currentAnimation.complete = () => {};
-    }
-    anime.remove(this.cardComponent.elementRef.nativeElement);
-    cancelAnimation(this.currentAnimation);
-  })
-
   }
 
 
@@ -87,9 +77,12 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
     }).concat([{ value: 1, duration }]);
     if (this.cardComponent.card.hasBeenUsed) {
       this.swiftCardOn = true;
-      this.elementRef.nativeElement.style.zIndex = 10000;
+      this.elementRef.nativeElement.style.zIndex = 5000;
       this.cardClass = 'card-correct';
-      const deckRect = this.deckComponent.nativeElement.getBoundingClientRect();
+      if(this.position < 3) {
+        this.elementRef.nativeElement.style.zIndex = 7000;
+      }
+      const deckRect = this.deckComponent?.nativeElement.getBoundingClientRect();
       const answerRect = this.cardComponent.elementRef.nativeElement.getBoundingClientRect();
       anime.remove(this.cardComponent.elementRef.nativeElement);
       this.currentAnimation = anime({
@@ -120,13 +113,12 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
                 zIndex:0,
                 duration: 1,
                 complete: () => {
-                  console.log("animacion completa testing");
                   nextStepEmitter?.emit();
                   this.swiftCardOn = true;
                   this.cardsAppearenceNew();
                   this.cardsPlayed = this.challengeService.cardsPlayed;
                   this.elementRef.nativeElement.style.zIndex = 0;
-    }})
+               }})
           }});
         }
       });

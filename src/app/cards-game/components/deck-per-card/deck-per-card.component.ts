@@ -94,7 +94,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
           this.currentAnimation = anime({
             targets: this.cardComponent.elementRef.nativeElement,
             translateX: convertPXToVH(deckRect.x) - convertPXToVH(answerRect.x) + 'vh',
-            translateY: convertPXToVH(deckRect.y) - convertPXToVH(answerRect.y) - 5  + 'vh',
+            translateY: convertPXToVH(deckRect.y) - convertPXToVH(answerRect.y) - 5.5  + 'vh',
             delay: 700,
             duration: 1000,
             begin: () => {

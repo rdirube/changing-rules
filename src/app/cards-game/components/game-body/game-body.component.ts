@@ -31,7 +31,7 @@ import { CardComponent } from '../card/card.component';
 import { ChangingRulesAnswerService } from 'src/app/shared/services/changing-rules-answer.service';
 import { GameBodyDirective } from 'src/app/shared/directives/game-body.directive';
 import { timer } from 'rxjs';
-import { getCardSvg, sameCard, allDifferentProperties, satisfyRuleCardsNew } from 'src/app/shared/models/functions';
+import { getCardSvg, sameCard, allDifferentProperties, satisfyRuleCardsNew, satisfyRule } from 'src/app/shared/models/functions';
 import { GAME_RULES } from 'src/app/shared/models/const';
 import anime from 'animejs';
 import { DeckPerCardComponent } from '../deck-per-card/deck-per-card.component';
@@ -57,7 +57,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   public countDownImageInfo: OxImageInfo | undefined;
   public currentSetting!: GameSetting;
   public auxArray:number[] = [];
-  constructor(private challengeService: ChangingRulesChallengeService,
+  constructor(public challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
     private gameActions: GameActionsService<any>,
     private cdr: ChangeDetectorRef,
@@ -256,10 +256,17 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
   
 
+  private itsCorrect(cards: CardInfo[]): boolean {
+      return this.challengeService.exerciseConfig.gameMode === 'Set convencional' ?
+      satisfyRuleCardsNew(cards, GAME_RULES) 
+      : this.exercise.rule.allSatisfyRule(cards); 
+  }
+
+
 
   private setAnswer(): void {
-    const cards = this.answerComponents.map(z => z.cardInfo)
-    const correctness = satisfyRuleCardsNew(cards, GAME_RULES) ? 'correct' : 'wrong';
+    const cards = this.answerComponents.map(z => z.cardInfo);
+    const correctness = this.itsCorrect(cards) ? 'correct' : 'wrong';
     this.answerService.currentAnswer = {
       parts: [
         { correctness, parts: cards.map(cardToSchemaPart) }
@@ -271,7 +278,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   onCountDownTimeUpdated() {
-    this.clockAnimation.pause();
     this.soundService.playSoundEffect('sounds/bubble01.mp3', ScreenTypeOx.Game);
   }
 }

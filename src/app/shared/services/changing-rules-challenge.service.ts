@@ -73,11 +73,14 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
     const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting);
-    this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer,() => this.cardsInTable.cardNotRepeatedLargeForced(this.cardsInTable.currentPossibleAnswerCards, this.cardsInTable.cards.filter(card => !card.hasBeenUsed),() => this.cardsInTable.addForcedCard(this.cardsInTable.currentPossibleAnswerCards)));
+    if(this.exerciseConfig.gameMode === 'Set convencional') {
+      this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer,() => this.cardsInTable.cardNotRepeatedLargeForced(this.cardsInTable.currentPossibleAnswerCards, this.cardsInTable.cards.filter(card => !card.hasBeenUsed),() => this.cardsInTable.addForcedCard(this.cardsInTable.currentPossibleAnswerCards)));
+    } else {
+      this.cardsInTable.updateCards(ruleClass, this.exerciseConfig.cardsForCorrectAnswer);
+    }
     // TODO SOLVE THIS
     // this.cardInTable.modifyInitialCards(currentExerciseRule, this.exerciseConfig.cardsForCorrectAnswer
     //   , this.cardInTable, CARD_COLORS, CARD_SHAPES, CARD_FILLERS, lastCards, this.exerciseConfig.cardInTable);
-    console.log(this.cardsInTable.cards.forEach(card=> console.log(card.hasBeenUsed)));
     return new ExerciseOx({
       rule: ruleClass,
       currentCards: this.cardsInTable.cards,
@@ -89,8 +92,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
 
 
   beforeStartGame(): void {
-    if (this.appInfo.microLessonInfo.creatorInfo)
-      this.appInfo.microLessonInfo.creatorInfo.microLessonGameInfo.properties = JSON.parse('{"gameRules":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["naranja","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":["igual", "distinto", "aleatorio"],"totalTimeInSeconds":15  ,"wildcardOn":true,"minWildcardQuantity":2,"gameMode":"Set convencional","rulesForAnswer":1,"totalExercises":99}'); 
     const gameCase = 'created-config';
     // this.appInfo.microLessonInfo.extraInfo.exerciseCase
     switch (gameCase) {

@@ -17,7 +17,7 @@ export class RulesComponent extends SubscriberOxDirective {
   currentRule!: string;
   public lowerCaseTrue: boolean = true;
 
-  private readonly allRuleArray:     {
+  private readonly allRuleArray:{
     iconSvg: string,
     auxForSvg: string,
     class: string,
@@ -62,13 +62,13 @@ export class RulesComponent extends SubscriberOxDirective {
   }
 
 
-  constructor(private challengeSrevice: ChangingRulesChallengeService,
+  constructor(private challengeService: ChangingRulesChallengeService,
               private gameActions: GameActionsService<any>) {
     super();
     this.addSubscription(this.gameActions.startGame, z => {
-      // this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.exerciseConfig.gameRules.includes(x.id));
+      this.rulesArray = this.allRuleArray.filter( x => this.challengeService.exerciseConfig.gameRules.includes(x.id));
     });
-    // this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.getExerciseConfig().gameRules.includes(x.id));
+    this.rulesArray = this.allRuleArray.filter( x => this.challengeService.getExerciseConfig().gameRules.includes(x.id));
   }
 
 
@@ -92,6 +92,8 @@ export class RulesComponent extends SubscriberOxDirective {
       z.class = this.classAutocomplete(z.isOn);
     });
   }
+
+
 
   ruleSelectionAnimation() {
     if (!this.allRules) return;

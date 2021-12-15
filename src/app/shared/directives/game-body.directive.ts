@@ -24,7 +24,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
   @ViewChildren(DeckPerCardComponent) cardDeckComponentQueryList!: QueryList<DeckPerCardComponent>;
   @ViewChild('tutorialText') tutorialText!: TextComponent;
   @ViewChild(RulesComponent) ruleComponent!: RulesComponent;
-  @ViewChild(DeckComponent) deckComponent!: DeckComponent;
+  @ViewChild(DeckComponent) deckComponent!: DeckComponent | undefined;
   stateByCards: string[] = [];
   public answerComponents: DeckPerCardComponent[] = [];
   public deckClass: string = "empty";
@@ -37,6 +37,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
   public currentTime = 0;
   public totalTime = 0;
   public clockAnimation!:any;
+  public auxArray:number[] = [];
   public color = 'rgb(0,255,0)';
   timeFormatted: string = '';
   private clockSubs!: Subscription;

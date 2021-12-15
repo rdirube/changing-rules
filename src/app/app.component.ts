@@ -1,6 +1,6 @@
 import {Component, ElementRef} from '@angular/core';
 import {CommunicationOxService, I18nService, PreloaderOxService, ResourceOx, ResourceType} from 'ox-core';
-import {anyElement, HasTutorialOxBridge, ResourceFinalStateOxBridge, ScreenTypeOx, shuffle} from 'ox-types';
+import {anyElement, HasTutorialOxBridge, ResourceFinalStateOxBridge, ScreenTypeOx, shuffle, TutorialMetric} from 'ox-types';
 import {environment} from '../environments/environment';
 import {
   AppInfoOxService,
@@ -35,18 +35,18 @@ export class AppComponent extends BaseMicroLessonApp {
 
   constructor(preloader: PreloaderOxService, translocoService: TranslocoService, wumboxService: InWumboxService,
               communicationOxService: CommunicationOxService, microLessonCommunicationService: MicroLessonCommunicationService<any>,
-              progressService: ProgressService, elementRef: ElementRef, gameActions: GameActionsService<any>,
+              progressService: ProgressService, elementRef: ElementRef,  private gameActionsService: GameActionsService<any>,
               endGame: EndGameService, i18nService: I18nService, levelService: LevelService, http: HttpClient,
-              challenge: ChangingRulesChallengeService, private appInfoService: AppInfoOxService,
+              private challengeService: ChangingRulesChallengeService, private appInfoService: AppInfoOxService,
               microLessonMetrics: MicroLessonMetricsService<any>, // Todo
               resourceStateService: ResourceStateService,
               sound: SoundOxService, bridgeFactory: PostMessageBridgeFactory,
               transloco: TranslocoService) {
     super(preloader, translocoService, wumboxService, communicationOxService, microLessonCommunicationService,
-      progressService, elementRef, gameActions, endGame,
-      i18nService, levelService, http, challenge, appInfoService, microLessonMetrics, sound, bridgeFactory);
+      progressService, elementRef, gameActionsService, endGame,
+      i18nService, levelService, http, challengeService, appInfoService, microLessonMetrics, sound, bridgeFactory);
     microLessonCommunicationService.sendMessageMLToManager(HasTutorialOxBridge, true);
-    gameActions.microLessonCompleted.subscribe(__ => {
+    gameActionsService.microLessonCompleted.subscribe(__ => {
       if (resourceStateService.currentState?.value) {
         microLessonCommunicationService.sendMessageMLToManager(ResourceFinalStateOxBridge, resourceStateService.currentState.value);
       }
@@ -102,7 +102,10 @@ export class AppComponent extends BaseMicroLessonApp {
   protected getBasePath(): string {
     return environment.basePath;
   }
-
+  onTutorialEnd(tutorialMetric: TutorialMetric): void {
+    this.gameActionsService.restartGame.emit(ScreenTypeOx.Tutorial as any);
+    super.onTutorialEnd(tutorialMetric);
+  }
 }
 
 

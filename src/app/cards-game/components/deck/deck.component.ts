@@ -32,18 +32,23 @@ export class DeckComponent extends SubscriberOxDirective implements OnInit {
     super();
     this.addSubscription(this.feedBack.endFeedback, z => {
       if (this.metricsService.currentMetrics.expandableInfo !== undefined) {
-        if(this.challengeService.cardsPlayed >= 6*this.challengeService.addCardToDeckValidator && this.challengeService.cardsPlayed < 42) {
+        if(this.challengeService.cardsPlayed >= 9*this.challengeService.addCardToDeckValidator && this.challengeService.cardsPlayed < 45) {
           this.challengeService.addCardToDeckValidator+=1;
           this.auxArray.push(0);
         }
       }      
-    });
+    }
+  );
    
+
+  
     this.addSubscription(this.answerService.correctCards, z=> {
       this.challengeService.addCardToDeckValidator+=1;
       this.auxArray.push(0);
     })
   }
+
+
 
   ngOnInit(): void {
   }

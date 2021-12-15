@@ -44,11 +44,7 @@ import { DeckComponent } from '../deck/deck.component';
 })
 
 export class GameBodyComponent extends GameBodyDirective implements OnInit, AfterViewInit {
-  ngAfterViewInit(): void {
-    if (this.exercise)
-      this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
-  }
-
+ 
   @ViewChildren(DeckPerCardComponent) cardComponentDeckQueryList!: QueryList<DeckPerCardComponent>;
   @ViewChildren('cardContainer') cardContainer!: QueryList<ElementRef>;
 
@@ -56,7 +52,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
   public currentSetting!: GameSetting;
-  public auxArray:number[] = [];
   constructor(public challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
     private gameActions: GameActionsService<any>,
@@ -108,6 +103,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
   
   }
+
 
 
 
@@ -209,8 +205,9 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   ngOnInit(): void {
-    // this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
-    this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
+    console.log(this.challengeService.exerciseConfig.gameMode);
+    this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
+    // this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         if (exercise === undefined) {
           this.firstSwiftCard = false;
@@ -221,7 +218,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
           this.cdr.detectChanges();
           console.log('Undefined exercise.');
           return;
-        }
+        } 
         console.log('Setting real exercise.');
         this.hintService.usesPerChallenge = 1;
         this.hintService.checkHintAvailable();
@@ -248,11 +245,17 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         //   });
         // }
         this.gridClass = this.getGridClassToUse();
-        if (this.ruleComponent)
-          this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
+        // if (this.ruleComponent)
+          // this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
       });
   }
 
+
+
+  ngAfterViewInit(): void {
+}
+   
+  
 
   
 

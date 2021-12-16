@@ -15,7 +15,7 @@ export class RulesComponent extends SubscriberOxDirective implements OnInit, Aft
 
   @ViewChildren('rules') allRules!: QueryList<ElementRef>;
   private _rule: GameRule | undefined;
-  
+  @Input() isTutorial!:boolean;
 
   @Input()
   public set rule(value: GameRule | undefined) {
@@ -80,13 +80,14 @@ export class RulesComponent extends SubscriberOxDirective implements OnInit, Aft
               private gameActions: GameActionsService<any>) {
     super();
     this.addSubscription(this.gameActions.startGame, z => {
+      
       this.rulesArray = this.allRuleArray.filter( x => this.challengeService.exerciseConfig.gameRules.includes(x.id));
     });
     this.rulesArray = this.allRuleArray.filter( x => this.challengeService.getExerciseConfig().gameRules.includes(x.id));
   }
  
+
   ngAfterViewInit(): void {
-    // this.ruleSelectionAnimation();
   }
  
   ngOnInit(): void {

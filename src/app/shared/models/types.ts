@@ -29,6 +29,11 @@ export interface CardInfo {
   // cardClasses?: string;
 }
 
+export interface gridConfig {
+  class:string;
+  numberForZIndex:number;
+}
+
 
 export interface Replaces {
   path: string;
@@ -278,22 +283,6 @@ export class CardsInTable {
   }
 
 
-
-
-  // generateCardAltMode(newCards:CardInfo[], randomCard:CardInfo):any{
-  //  const modeToUse:string[] = ['different', 'same'];
-  //  const randomMode:string = anyElement(modeToUse); 
-  //  const cardGuideRule = anyElement(ALL_RULES);
-  //  console.log(randomMode);
-  //  console.log(cardGuideRule);
-  //  if(randomCard) {
-  //   switch(randomMode) {
-  //     case'different': return this.returnDifferentPropertiesCard(newCards);
-  //     case 'same': return this.returnEqualProperty(cardGuideRule, randomCard);
-  //   }} else {
-  //     this.isNotRepeated(randomCard,newCards) ? randomCard : this.generateCardAltMode(newCards, randomCard);
-  //   }
-  // }
 
 
 

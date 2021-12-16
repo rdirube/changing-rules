@@ -32,6 +32,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   @Input() firstSwiftCard!: boolean;
   @Input() swiftCardOn!: boolean;
   @Input() position!:number;
+  @Input() gridZindex!: number;
 
 
   public deckWidth: string = '15vh';
@@ -79,7 +80,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
       this.swiftCardOn = true;
       this.elementRef.nativeElement.style.zIndex = 5000;
       this.cardClass = 'card-correct';
-      if(this.position < 3) {
+      if(this.position < this.gridZindex) {
         this.elementRef.nativeElement.style.zIndex = 7000;
       }
       const deckRect = this.deckComponent?.nativeElement.getBoundingClientRect();

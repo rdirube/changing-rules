@@ -73,12 +73,16 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     protected soundService: SoundOxService,
     public tutorialService: TutorialService) {
     super(soundService, challengeService);
+
+    this.tutorialService.cardInTable = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
+    this.tutorialService.cardInTable.setInitialCards(9, 3);
+
+
     this.exerciseConfig = this.challengeService.getExerciseConfig();
     this.exerciseConfig.gameMode === "Set convencional" ? this.setStepConventional() : this.setSteps();
     // this.tutorialExercise = this.tutorialService.tutorialCardGenerator(this.challengeService.getExerciseConfig().gameRules[0]);
     this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');
-    this.gridClass = this.getGridClassToUse();
-    // this.tutorialService.tutorialCardGeneratorSetConv();
+    this.gridConfig = this.getGridClassToUse();
     this.clicksOn = false;
     this.addSubscription(this.checkAnswerTutorial, z => {
       const ruleToApply = ALL_RULES.find((z: Rule) => z.id === this.tutorialExercise.rule.id);
@@ -105,12 +109,6 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     this.addSubscription(this.checkAnswerTutorialConv, __ => {
       if (satisfyRuleCardsNew(this.answerComponents.map(z => z.cardInfo), GAME_RULES)) {
         this.answerRight();
-
-        // if(x === this.answerComponents[0]) {
-        //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit(this.answerService.correctCards)
-        // } else {
-        //   this.answerService.cardsToDeckAnimationEmitterTutorial.emit()
-        // }
       } else {
         this.answerComponents.forEach((z, i) => {
           i === 0 ? this.answerService.wrongCards.emit() : undefined
@@ -173,13 +171,16 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
 
+
   public setSteps() {
     this.destroyClock();
     this.swiftCardOn = true;
     this.firstSwiftCard = true;
+
     const aux = this.challengeService.getExerciseConfig();
     const rulesToEjemplify = aux.gameRules;
-    this.tutorialExercise = this.tutorialService.tutorialCardGenerator(rulesToEjemplify[0]);
+    this.tutorialExercise = this.tutorialService.tutorialCardGenerator(GAME_RULES[0]);
+    console.log(rulesToEjemplify);
     this.addStep('¡Buenas! El objetivo del juego consiste en seleccionar las cartas que compartan la regla que figura en el panel de reglas', () => {
     }, timer(4000));
     for (let i = 0; i < rulesToEjemplify.length; i++) {
@@ -220,6 +221,8 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
     }, this.tutorialEnd);
   }
 
+
+    
 
 
   public setStepConventional() {
@@ -344,7 +347,7 @@ export class TutorialComponent extends GameBodyDirective implements OnInit {
 
 
   public repeatTutorialComplete() {
-    this.gridClass = this.getGridClassToUse();
+    this.gridConfig = this.getGridClassToUse();
     this.tutorialService.propertiesAvaiable = GAME_RULES;
     this.setMagnifierReference('initial-state');
     this.stateByCards = this.tutorialService.cardInTable.cards.map(z => 'card-neutral');

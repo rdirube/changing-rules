@@ -25,20 +25,19 @@ import { ChangingRulesChallengeService } from './changing-rules-challenge.servic
 
 export class TutorialService {
   public currentRule!: Rule;
-  public cardInTable;
+  public cardInTable!:CardsInTable;
   public propertyFixed: any[] = [];
   public property: GameRule[] = [];
   public propertiesAvaiable = GAME_RULES;
   constructor(private challengeService: ChangingRulesChallengeService) {
-    const aux = this.challengeService.exerciseConfig;
-    this.cardInTable = new CardsInTable(CARD_COLORS, CARD_SHAPES, CARD_FILLERS);
-    this.cardInTable.setInitialCards(9, 3);
+  
   }
 
 
 
   tutorialCardGenerator(gameRule: GameRule): ChangingRulesExercise {
     this.currentRule = ALL_RULES.find(z => gameRule === z.id) as Rule;
+    console.log('cantidad de cartas usadas', this.cardInTable.cards.map( z => z.hasBeenUsed).length)
     this.cardInTable.updateCards(this.currentRule, this.challengeService.exerciseConfig.cardsForCorrectAnswer);
     return {
       currentCards: this.cardInTable.cards,

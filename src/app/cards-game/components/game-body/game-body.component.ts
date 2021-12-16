@@ -77,7 +77,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       this.deckClass = 'empty';
     });
     this.addSubscription(this.gameActions.showHint, x => this.showHint());
-
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       const correct = z.correctness === 'correct';
       if (correct) {
@@ -101,7 +100,8 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       this.gameActions.showNextChallenge.emit();
     });
 
-  
+   
+
   }
 
 
@@ -244,7 +244,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         //     // z.updateCard();
         //   });
         // }
-        this.gridClass = this.getGridClassToUse();
+        this.gridConfig = this.getGridClassToUse();
         // if (this.ruleComponent)
           // this.ruleComponent.setNewRule(this.exercise.rule.id as GameRule);
       });

@@ -30,9 +30,9 @@
         [auxArray]="auxArray" >
       </app-deck>
     </div>
-    <div [ngClass]="gridClass">
+    <div class="cards-grid-9">
       <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialService.cardInTable.cards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent?.elementRef"
-      *ngFor="let item of tutorialService.cardInTable.cards; let i = index" [position]="i" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerByCurrentTutorialMode())" [swiftCardOn]="swiftCardOn" [firstSwiftCard]="firstSwiftCard">
+      *ngFor="let item of tutorialService.cardInTable.cards; let i = index" [position]="i" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerByCurrentTutorialMode())" [swiftCardOn]="swiftCardOn" [firstSwiftCard]="firstSwiftCard" [gridZindex]="gridConfig.numberForZIndex">
      </app-deck-per-card>
     </div>
   </div>

@@ -1,17 +1,17 @@
-import {Directive, QueryList, ViewChild, ViewChildren, EventEmitter} from '@angular/core';
+import { Directive, QueryList, ViewChild, ViewChildren, EventEmitter } from '@angular/core';
 import anime from 'animejs';
-import {SubscriberOxDirective} from 'micro-lesson-components';
-import {SoundOxService} from 'micro-lesson-core';
-import {isEven, ScreenTypeOx} from 'ox-types';
-import {CardComponent} from 'src/app/cards-game/components/card/card.component';
-import {TextComponent} from 'typography-ox';
-import {convertPXToVH, isNotRepeated} from '../models/functions';
-import {DeckComponent} from '../../cards-game/components/deck/deck.component';
-import {RulesComponent} from '../../cards-game/components/rules/rules.component';
-import {ChangingRulesChallengeService} from '../services/changing-rules-challenge.service';
-import {interval, Subscription} from 'rxjs';
-import {take} from 'rxjs/operators';
-import { GameSetting } from '../models/types';
+import { SubscriberOxDirective } from 'micro-lesson-components';
+import { SoundOxService } from 'micro-lesson-core';
+import { isEven, ScreenTypeOx } from 'ox-types';
+import { CardComponent } from 'src/app/cards-game/components/card/card.component';
+import { TextComponent } from 'typography-ox';
+import { convertPXToVH, isNotRepeated } from '../models/functions';
+import { DeckComponent } from '../../cards-game/components/deck/deck.component';
+import { RulesComponent } from '../../cards-game/components/rules/rules.component';
+import { ChangingRulesChallengeService } from '../services/changing-rules-challenge.service';
+import { interval, Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { GameSetting, gridConfig } from '../models/types';
 import { DeckPerCardComponent } from 'src/app/cards-game/components/deck-per-card/deck-per-card.component';
 
 @Directive({
@@ -30,26 +30,29 @@ export class GameBodyDirective extends SubscriberOxDirective {
   public deckClass: string = "empty";
   public deckWidth: string = '15vh';
   public deckHeight: string = '20vh';
-  public gridClass = 'cards-grid-9';
-  public currentSetting!:GameSetting;
-  public firstSwiftCard!:boolean;
-  public swiftCardOn!:boolean;
+  public gridConfig:gridConfig = {class:'cards-grid-9',
+   numberForZIndex:3};
+  public currentSetting!: GameSetting;
+  public firstSwiftCard!: boolean;
+  public swiftCardOn!: boolean;
   public currentTime = 0;
   public totalTime = 0;
-  public clockAnimation!:any;
-  public auxArray:number[] = [];
+  public clockAnimation!: any;
   public color = 'rgb(0,255,0)';
   timeFormatted: string = '';
   private clockSubs!: Subscription;
   cardsInteractable: boolean = false;
-  public faceDown:boolean = false;
+  public faceDown: boolean = false;
+  public auxArray: number[] = [];
 
+  
 
   constructor(protected soundService: SoundOxService, private cs: ChangingRulesChallengeService) {
     super();
     this.firstSwiftCard = false;
     this.swiftCardOn = false;
   }
+
 
 
   updateAnswer(i: number, cardsForCorrect: number, cardsForCheckReached: () => void) {
@@ -120,24 +123,41 @@ export class GameBodyDirective extends SubscriberOxDirective {
     }
     this.clockSubs = undefined as any;
   }
-  
 
-  getGridClassToUse(): string {
-  
+
+  getGridClassToUse(): gridConfig {
+    console.log(this.cs.exerciseConfig.cardInTable);
     if (this.cs.exerciseConfig.cardInTable <= 4) {
-      return 'cards-grid-4';
+      return {
+        class: 'cards-grid-4',
+        numberForZIndex: 2
+      };
     } else if (this.cs.exerciseConfig.cardInTable <= 6) {
-      return 'cards-grid-6';
+      return {
+        class: 'cards-grid-6',
+        numberForZIndex: 2
+      };
     } else if (this.cs.exerciseConfig.cardInTable <= 9) {
-      return 'cards-grid-9';
+      return {
+        class: 'cards-grid-9',
+        numberForZIndex: 3
+      }
     } else if (this.cs.exerciseConfig.cardInTable <= 12) {
-      return 'cards-grid-12';
+      return {
+        class: 'cards-grid-12',
+        numberForZIndex: 4
+      }
     } else {
-      return 'cards-grid-16';
-    }
+      return {
+        class: 'cards-grid-16',
+        numberForZIndex: 4
+      }    }
   }
 
 
+  public cantClickSound() {
+    this.soundService.playSoundEffect('sounds/cantClick.mp3', ScreenTypeOx.Game)
+  }
 
   // cardsToDeckAnimation(nextStepEmitter: EventEmitter<any>) {
   //   const duration = 123;
@@ -228,8 +248,8 @@ export class GameBodyDirective extends SubscriberOxDirective {
 
   protected playWrongAnimation() {
     const rotate = Array.from(Array(8).keys()).map((z, i) => {
-      return {value: isEven(i) ? 2 : -2, duration: 50};
-    }).concat([{value: 0, duration: 50}]);
+      return { value: isEven(i) ? 2 : -2, duration: 50 };
+    }).concat([{ value: 0, duration: 50 }]);
     anime({
       targets: this.answerComponents.map(z => z.elementRef.nativeElement),
       rotate,

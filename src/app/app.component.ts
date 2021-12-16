@@ -38,13 +38,13 @@ export class AppComponent extends BaseMicroLessonApp {
               progressService: ProgressService, elementRef: ElementRef,  private gameActionsService: GameActionsService<any>,
               endGame: EndGameService, i18nService: I18nService, levelService: LevelService, http: HttpClient,
               private challengeService: ChangingRulesChallengeService, private appInfoService: AppInfoOxService,
-              microLessonMetrics: MicroLessonMetricsService<any>, // Todo
+              private metrics: MicroLessonMetricsService<any>, // Todo
               resourceStateService: ResourceStateService,
               sound: SoundOxService, bridgeFactory: PostMessageBridgeFactory,
               transloco: TranslocoService) {
     super(preloader, translocoService, wumboxService, communicationOxService, microLessonCommunicationService,
       progressService, elementRef, gameActionsService, endGame,
-      i18nService, levelService, http, challengeService, appInfoService, microLessonMetrics, sound, bridgeFactory);
+      i18nService, levelService, http, challengeService, appInfoService, metrics, sound, bridgeFactory);
     microLessonCommunicationService.sendMessageMLToManager(HasTutorialOxBridge, true);
     gameActionsService.microLessonCompleted.subscribe(__ => {
       if (resourceStateService.currentState?.value) {
@@ -78,7 +78,7 @@ export class AppComponent extends BaseMicroLessonApp {
     // const svgForms: string[] = ['circulo_rallado.svg', 'circulo_relleno.svg', 'circulo_vacio.svg', 'circulo_moteado.svg', 'cuadrado_rallado.svg', 'cuadrado_moteado.svg', 'cuadrado_vacio.svg',
     //   'cuadrado_relleno.svg', 'estrella_rallado.svg', 'estrella_moteado.svg',
     //   'estrella_vacio.svg', 'estrella_relleno.svg', 'triangulo_moteado.svg', 'triangulo_relleno.svg', 'triangulo_vacio.svg', 'triangulo_rallado.svg'];
-    const sounds = ['click.mp3', 'bubble01.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3'].map(z => 'sounds/' + z);
+    const sounds = ['click.mp3', 'bubble01.mp3', 'bubble02.mp3', 'rightAnswer.mp3', 'woosh.mp3', 'wrongAnswer.mp3', 'clickSurrender.mp3','cantClick.mp3'].map(z => 'sounds/' + z);
 
     const figuresSvg: string[] = [];
     CARD_SHAPES.forEach(shape => {
@@ -103,7 +103,8 @@ export class AppComponent extends BaseMicroLessonApp {
     return environment.basePath;
   }
   onTutorialEnd(tutorialMetric: TutorialMetric): void {
-    this.gameActionsService.restartGame.emit(ScreenTypeOx.Tutorial as any);
+    if ((this.metrics.currentMetrics?.expandableInfo?.exercisesData as any[])?.length > 0)
+      this.gameActionsService.restartGame.emit(ScreenTypeOx.Tutorial as any);
     super.onTutorialEnd(tutorialMetric);
   }
 }

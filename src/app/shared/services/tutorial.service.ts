@@ -38,7 +38,7 @@ export class TutorialService {
   tutorialCardGenerator(gameRule: GameRule): ChangingRulesExercise {
     this.currentRule = ALL_RULES.find(z => gameRule === z.id) as Rule;
     console.log('cantidad de cartas usadas', this.cardInTable.cards.map( z => z.hasBeenUsed).length)
-    this.cardInTable.updateCards(this.currentRule, this.challengeService.exerciseConfig.cardsForCorrectAnswer);
+    this.cardInTable.updateCards(this.currentRule, 3);
     return {
       currentCards: this.cardInTable.cards,
       rule: this.currentRule,

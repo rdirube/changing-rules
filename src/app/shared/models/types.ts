@@ -76,7 +76,7 @@ export interface ChangingRulesNivelation {
   cardInTable: number;
   // cardQuantityDeck: number;
   cardsForCorrectAnswer: number;
-  gameSetting: GameSetting[];
+  gameSetting: GameSetting;
   totalExercises: number;
   totalTimeInSeconds: number;
   timeScoreCriteria: ChangingRulesScoreCriteria;

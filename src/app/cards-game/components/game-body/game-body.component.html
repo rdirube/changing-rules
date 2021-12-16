@@ -34,7 +34,7 @@
 
  <div fxLayout="column" class="card-to-select" style="height: auto" *ngIf="challengeService.exerciseConfig.gameMode === 'limpiar la mesa'"> 
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;" fxLayoutAlign="center center">
-    <ox-text [originalText]="challengeService.exerciseConfig.gameSetting[0]" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
+    <ox-text [originalText]="challengeService.exerciseConfig.gameSetting" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
   </div>
   <app-rules 
   [rule]="exercise?.rule?.id">

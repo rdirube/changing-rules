@@ -72,7 +72,6 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     const currentExerciseRule: GameRule = anyElement(this.exerciseConfig.gameRules.filter( z => z !== this.lastRule));
     this.lastRule = currentExerciseRule;
     const ruleClass = ALL_RULES.find(z => z.id === currentExerciseRule) as Rule;
-    const currentSetting:GameSetting = anyElement(this.exerciseConfig.gameSetting);
     if(this.exerciseConfig.gameMode === 'Set convencional') {
       this.cardsInTable.updateCardsNewModel(this.exerciseConfig.cardsForCorrectAnswer,() => this.cardsInTable.cardNotRepeatedLargeForced(this.cardsInTable.currentPossibleAnswerCards, this.cardsInTable.cards.filter(card => !card.hasBeenUsed),() => this.cardsInTable.addForcedCard(this.cardsInTable.currentPossibleAnswerCards)));
     } else {
@@ -84,7 +83,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     return new ExerciseOx({
       rule: ruleClass,
       currentCards: this.cardsInTable.cards,
-      currentSetting: currentSetting === 'aleatorio' ? anyElement(this.exerciseConfig.gameSetting.filter(z => z!=='aleatorio')) : currentSetting
+      currentSetting: this.exerciseConfig.gameSetting
     } as ChangingRulesExercise, 1, {maxTimeToBonus: 0, freeTime: 0}, []);
   }
 

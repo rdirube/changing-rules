@@ -138,6 +138,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
 
 
   startGame() {
+    console.log(this.challengeService.exerciseConfig.gameSetting)
     this.soundService.playWoosh(ScreenTypeOx.Game);
     this.countDownImageInfo = undefined;
     this.currentSetting = this.exercise.currentSetting;

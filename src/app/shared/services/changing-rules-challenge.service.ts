@@ -50,7 +50,7 @@ export class ChangingRulesChallengeService extends ChallengeService<any, any> {
     gameActionsService.showNextChallenge.subscribe(z => {
       console.log('showNextChallenge');
     });
-    this.exerciseConfig = JSON.parse('{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"GameMode":"limpiar la mesa","rulesForAnswer":1}');
+    this.exerciseConfig = JSON.parse('{"GAME_RULES":["forma","color","relleno"],"shapesAvaiable":["circulo","cuadrado","triangulo","estrella","rombo"],"colorsAvaiable":["rojo","celeste","amarillo","verde","violeta"],"fillsAvaiable":["vacio","relleno","rallado","moteado"],"cardInTable":9,"cardsForCorrectAnswer":3,"gameSetting":"igual","totalTimeInSeconds":30,"wildcardOn":true,"minWildcardQuantity":2,"gameMode":"limpiar la mesa","rulesForAnswer":1}');
   }
 
 

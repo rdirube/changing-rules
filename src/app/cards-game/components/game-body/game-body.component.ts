@@ -78,6 +78,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     });
     this.addSubscription(this.gameActions.showHint, x => this.showHint());
     this.addSubscription(this.gameActions.checkedAnswer, z => {
+      console.log()
       const correct = z.correctness === 'correct';
       if (correct) {
         this.answerComponents.map(z => z.cardInfo).forEach(card => card.hasBeenUsed = true);
@@ -153,6 +154,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     }
     this.clockAnimation.play();
     this.cardsAppearenceAnimation();
+    console.log(this.challengeService.exerciseConfig);
   }
 
 
@@ -208,7 +210,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   ngOnInit(): void {
     console.log(this.challengeService.exerciseConfig.gameMode);
     this.addSubscription(this.challengeService.currentExercise.pipe(filter(x => x !== undefined)),
-    // this.addSubscription(this.challengeService.currentExercise, //.pipe(filter(x => x !== undefined)),
       (exercise: ExerciseOx<ChangingRulesExercise>) => {
         if (exercise === undefined) {
           this.firstSwiftCard = false;

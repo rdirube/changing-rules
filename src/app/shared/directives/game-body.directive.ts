@@ -146,8 +146,8 @@ export class GameBodyDirective extends SubscriberOxDirective {
 
 
   cardsAppearenceAnimation() {
-    anime.remove('.card-component');
-    anime({
+  anime.remove('.card-component');
+  anime({
       targets: '.card-component',
       rotateY: '180',
       duration: 300,
@@ -156,7 +156,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
        this.cardsInteractable = true;
       }
     });
-    anime({
+  anime({
       targets: '.card-component',
       duration:150,
       complete: ()=> {

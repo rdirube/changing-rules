@@ -1,4 +1,4 @@
-import {Component, Input, ElementRef, QueryList, ViewChildren, HostListener} from '@angular/core';
+import {Component, Input, ElementRef, QueryList, ViewChildren, HostListener, OnInit, AfterViewInit} from '@angular/core';
 import {GameRule, RuleArray} from 'src/app/shared/models/types';
 import anime from 'animejs';
 import {SubscriberOxDirective} from 'micro-lesson-components';
@@ -11,13 +11,21 @@ import {ChangingRulesChallengeService} from '../../../shared/services/changing-r
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss']
 })
-export class RulesComponent extends SubscriberOxDirective {
+export class RulesComponent extends SubscriberOxDirective implements OnInit, AfterViewInit {
 
   @ViewChildren('rules') allRules!: QueryList<ElementRef>;
-  currentRule!: string;
+  private _rule: GameRule | undefined;
+  @Input() isTutorial!:boolean;
+
+  @Input()
+  public set rule(value: GameRule | undefined) {
+    this._rule = value;
+    this.updateRuleStates();
+    this.ruleSelectionAnimation();
+  }
   public lowerCaseTrue: boolean = true;
 
-  private readonly allRuleArray:     {
+  private readonly allRuleArray:{
     iconSvg: string,
     auxForSvg: string,
     class: string,
@@ -55,20 +63,35 @@ export class RulesComponent extends SubscriberOxDirective {
   //   this.currentRule = r;
   //   this.ruleSelectionAnimation();
   // }
-  setNewRule(r: GameRule) {
-    this.currentRule = r;
-    this.updateRuleStates();
-    this.ruleSelectionAnimation();
-  }
+  // @Input()
+  // get rule(): GameRule | undefined {
+  //   return this._rule;
+  // }
+  // set rule(r: GameRule | undefined) {
+  //   console.log('llego rule', r);
+  //   if (r === undefined) return;
+  //   this._rule = r;
+  //   this.updateRuleStates();
+  //   this.ruleSelectionAnimation();
+  // }
 
 
-  constructor(private challengeSrevice: ChangingRulesChallengeService,
+  constructor(private challengeService: ChangingRulesChallengeService,
               private gameActions: GameActionsService<any>) {
     super();
     this.addSubscription(this.gameActions.startGame, z => {
-      this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.exerciseConfig.gameRules.includes(x.id));
+      
+      this.rulesArray = this.allRuleArray.filter( x => this.challengeService.exerciseConfig.gameRules.includes(x.id));
     });
-    this.rulesArray = this.allRuleArray.filter( x => this.challengeSrevice.getExerciseConfig().gameRules.includes(x.id));
+    this.rulesArray = this.allRuleArray.filter( x => this.challengeService.getExerciseConfig().gameRules.includes(x.id));
+  }
+ 
+
+  ngAfterViewInit(): void {
+  }
+ 
+  ngOnInit(): void {
+    console.log('Rule component instaciated')
   }
 
 
@@ -87,11 +110,13 @@ export class RulesComponent extends SubscriberOxDirective {
 
   updateRuleStates() {
     this.rulesArray.forEach(z => {
-      z.isOn = this.currentRule === z.id;
+      z.isOn = this._rule === z.id;
       z.iconSvg = this.iconAutocomplete(z.isOn, z.auxForSvg);
       z.class = this.classAutocomplete(z.isOn);
     });
   }
+
+
 
   ruleSelectionAnimation() {
     if (!this.allRules) return;

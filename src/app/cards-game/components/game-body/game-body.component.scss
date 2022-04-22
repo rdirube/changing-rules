@@ -33,8 +33,6 @@
 }
 
 
-.card-back {
-}
 
 
 .card-component .card-off {
@@ -56,3 +54,17 @@
 .hide {
   opacity: 0;
 }
+
+
+.cover-everything {
+    z-index: 100;
+    position: absolute;
+  }
+  
+  
+  .little-down-1 {
+    transform: translateY(0.65vh);
+    position: absolute;
+
+  }
+  

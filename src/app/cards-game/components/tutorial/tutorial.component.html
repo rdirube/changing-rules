@@ -12,7 +12,7 @@
       <app-tutorial-button fxLayoutAlign="center center" class="complete-buttom"
                            mlcClickeableOx
                            tutorialText="Repetir tutorial"
-                           [realClick]="repeatTutorialMethod.bind(this)"></app-tutorial-button>
+                           [realClick]="repeatTutorialComplete.bind(this)"></app-tutorial-button>
     </div>
     <mlc-loaded-svg fxFlex="grow" fxFlexFill class="myAbsolute" forceViewBoxTo="''"
                     path="changing_rules/svg/elementos/mesa.svg">
@@ -26,35 +26,25 @@
       <app-deck
         [ngStyle]="{'width': deckWidth, 'height': deckHeight}"
         [deckHeight]="deckHeight" [deckWidth]="deckWidth"
-        style="transform: translateX(-52vh);">
+        style="transform: translateX(-52vh);"
+        [auxArray]="auxArray" >
       </app-deck>
     </div>
-    <div [ngClass]="gridClass">
-      <div #cardContainer *ngFor="let item of tutorialExercise?.currentCards; let i = index"
-           [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
-           style="position: relative;">
-        <app-card [cardInfo]="item" #aCard (click)="answerVerificationTutorial(i)"
-                  [cardClasses]="stateByCards[i]"
-                  [ngClass]=" swiftCardOn ? 'card-component card-on': 'card-component card-off'">
-        </app-card>
-        <mlc-loaded-svg fxFlex="grow" fxFlexFill class="card-back myAbsolute"
-                        path="changing_rules/svg/elementos/dorso.svg">
-        </mlc-loaded-svg>
-      </div>
+    <div class="cards-grid-9">
+      <app-deck-per-card style="height: 100%;" [cardInfo]="tutorialService.cardInTable.cards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent?.elementRef"
+      *ngFor="let item of tutorialService.cardInTable.cards; let i = index" [position]="i" [cardClass]="stateByCards[i]" (click)="answerVerificationTutorial(i, checkAnswerByCurrentTutorialMode())" [swiftCardOn]="swiftCardOn" [firstSwiftCard]="firstSwiftCard" [gridZindex]="gridConfig.numberForZIndex">
+     </app-deck-per-card>
     </div>
   </div>
 </div>
-<div fxLayout="column" class="card-to-select" style="height: auto">
+<div fxLayout="column" class="card-to-select" style="height: auto" *ngIf="exerciseConfig.gameMode === 'limpiar la mesa'">
   <div style="background-color: #f04141;width:100%;height: 7.5vh;border-radius: 10px 10px 0 0;"
        fxLayoutAlign="center center">
-    <ox-text originalText="IGUAL" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
+    <ox-text originalText="igual" color="white" font="dinnRegular" fontSize="4vh"></ox-text>
   </div>
-  <app-rules></app-rules>
+  <app-rules [rule]="tutorialExercise?.rule?.id"></app-rules>
 </div>
 
-<!--<div class="deck-container">-->
-<!--  <app-deck [deckClass]="deckClass"></app-deck>-->
-<!--</div>-->
 <div class="text-tutorial-container" style="position: absolute; z-index: 101" fxLayoutAlign="center center">
   <ox-text #tutorialText
            [ignoreLowerCase]="true"

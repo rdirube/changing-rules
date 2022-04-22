@@ -1,0 +1,33 @@
+<mlc-loaded-svg fxFlex="grow" *ngIf="challengeService.cardsPlayed < 12" 
+ style="width: 100%;height: 100%;position: absolute;transform: translateY(2.4vh);" path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg>
+<mlc-loaded-svg fxFlex="grow" *ngIf="challengeService.cardsPlayed  < 24"
+ style="width: 100%;height: 100%;position: absolute;transform: translateY(1.8vh);" path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg>
+<mlc-loaded-svg fxFlex="grow" *ngIf="challengeService.cardsPlayed  < 36"
+ style="width: 100%;height: 100%;position: absolute; transform: translateY(1.2vh);" path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg>
+<mlc-loaded-svg fxFlex="grow" *ngIf="challengeService.cardsPlayed  < 48"
+ style="width: 100%;height: 100%;position: absolute;transform: translateY(0.6vh);" path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg>
+<div #cardContainer 
+      [ngClass]=" swiftCardOn ? 'card-component-visible': 'card-component'"
+       style="position: relative;">
+        <app-card #cardComponent [isSelected]="isSelected" *ngIf="cardInfo"
+        [swiftCardOn]="swiftCardOn"
+         [cardInfo]="cardInfo" #aCard 
+                  [cardClass]="cardClass"
+                  class="card-component"
+                  [ngClass]="{'card-on': firstSwiftCard ,  'card-off': !firstSwiftCard } ">
+       </app-card>
+
+     <mlc-loaded-svg fxFlex="grow" #cardPlaceHolder fxFlexFill [ngClass]="swiftCardOn ? 'card-back-up': 'card-back'" path="changing_rules/svg/elementos/dorso.svg">
+      </mlc-loaded-svg>
+
+<!-- 
+       <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill [ngClass]=" faceDown? 'cover-everything':'little-down-1'" path="changing_rules/svg/elementos/dorso.svg">
+    </mlc-loaded-svg> -->
+</div>
+
+<!-- <mlc-loaded-svg fxFlex="grow" #cardPlaceholder fxFlexFill  path="changing_rules/svg/elementos/dorso.svg">
+</mlc-loaded-svg> -->

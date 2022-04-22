@@ -7,11 +7,13 @@ import { CardComponent } from './components/card/card.component';
 import { DeckComponent } from './components/deck/deck.component';
 import { OxComponentsModule } from 'ox-components';
 import { TutorialComponent } from './components/tutorial/tutorial.component';
-import {GameBodyDirective} from '../shared/directives/game-body.directive';
-import {RoundProgressModule} from 'angular-svg-round-progressbar';
+import { GameBodyDirective } from '../shared/directives/game-body.directive';
+import { RoundProgressModule } from 'angular-svg-round-progressbar';
 import { ClockComponent } from './components/clock/clock.component';
 import { TutorialButtonComponent } from './components/tutorial/tutorial-button/tutorial-button.component';
-
+import { DeckPerCardComponent } from './components/deck-per-card/deck-per-card.component';
+import { MagnifierGlassComponent } from 'ox-components';
+import { LoadedSvgComponent } from 'micro-lesson-components';
 
 @NgModule({
   declarations: [
@@ -22,8 +24,10 @@ import { TutorialButtonComponent } from './components/tutorial/tutorial-button/t
     DeckComponent,
     TutorialComponent,
     ClockComponent,
-    TutorialButtonComponent
+    TutorialButtonComponent,
+    DeckPerCardComponent,
   ],
+  
   exports: [
     GameBodyComponent,
     TutorialComponent,

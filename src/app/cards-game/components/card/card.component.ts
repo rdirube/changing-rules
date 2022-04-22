@@ -16,12 +16,11 @@ import {LoadedSvgComponent} from 'micro-lesson-components';
 
 export class CardComponent implements OnInit {
 
-  @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
-  public isSelected: boolean = false;
+  // @ViewChild('cardPlaceholder') cardPlaceholder!: LoadedSvgComponent;
+  @Input() isSelected: boolean = false;
   public cardPathWithReplaces!: Replaces;
   public cardSvg: string = 'changing_rules/svg/elementos/frente.svg';
-
-  @Input() swiftCardOn!: boolean;
+  @Input() swiftCardOn!:boolean;
 
   @Input('cardInfo')
   set setCardInfo(c: CardInfo) {
@@ -32,16 +31,15 @@ export class CardComponent implements OnInit {
   }
 
 
-  @Input() cardClasses: string = 'card-neutral';
+  @Input() cardClass!: string;
   card!: CardInfo;
 
 
-  faceDown = false;
 
 
   constructor(public elementRef: ElementRef, private gameActions: GameActionsService<any>,
               private preloader: PreloaderOxService) {
-    this.cardClasses = 'card-neutral';
+              this.cardClass = 'card-neutral';
   }
 
 
@@ -56,10 +54,13 @@ export class CardComponent implements OnInit {
     this.cardPathWithReplaces = {path: cardSvgNocolor, replaces: replaces};
   }
 
+
+  
   public updateCard(): void {
     this.cardSvg = 'changing_rules/svg/elementos/frente.svg';
-    this.faceDown = false;
   }
 
+
+  
 
 }

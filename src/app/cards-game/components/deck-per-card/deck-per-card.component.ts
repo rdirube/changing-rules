@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, EventEmitter, ViewChild, HostListener, Renderer2 } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, EventEmitter, ViewChild, HostListener, Renderer2, Output } from '@angular/core';
 import anime from 'animejs';
 import { LoadedSvgComponent, SubscriberOxDirective } from 'micro-lesson-components';
 import { FeedbackOxService, GameActionsService, SoundOxService } from 'micro-lesson-core';
@@ -33,7 +33,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
   @Input() swiftCardOn!: boolean;
   @Input() position!:number;
   @Input() gridZindex!: number;
-
+  @Output() clockAnimationState = new EventEmitter<boolean>()
 
   public deckWidth: string = '15vh';
   public deckHeight: string = '27.5vh';
@@ -87,6 +87,9 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
       const answerRect = this.cardComponent.elementRef.nativeElement.getBoundingClientRect();
       anime.remove(this.cardComponent.elementRef.nativeElement);
       this.currentAnimation = anime({
+        begin: () => {
+          this.clockAnimationState.emit(false);
+        },
         targets: this.cardComponent.elementRef.nativeElement,
         zIndex: 1000,
         easing: 'easeInOutExpo',
@@ -119,6 +122,7 @@ export class DeckPerCardComponent extends SubscriberOxDirective implements OnIni
                   this.cardsAppearenceNew();
                   this.cardsPlayed = this.challengeService.cardsPlayed;
                   this.elementRef.nativeElement.style.zIndex = 0;
+                  this.clockAnimationState.emit(true);
                }})
           }});
         }

@@ -52,6 +52,7 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   public exercise!: ChangingRulesExercise;
   public countDownImageInfo: OxImageInfo | undefined;
   public currentSetting!: GameSetting;
+  private correctCounter!:number;
   constructor(public challengeService: ChangingRulesChallengeService,
     private metricsService: MicroLessonMetricsService<any>,
     private gameActions: GameActionsService<any>,
@@ -66,7 +67,6 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     // @ts-ignore
     anime.suspendWhenDocumentHidden = false;
     this.addSubscription(this.gameActions.microLessonCompleted, z => {
-      
       timer(100).subscribe(zzz => {
         this.microLessonCommunication.sendMessageMLToManager(GameAskForScreenChangeBridge,
           ScreenTypeOx.GameComplete);
@@ -76,11 +76,13 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
       this.challengeService.addCardToDeckValidator = 0;
       this.deckClass = 'empty';
     });
+    this.correctCounter = 0;
     this.addSubscription(this.gameActions.showHint, x => this.showHint());
     this.addSubscription(this.gameActions.checkedAnswer, z => {
       console.log()
       const correct = z.correctness === 'correct';
       if (correct) {
+        this.correctCounter++;
         this.answerComponents.map(z => z.cardInfo).forEach(card => card.hasBeenUsed = true);
         this.answerComponents.forEach((z, i) => {
           z.cardsToDeckAnimation(i === 0 ? this.feedbackService.endFeedback : undefined);
@@ -89,6 +91,11 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
         this.challengeService.cardsPlayed += 3;
         if (this.challengeService.cardsPlayed > 9 * this.challengeService.cardDecksPivot) {
           this.challengeService.cardDecksPivot += 1;
+        }
+        if(this.challengeService.exerciseConfig.totalExercises !== 0 && this.challengeService.exerciseConfig.totalExercises <= this.correctCounter) {
+          timer(2800).subscribe(z=> {
+            this.gameActions.microLessonCompleted.emit();
+          })
         }
       }
       else {
@@ -99,6 +106,9 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     });
     this.addSubscription(this.feedbackService.endFeedback, x => {
       this.gameActions.showNextChallenge.emit();
+    });
+    this.addSubscription(this.gameActions.restartGame, z => {
+      this.correctCounter = 0;
     });
 
    
@@ -144,15 +154,24 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
     this.countDownImageInfo = undefined;
     this.currentSetting = this.exercise.currentSetting;
     (this.deckComponent as DeckComponent).auxArray = [];  
-    if (this.challengeService.exerciseConfig.totalTimeInSeconds) {
+    if (this.challengeService.exerciseConfig.totalTimeInSeconds !== 0 ) {
       this.setClock(this.challengeService.exerciseConfig.totalTimeInSeconds, () => {
         this.cardsInteractable = false;
         timer(1800).subscribe(z=> {
-          this.gameActions.microLessonCompleted.emit();
+          if(this.challengeService.exerciseConfig.totalExercises !== 0) {
+            if(this.correctCounter < this.challengeService.exerciseConfig.totalExercises) {
+              this.gameActions.microLessonCompleted.emit();
+            }
+          } else {
+            this.gameActions.microLessonCompleted.emit();
+          }
+          
         })
       });
     }
-    this.clockAnimation.play();
+    if(this.challengeService.exerciseConfig.totalTimeInSeconds !== 0) {
+      this.clockAnimation.play();
+    }
     this.cardsAppearenceAnimation();
     console.log(this.challengeService.exerciseConfig);
   }
@@ -192,6 +211,10 @@ export class GameBodyComponent extends GameBodyDirective implements OnInit, Afte
   }
 
 
+
+  public clockAnimationState(state:boolean) {
+    state ? this.clockAnimation.play() : this.clockAnimation.pause();
+  }
 
 
 

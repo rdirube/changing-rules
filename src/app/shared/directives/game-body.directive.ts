@@ -98,6 +98,7 @@ export class GameBodyDirective extends SubscriberOxDirective {
         onFinish();
       }
     });
+    
   }
 
   protected destroyClockSubs() {

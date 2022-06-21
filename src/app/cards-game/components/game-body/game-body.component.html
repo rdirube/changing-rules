@@ -13,7 +13,7 @@
       path="changing_rules/svg/elementos/mesa.svg">
     </mlc-loaded-svg>
     <div class="myAbsolute" fxLayoutAlign="end start">
-      <app-clock *ngIf="totalTime"
+      <app-clock *ngIf="challengeService.exerciseConfig.totalTimeInSeconds !== 0"
       [totalTime]="totalTime" [color]="color" [timeFormatted]="timeFormatted" [currentTime]="currentTime"></app-clock>
     </div>
     <div fxFlex="grow" fxLayoutAlign="center center" [ngClass]="{'hide': deckWidth?.length === 0}" class="myAbsolute">
@@ -24,7 +24,7 @@
       </app-deck>
     </div>
   <div [ngClass]="gridConfig.class" >
-    <app-deck-per-card style="height: 100%;" [cardInfo]="exercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent?.elementRef"
+    <app-deck-per-card (clockAnimationState)="clockAnimationState($event)"  style="height: 100%;" [cardInfo]="exercise.currentCards[i]" [cardsInteractable]="cardsInteractable" [deckComponent]="deckComponent?.elementRef"
      *ngFor="let item of exercise?.currentCards; let i = index" [position]="i" 
      [cardClass]="stateByCards[i]" (click)="cardsInteractable ? answerVerificationMethod(i) : cantClickSound()"  [swiftCardOn]="swiftCardOn"  [firstSwiftCard]="firstSwiftCard">
     </app-deck-per-card>
